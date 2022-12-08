@@ -10,7 +10,9 @@ import androidx.room.PrimaryKey
 */
 @Entity(
     tableName = "ingredient",
-    indices = [Index("ingredientId")]
+    indices = [
+        Index(value = ["name"], unique = true)
+    ]
 )
 data class Ingredient(
     @PrimaryKey(autoGenerate = false)

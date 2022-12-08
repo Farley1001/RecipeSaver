@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "1d67609b57d805e6d11614ac35eacad2",
+    "identityHash": "a32b4a3e48b09bb5ffdae6ebbbba3b15",
     "entities": [
       {
         "tableName": "recipe",
@@ -428,7 +428,7 @@
       },
       {
         "tableName": "recipe_ingredient",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`recipeIngredientId` INTEGER PRIMARY KEY AUTOINCREMENT, `recipeId` INTEGER NOT NULL, `ingredientId` INTEGER NOT NULL, `measureId` INTEGER NOT NULL, `amount` TEXT NOT NULL, `text` TEXT NOT NULL, FOREIGN KEY(`ingredientId`) REFERENCES `ingredient`(`ingredientId`) ON UPDATE NO ACTION ON DELETE SET DEFAULT )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`recipeIngredientId` INTEGER PRIMARY KEY AUTOINCREMENT, `recipeId` INTEGER NOT NULL, `ingredientId` INTEGER NOT NULL, `measureId` INTEGER NOT NULL, `amount` TEXT NOT NULL, `text` TEXT NOT NULL, FOREIGN KEY(`recipeId`) REFERENCES `recipe`(`recipeId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`ingredientId`) REFERENCES `ingredient`(`ingredientId`) ON UPDATE NO ACTION ON DELETE SET DEFAULT , FOREIGN KEY(`measureId`) REFERENCES `measure`(`measureId`) ON UPDATE NO ACTION ON DELETE SET DEFAULT )",
         "fields": [
           {
             "fieldPath": "recipeIngredientId",
@@ -491,9 +491,29 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_recipe_ingredient_ingredientId` ON `${TABLE_NAME}` (`ingredientId`)"
+          },
+          {
+            "name": "index_recipe_ingredient_measureId",
+            "unique": false,
+            "columnNames": [
+              "measureId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_recipe_ingredient_measureId` ON `${TABLE_NAME}` (`measureId`)"
           }
         ],
         "foreignKeys": [
+          {
+            "table": "recipe",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "recipeId"
+            ],
+            "referencedColumns": [
+              "recipeId"
+            ]
+          },
           {
             "table": "ingredient",
             "onDelete": "SET DEFAULT",
@@ -503,6 +523,17 @@
             ],
             "referencedColumns": [
               "ingredientId"
+            ]
+          },
+          {
+            "table": "measure",
+            "onDelete": "SET DEFAULT",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "measureId"
+            ],
+            "referencedColumns": [
+              "measureId"
             ]
           }
         ]
@@ -579,7 +610,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1d67609b57d805e6d11614ac35eacad2')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a32b4a3e48b09bb5ffdae6ebbbba3b15')"
     ]
   }
 }

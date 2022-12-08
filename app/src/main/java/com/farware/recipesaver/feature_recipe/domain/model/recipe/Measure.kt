@@ -10,7 +10,9 @@ import androidx.room.PrimaryKey
 */
 @Entity(
     tableName = "measure",
-    indices = [Index("measureId")]
+    indices = [
+        Index(value = ["name"], unique = true)
+    ]
 )
 data class Measure(
     @PrimaryKey(autoGenerate = false)

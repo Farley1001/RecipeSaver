@@ -10,7 +10,10 @@ import androidx.room.PrimaryKey
     foreignKeys = [
         ForeignKey(entity = Category::class, parentColumns = ["categoryId"], childColumns = ["categoryId"], onDelete = ForeignKey.SET_DEFAULT)
     ],
-    indices = [Index("categoryId")]
+    indices = [
+        Index(value = ["categoryId"], unique = false),
+        Index(value = ["name"], unique = true)
+    ]
 )
 data class Recipe(
     @PrimaryKey(autoGenerate = true)
