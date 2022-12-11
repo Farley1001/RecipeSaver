@@ -2,22 +2,12 @@ package com.farware.recipesaver.di
 
 import android.app.Application
 import android.content.Context
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.BlendMode.Companion.Screen
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.farware.recipesaver.RecipeApp
 import com.farware.recipesaver.feature_recipe.data.data_source.RecipeDatabase
-import com.farware.recipesaver.feature_recipe.data.data_source.RecipeDatabase.Companion.getInstance
 import com.farware.recipesaver.feature_recipe.data.repository.DataStoreRepositoryImpl
 import com.farware.recipesaver.feature_recipe.data.repository.FirebaseRepositoryImpl
 import com.farware.recipesaver.feature_recipe.data.repository.RecipeRepositoryImpl
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.*
 import com.farware.recipesaver.feature_recipe.domain.repository.DataStoreRepository
 import com.farware.recipesaver.feature_recipe.domain.repository.FirebaseRepository
 import com.farware.recipesaver.feature_recipe.domain.repository.RecipeRepository
@@ -40,8 +30,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 import javax.inject.Singleton
 
@@ -73,8 +61,8 @@ object AppModule {
             RecipeDatabase::class.java,
             RecipeDatabase.DATABASE_NAME
         ).fallbackToDestructiveMigration()
-            //.createFromAsset("recipes_db.db ")
-            .addCallback(object : RoomDatabase.Callback() {
+            //.createFromAsset("recipes_db.db")
+            /*.addCallback(object : RoomDatabase.Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
                     ioThread {
@@ -92,36 +80,6 @@ object AppModule {
                                     timeStamp = System.currentTimeMillis()
                                 )
                             )
-                            /*dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Purple",
-                                    lightThemeColor = Color(0xFFBA68C8).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFF7E57C2).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            )
-                            dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Deep Purple",
-                                    lightThemeColor = Color(0xFFB388FF).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFF512DA8).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            )
-                            dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Indigo",
-                                    lightThemeColor = Color(0xFF536DFE).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFF303F9F).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            )*/
                             dao.insertCategoryColor(
                                 CategoryColor(
                                     name = "Light Indigo",
@@ -132,26 +90,6 @@ object AppModule {
                                     timeStamp = System.currentTimeMillis()
                                 )
                             )
-                            /*dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Dark Blue",
-                                    lightThemeColor = Color(0xFF2979FF).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFF1565C0).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            )
-                            dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Blue",
-                                    lightThemeColor = Color(0xFF42A5F5).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFF0277BD).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            ) */
                             dao.insertCategoryColor(
                                 CategoryColor(
                                     name = "Light Blue",
@@ -162,16 +100,6 @@ object AppModule {
                                     timeStamp = System.currentTimeMillis()
                                 )
                             )
-                       /*     dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Dark Cyan",
-                                    lightThemeColor = Color(0xFF0097A7).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFF006064).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            )*/
                             dao.insertCategoryColor(
                                 CategoryColor(
                                     name = "Light Cyan",
@@ -182,36 +110,6 @@ object AppModule {
                                     timeStamp = System.currentTimeMillis()
                                 )
                             )
-/*                            dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Dark Teal",
-                                    lightThemeColor = Color(0xFF00897B).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFF00695C).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            )
-                            dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Light Teal",
-                                    lightThemeColor = Color(0xFF26A69A).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFF00796B).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            )
-                            dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Dark Green",
-                                    lightThemeColor = Color(0xFF388E3C).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFF1B5E20).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            )*/
                             dao.insertCategoryColor(
                                 CategoryColor(
                                     name = "Green",
@@ -222,46 +120,6 @@ object AppModule {
                                     timeStamp = System.currentTimeMillis()
                                 )
                             )
-                            /*dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Light Green",
-                                    lightThemeColor = Color(0xFF8BC34A).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFF2E7D32).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            )
-                            dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Lime",
-                                    lightThemeColor = Color(0xFFAEEA00).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFF6A7800).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            )
-                            dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Dark Purple2",
-                                    lightThemeColor = Color(0xFFA100BD).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFFF8ACFF).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            )
-                            dao.insertCategoryColor(
-                                CategoryColor(
-                                    name = "Purple2",
-                                    lightThemeColor = Color(0xFF8B3D9B).toArgb(),
-                                    onLightThemeColor = Color(0xFF000000).toArgb(),
-                                    darkThemeColor = Color(0xFFF6ADFF).toArgb(),
-                                    onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                                    timeStamp = System.currentTimeMillis()
-                                )
-                            )*/
                             dao.insertCategoryColor(
                                 CategoryColor(
                                     name = "Deep Purple",
@@ -529,10 +387,13 @@ object AppModule {
 
                             dao.getRecipes(onlyFavorites = false )
                             dao.getCategories()
+
+
                         }
                     }
                 }
-            })
+            }) */
+            .createFromAsset("database/recipes_db.db")
             .build()
     }
 

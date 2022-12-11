@@ -149,10 +149,10 @@ class RegisterViewModel @Inject constructor(
                                 )
 
                                 // get conversions from firebase
-                                getConversionsFromFirebase()
+                                //getConversionsFromFirebase()
 
                                 // get measures from firebase
-                                getMeasuresFromFirebase()
+                                //getMeasuresFromFirebase()
 
                                 //
                                 loadingState.emit(LoadingState.LOADED)

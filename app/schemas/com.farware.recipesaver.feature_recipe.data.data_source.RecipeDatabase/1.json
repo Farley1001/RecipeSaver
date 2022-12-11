@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a32b4a3e48b09bb5ffdae6ebbbba3b15",
+    "identityHash": "08322ab361df01ddc7a54856ec6139a8",
     "entities": [
       {
         "tableName": "recipe",
@@ -78,6 +78,15 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_recipe_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
+          },
+          {
+            "name": "index_recipe_name",
+            "unique": true,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_recipe_name` ON `${TABLE_NAME}` (`name`)"
           }
         ],
         "foreignKeys": [
@@ -344,7 +353,7 @@
       },
       {
         "tableName": "ingredient",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ingredientId` INTEGER NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, PRIMARY KEY(`ingredientId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ingredientId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "ingredientId",
@@ -369,17 +378,17 @@
           "columnNames": [
             "ingredientId"
           ],
-          "autoGenerate": false
+          "autoGenerate": true
         },
         "indices": [
           {
-            "name": "index_ingredient_ingredientId",
-            "unique": false,
+            "name": "index_ingredient_name",
+            "unique": true,
             "columnNames": [
-              "ingredientId"
+              "name"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_ingredient_ingredientId` ON `${TABLE_NAME}` (`ingredientId`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_ingredient_name` ON `${TABLE_NAME}` (`name`)"
           }
         ],
         "foreignKeys": []
@@ -415,13 +424,13 @@
         },
         "indices": [
           {
-            "name": "index_measure_measureId",
-            "unique": false,
+            "name": "index_measure_name",
+            "unique": true,
             "columnNames": [
-              "measureId"
+              "name"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_measure_measureId` ON `${TABLE_NAME}` (`measureId`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_measure_name` ON `${TABLE_NAME}` (`name`)"
           }
         ],
         "foreignKeys": []
@@ -540,13 +549,13 @@
       },
       {
         "tableName": "conversion",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`conversionId` INTEGER, `name` TEXT NOT NULL, `shortName` TEXT NOT NULL, `size` REAL NOT NULL, `sizeText` TEXT NOT NULL, `flozUs` REAL NOT NULL, `flozImp` REAL NOT NULL, `mlUs` REAL NOT NULL, `mlImp` REAL NOT NULL, PRIMARY KEY(`conversionId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`conversionId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `shortName` TEXT NOT NULL, `size` REAL NOT NULL, `sizeText` TEXT NOT NULL, `flozUs` REAL NOT NULL, `flozImp` REAL NOT NULL, `mlUs` REAL NOT NULL, `mlImp` REAL NOT NULL)",
         "fields": [
           {
             "fieldPath": "conversionId",
             "columnName": "conversionId",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "name",
@@ -601,7 +610,7 @@
           "columnNames": [
             "conversionId"
           ],
-          "autoGenerate": false
+          "autoGenerate": true
         },
         "indices": [],
         "foreignKeys": []
@@ -610,7 +619,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a32b4a3e48b09bb5ffdae6ebbbba3b15')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '08322ab361df01ddc7a54856ec6139a8')"
     ]
   }
 }

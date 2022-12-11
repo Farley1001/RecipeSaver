@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
     ]
 )
 data class Ingredient(
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
     val ingredientId: Int,
     val name: String,
     val type: String

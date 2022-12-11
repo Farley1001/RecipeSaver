@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "conversion")
 data class Conversion(
-    @PrimaryKey(autoGenerate = false)
-    val conversionId: Int? = null,
+    @PrimaryKey(autoGenerate = true)
+    val conversionId: Int,
     val name: String,
     val shortName: String,
     val size: Float,
