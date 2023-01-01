@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.farware.recipesaver.feature_recipe.common.Resource
 import com.farware.recipesaver.feature_recipe.domain.use_cases.DataStoreUseCases
 import com.farware.recipesaver.feature_recipe.presentation.util.LoadingState
-import com.farware.recipesaver.feature_recipe.presentation.util.MainActivityState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow

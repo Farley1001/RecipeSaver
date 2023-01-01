@@ -112,13 +112,6 @@ class LoginViewModel @Inject constructor(
                                     isLoading = false
                                 )
 
-                                // get conversions from firebase
-                                //getConversionsFromFirebase()
-
-                                // get measures from firebase
-                                //getMeasuresFromFirebase()
-
-                                //
                                 loadingState.emit(LoadingState.LOADED)
                             }
                             is Resource.Error -> {
@@ -146,13 +139,6 @@ class LoginViewModel @Inject constructor(
                                     isLoading = false
                                 )
 
-                                // get conversions from firebase
-                                //getConversionsFromFirebase()
-
-                                // get measures from firebase
-                                //getMeasuresFromFirebase()
-
-                                //
                                 loadingState.emit(LoadingState.LOADED)
                             }
                             is Resource.Error -> {
@@ -207,6 +193,8 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+/*
+
     private fun getConversionsFromFirebase()  {
         firebaseUseCases.getFirebaseConversions()
             .onEach { result ->
@@ -258,4 +246,6 @@ class LoginViewModel @Inject constructor(
                 }
             }.launchIn(viewModelScope)
     }
+    */
 }
+

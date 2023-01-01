@@ -26,7 +26,8 @@ data class RecipeIngredient(
     val ingredientId: Int,
     val measureId: Int,
     val amount: String,
-    val text: String
+    val measure: String,
+    val ingredient: String
 ) {
     /**
      * create any functions that are needed to operate on this entity
@@ -70,7 +71,7 @@ data class RecipeIngredient(
     /*
      * override toString() to return amount as the default
      */
-    override fun toString() = text
+    override fun toString() = "$amount $measure $ingredient"
 }
 
 class InvalidRecipeIngredientException(message: String): Exception(message)

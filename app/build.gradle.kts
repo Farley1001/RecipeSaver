@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import java.util.Properties
 
 plugins {
@@ -105,7 +104,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.5.1")
     implementation("androidx.compose.ui:ui:1.4.0-alpha03")
-    implementation("androidx.compose.material3:material3:1.1.0-alpha02")
+    implementation("androidx.compose.material3:material3:1.1.0-alpha03")
     implementation("androidx.compose.ui:ui-tooling-preview:1.4.0-alpha03")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation("androidx.activity:activity-compose:1.6.1")
@@ -162,9 +161,9 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.3")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.3")
 
-    // splash screen - changed from 1.2.0-beta03 to $compose_version
+    // splash screen
     implementation("androidx.core:core-splashscreen:1.0.0")
-    implementation("androidx.compose.animation:animation-graphics:1.4.0-alpha02")
+    implementation("androidx.compose.animation:animation-graphics:1.4.0-alpha03")
 
     // memory leak detector
     //debugImplementation("com.squareup.leakcanary:leakcanary-android:2.8.1")

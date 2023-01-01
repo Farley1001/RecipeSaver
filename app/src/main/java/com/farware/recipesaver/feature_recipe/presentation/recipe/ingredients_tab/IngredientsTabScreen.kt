@@ -19,15 +19,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Ingredient
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.FullRecipeIngredient
+import com.farware.recipesaver.feature_recipe.presentation.components.OutlinedTextFieldWithError
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.IngredientFocus
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.IngredientsChip
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.StepFocus
 import com.farware.recipesaver.feature_recipe.presentation.recipe.steps_tab.StepsTabEvent
+import com.farware.recipesaver.feature_recipe.presentation.ui.theme.Spacing
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.fabShape
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 import com.farware.recipesaver.feature_recipe.presentation.util.CustomDialogPosition
@@ -42,10 +45,16 @@ fun IngredientsTabScreen(
 
     IngredientsTabContent(
         ingredients = viewModel.state.value.ingredientFocus,
+        ingredient = "${viewModel.recipeIngredient.value.ingredient} ${viewModel.recipeIngredient.value.amount} ${viewModel.recipeIngredient.value.measure}",
+        onIngredientFocusChanged = { viewModel.onEvent(IngredientsTabEvent.IngredientFocusChanged(it)) },
         newIngredient = viewModel.newIngredient.value,
-        text = text,
+        dialogAmountAndMeasure = "${viewModel.recipeIngredient.value.amount} ${viewModel.recipeIngredient.value.measure}" ,
+        onDialogAmountAndMeasureChanged = {},
+        onDialogAmountAndMeasureFocusChanged = {},
+        dialogIngredient = "${viewModel.recipeIngredient.value.ingredient}",
+        onDialogIngredientChanged = {  },
+        onDialogIngredientFocusChanged = {  },
         showNewIngredientDialog = showNewIngredientDialog,
-        ingredientFocusChanged = { viewModel.onEvent(IngredientsTabEvent.IngredientFocusChanged(it)) },
         saveIngredientClicked = { viewModel.onEvent(IngredientsTabEvent.SaveIngredient(it)) },
         deleteIngredientClicked = { viewModel.onEvent(IngredientsTabEvent.DeleteIngredient(it)) }
     )
@@ -55,10 +64,16 @@ fun IngredientsTabScreen(
 @Composable
 fun IngredientsTabContent(
     ingredients: List<IngredientFocus>,
+    ingredient: String,
+    onIngredientFocusChanged: (IngredientFocus) -> Unit,
     newIngredient: FullRecipeIngredient,
-    text: MutableState<String>,
+    dialogAmountAndMeasure: String,
+    onDialogAmountAndMeasureChanged: (String) -> Unit,
+    onDialogAmountAndMeasureFocusChanged: (FocusState) -> Unit,
+    dialogIngredient: String,
+    onDialogIngredientChanged: (String) -> Unit,
+    onDialogIngredientFocusChanged: (FocusState) -> Unit,
     showNewIngredientDialog: MutableState<Boolean>,
-    ingredientFocusChanged: (IngredientFocus) -> Unit,
     saveIngredientClicked: (FullRecipeIngredient) -> Unit,
     deleteIngredientClicked: (FullRecipeIngredient) -> Unit
 ) {
@@ -80,13 +95,24 @@ fun IngredientsTabContent(
                 Text(text = "Edit Ingredient")
             },
             text = {
-                TextField(
-                    modifier = Modifier.fillMaxHeight(0.5F),
-                    value = text.value,
-                    onValueChange = {
-                        text.value = it
-                    }
-                )
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    OutlinedTextFieldWithError(
+                        text = dialogAmountAndMeasure,
+                        onTextChanged = onDialogAmountAndMeasureChanged,
+                        label = "Amount and Measure",
+                        onFocusChanged = onDialogAmountAndMeasureFocusChanged
+                    )
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
+                    OutlinedTextFieldWithError(
+                        text = dialogIngredient,
+                        onTextChanged = onDialogIngredientChanged,
+                        label = "Ingredient",
+                        onFocusChanged = onDialogIngredientFocusChanged
+                    )
+                }
             },
             confirmButton = {
                 TextButton(
@@ -132,7 +158,7 @@ fun IngredientsTabContent(
                     IngredientsChip(
                         ingredient = ingredient,
                         focused = ingredient.focused,
-                        onChangeFocus = { ingredientFocusChanged(it) },
+                        onChangeFocus = { onIngredientFocusChanged(it) },
                         onSaveClicked = { saveIngredientClicked(it) },
                         onDeleteClicked = { deleteIngredientClicked(it) },
                     )

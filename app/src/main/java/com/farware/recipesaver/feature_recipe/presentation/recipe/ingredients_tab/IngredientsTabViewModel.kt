@@ -34,7 +34,7 @@ class IngredientsTabViewModel @Inject constructor(
     private var _ingredient = mutableStateOf(Ingredient(-1, "", ""))
     val ingredient: State<Ingredient> = _ingredient
 
-    private var _recipeIngredient = mutableStateOf(RecipeIngredient(-1, -1, -1, -1, "", ""))
+    private var _recipeIngredient = mutableStateOf(RecipeIngredient(-1, -1, -1, -1, "", "", ""))
     val recipeIngredient: State<RecipeIngredient> = _recipeIngredient
 
     private var _recipeIngredientWithIngredient = mutableStateOf(RecipeIngredientWithIngredient(recipeIngredient.value, ingredient.value))
@@ -123,7 +123,8 @@ class IngredientsTabViewModel @Inject constructor(
                     ingredientId = -1,
                     measureId = -1,
                     amount = "",
-                    text = ""
+                    measure = "",
+                    ingredient = ""
                 ),
                 ingredient = Ingredient(
                     ingredientId = -1,
