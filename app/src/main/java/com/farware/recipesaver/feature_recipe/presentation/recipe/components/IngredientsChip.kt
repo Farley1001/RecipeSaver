@@ -34,8 +34,8 @@ fun IngredientsChip(
     val isEditMode = remember { mutableStateOf(false) }
     val openEditDialog = remember { mutableStateOf(true) }
     val openConfirmDeleteDialog = remember { mutableStateOf(false) }
-    text.value = ingredient.fullIngredient.recipeIngredientWithIngredient.ingredient.name
-    displayText.value = "${ingredient.measureAmount.amount} ${ingredient.measure.shortName} ${ingredient.ingredient.name}"
+    text.value = ingredient.fullIngredient.ingredient
+    displayText.value = "${ingredient.fullIngredient.amount} ${ingredient.fullIngredient.measure} ${ingredient.fullIngredient.ingredient}"
 
     if(!focused) {
         isFocused.value = false

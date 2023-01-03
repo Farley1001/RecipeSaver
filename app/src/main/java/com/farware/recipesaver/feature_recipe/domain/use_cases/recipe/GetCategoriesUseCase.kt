@@ -17,14 +17,14 @@ class GetCategoriesUseCase(
             when (categoryOrder.orderType) {
                 is OrderType.Ascending -> {
                     when(categoryOrder) {
-                        is CategoryOrder.Name -> categories.sortedBy { it.category.name.lowercase() }
-                        is CategoryOrder.Color -> categories.sortedBy { it.category.categoryId }
+                        is CategoryOrder.Name -> categories.sortedBy { it.name.lowercase() }
+                        is CategoryOrder.Color -> categories.sortedBy { it.categoryId }
                     }
                 }
                 is OrderType.Descending -> {
                     when(categoryOrder) {
-                        is CategoryOrder.Name -> categories.sortedByDescending { it.category.name.lowercase() }
-                        is CategoryOrder.Color -> categories.sortedByDescending { it.category.categoryId }
+                        is CategoryOrder.Name -> categories.sortedByDescending { it.name.lowercase() }
+                        is CategoryOrder.Color -> categories.sortedByDescending { it.categoryId }
                     }
                 }
             }

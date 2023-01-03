@@ -4,19 +4,20 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.farware.recipesaver.feature_recipe.data.entities.*
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.*
 
 @Database(
     entities = [
-        Recipe::class,
-        Category::class,
-        CategoryColor::class,
-        Step::class,
-        Tip::class,
-        Ingredient::class,
-        Measure::class,
-        RecipeIngredient::class,
-        Conversion::class
+        RecipeEntity::class,
+        CategoryEntity::class,
+        CategoryColorEntity::class,
+        ConversionEntity::class,
+        IngredientEntity::class,
+        MeasureEntity::class,
+        RecipeIngredientEntity::class,
+        StepEntity::class,
+        TipEntity::class,
     ],
     version = 1,
     exportSchema = true

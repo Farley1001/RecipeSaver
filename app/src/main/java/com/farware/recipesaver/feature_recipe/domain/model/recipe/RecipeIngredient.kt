@@ -1,26 +1,8 @@
 package com.farware.recipesaver.feature_recipe.domain.model.recipe
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
 import java.math.RoundingMode
 
-@Entity(
-    tableName = "recipe_ingredient",
-    foreignKeys = [
-        ForeignKey(entity = Recipe::class, parentColumns = ["recipeId"], childColumns = ["recipeId"]),
-        ForeignKey(entity = Ingredient::class, parentColumns = ["ingredientId"], childColumns = ["ingredientId"], onDelete = ForeignKey.SET_DEFAULT),
-        ForeignKey(entity = Measure::class, parentColumns = ["measureId"], childColumns = ["measureId"], onDelete = ForeignKey.SET_DEFAULT)
-    ],
-    indices = [
-        Index(value = ["recipeId"], unique = false),
-        Index(value = ["ingredientId"], unique = false),
-        Index(value = ["measureId"], unique = false)
-    ]
-)
 data class RecipeIngredient(
-    @PrimaryKey(autoGenerate = true)
     val recipeIngredientId: Long? = null,
     val recipeId: Long,
     val ingredientId: Int,

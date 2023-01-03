@@ -34,12 +34,12 @@ fun CategoryItem(
     cutCornerSize: Dp = 30.dp,
     onDeleteClick: () -> Unit
 ) {
-    val categoryColor = Color(category.categoryColor.background(isSystemInDarkTheme()))
-    val onCategoryColor = Color(category.categoryColor.onBackground(isSystemInDarkTheme()))
+    val categoryColor = Color(category.background(isSystemInDarkTheme()))
+    val onCategoryColor = Color(category.onBackground(isSystemInDarkTheme()))
 
     CategoryItemContent(
         modifier = modifier,
-        categoryName = category.category.name,
+        categoryName = category.name,
         cornerRadius = cornerRadius,
         cutCornerSize = cutCornerSize,
         categoryColor = categoryColor,

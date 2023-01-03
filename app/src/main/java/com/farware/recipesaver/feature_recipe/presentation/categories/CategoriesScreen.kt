@@ -248,7 +248,7 @@ fun CategoriesContent(
                                     onCategoryItemClick(category)
                                 },
                             onDeleteClick = {
-                                onCategoryItemDeleteClick(category.category)
+                                onCategoryItemDeleteClick(category.toCategory())
                             }
                         )
                         Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))

@@ -1,15 +1,39 @@
 package com.farware.recipesaver.feature_recipe.domain.model.recipe.relations
 
-import androidx.room.Embedded
-import androidx.room.Relation
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Category
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.CategoryColor
 
-data class CategoryWithColor(
-    @Embedded val category: Category,
-    @Relation(
-        parentColumn = "colorId",
-        entityColumn = "categoryColorId"
-    )
-    val categoryColor: CategoryColor
-)
+data class CategoryWithColor (
+    val categoryId: Long?,
+    val name: String,
+    val colorId: Long,
+    val color: String,
+    val lightThemeColor: Int,
+    val onLightThemeColor: Int,
+    val darkThemeColor: Int,
+    val onDarkThemeColor: Int,
+    val timeStamp: Long
+) {
+    /**
+     * create any functions that are needed to operate on this entity
+     */
+    fun toCategory(): Category {
+        return Category(
+            categoryId,
+            name,
+            colorId,
+            timeStamp
+        )
+    }
+
+    fun background(isDarkTheme: Boolean): Int {
+        return if(isDarkTheme) darkThemeColor else lightThemeColor
+    }
+
+    fun onBackground(isDarkTheme: Boolean): Int {
+        return if(isDarkTheme) onDarkThemeColor else onLightThemeColor
+    }
+    /**
+     * override toString() to return name as the default
+     */
+    override fun toString() = name
+}

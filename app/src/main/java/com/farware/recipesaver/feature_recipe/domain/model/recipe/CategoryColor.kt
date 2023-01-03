@@ -1,11 +1,6 @@
 package com.farware.recipesaver.feature_recipe.domain.model.recipe
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity(tableName = "category_color")
 data class CategoryColor(
-    @PrimaryKey(autoGenerate = true)
     val categoryColorId: Long? = null,
     val name: String,
     val lightThemeColor: Int,

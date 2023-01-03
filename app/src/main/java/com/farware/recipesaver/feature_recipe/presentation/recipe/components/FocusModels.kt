@@ -10,9 +10,6 @@ data class StepFocus(
 
 data class IngredientFocus(
     val fullIngredient: FullRecipeIngredient,
-    val measureAmount: RecipeIngredient,
-    val measure: Measure,
-    val ingredient: Ingredient,
     var focused: Boolean
 )
 

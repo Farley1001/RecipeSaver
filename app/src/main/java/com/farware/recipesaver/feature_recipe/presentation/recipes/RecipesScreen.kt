@@ -98,14 +98,14 @@ fun RecipesScreen(
 
     fun recipeItemClicked(recipe: RecipeWithCategoryAndColor) {
         navController.navigate(Screen.RecipeScreen.withArgs(
-            recipe.recipe.recipeId.toString()
+            recipe.recipeId.toString()
         ))
         //Toast.makeText(context, "RecipeItem Click", Toast.LENGTH_LONG).show()
     }
 
     fun recipeItemLongClicked(recipe: RecipeWithCategoryAndColor) {
         navController.navigate(Screen.AddEditRecipeScreen.withArgs(
-            recipe.recipe.recipeId.toString()
+            recipe.recipeId.toString()
         ))
         Toast.makeText(context, "RecipeItem Long Click", Toast.LENGTH_LONG).show()
     }
@@ -325,7 +325,7 @@ fun RecipesContent(
                                     }
                                 ),
                             onDeleteClick = {
-                                onRecipeItemDeleteClick(recipe.recipe)
+                                onRecipeItemDeleteClick(recipe.toRecipe())
                             }
                         )
                         Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))

@@ -1,22 +1,6 @@
 package com.farware.recipesaver.feature_recipe.domain.model.recipe
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
-
-@Entity(
-    tableName = "recipe",
-    foreignKeys = [
-        ForeignKey(entity = Category::class, parentColumns = ["categoryId"], childColumns = ["categoryId"], onDelete = ForeignKey.SET_DEFAULT)
-    ],
-    indices = [
-        Index(value = ["categoryId"], unique = false),
-        Index(value = ["name"], unique = true)
-    ]
-)
 data class Recipe(
-    @PrimaryKey(autoGenerate = true)
     val recipeId: Long? = null,
     val categoryId: Long,
     val name: String,

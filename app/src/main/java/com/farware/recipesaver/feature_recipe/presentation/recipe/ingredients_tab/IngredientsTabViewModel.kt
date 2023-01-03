@@ -28,19 +28,19 @@ class IngredientsTabViewModel @Inject constructor(
     private var _state =  mutableStateOf(IngredientsTabState())
     val state: State<IngredientsTabState> = _state
 
-    private var _measure = mutableStateOf(Measure(-1, "", ""))
+    private var _measure = mutableStateOf(Measure(null, "", ""))
     val measure: State<Measure> = _measure
 
     private var _ingredient = mutableStateOf(Ingredient(-1, "", ""))
     val ingredient: State<Ingredient> = _ingredient
 
-    private var _recipeIngredient = mutableStateOf(RecipeIngredient(-1, -1, -1, -1, "", "", ""))
+    private var _recipeIngredient = mutableStateOf(RecipeIngredient(null, -1, -1, -1, "", "", ""))
     val recipeIngredient: State<RecipeIngredient> = _recipeIngredient
 
-    private var _recipeIngredientWithIngredient = mutableStateOf(RecipeIngredientWithIngredient(recipeIngredient.value, ingredient.value))
+    private var _recipeIngredientWithIngredient = mutableStateOf(RecipeIngredientWithIngredient(null, -1, -1, -1, "", "", "", "", ""))
     val recipeIngredientWithIngredient: State<RecipeIngredientWithIngredient> = _recipeIngredientWithIngredient
 
-    private var _newIngredient = mutableStateOf(FullRecipeIngredient(recipeIngredientWithIngredient.value, measure.value))
+    private var _newIngredient = mutableStateOf(FullRecipeIngredient(-1,-1L,-1,-1, "","","","",""))
     val newIngredient: State<FullRecipeIngredient> = _newIngredient
 
     private var getIngredientsJob: Job? = null
@@ -58,7 +58,7 @@ class IngredientsTabViewModel @Inject constructor(
             is IngredientsTabEvent.IngredientFocusChanged -> {
                 var sf = state.value.ingredientFocus
                 sf = sf.map { item ->
-                    if(item.fullIngredient.recipeIngredientWithIngredient.recipeIngredient.ingredientId == event.ingredientFocus.fullIngredient.recipeIngredientWithIngredient.ingredient.ingredientId)
+                    if(item.fullIngredient.ingredientId == event.ingredientFocus.fullIngredient.ingredientId)
                         item.copy(focused = true)
                     else
                         item.copy(focused = false)
@@ -72,12 +72,12 @@ class IngredientsTabViewModel @Inject constructor(
             }
             is IngredientsTabEvent.SaveIngredient -> {
                 viewModelScope.launch {
-                    ingredientUseCases.addRecipeIngredient(event.ingredient.recipeIngredientWithIngredient.recipeIngredient)
+                    ingredientUseCases.addRecipeIngredient(event.ingredient.toRecipeIngredient())
                 }
             }
             is IngredientsTabEvent.DeleteIngredient -> {
                 viewModelScope.launch {
-                    ingredientUseCases.deleteRecipeIngredient(event.ingredient.recipeIngredientWithIngredient.recipeIngredient)
+                    ingredientUseCases.deleteRecipeIngredient(event.ingredient.toRecipeIngredient())
                 }
             }
         }
@@ -94,9 +94,6 @@ class IngredientsTabViewModel @Inject constructor(
                 ingredients.forEach { ingredient ->
                     ifList += IngredientFocus(
                         fullIngredient = ingredient!!,
-                        measureAmount = ingredient.recipeIngredientWithIngredient.recipeIngredient,
-                        measure = ingredient.measure,
-                        ingredient = ingredient.recipeIngredientWithIngredient.ingredient,
                         focused = false
                     )
                 }
@@ -111,27 +108,15 @@ class IngredientsTabViewModel @Inject constructor(
 
     private fun newIngredient(recipeId: Long): FullRecipeIngredient {
         return FullRecipeIngredient(
-            measure = Measure(
-                measureId = -1,
-                name = "",
-                shortName = ""
-            ),
-            recipeIngredientWithIngredient = RecipeIngredientWithIngredient(
-                recipeIngredient = RecipeIngredient(
-                    recipeIngredientId = -1,
-                    recipeId = -1L,
-                    ingredientId = -1,
-                    measureId = -1,
-                    amount = "",
-                    measure = "",
-                    ingredient = ""
-                ),
-                ingredient = Ingredient(
-                    ingredientId = -1,
-                    name = "",
-                    type = ""
-                )
-            ),
+            recipeIngredientId = -1,
+            recipeId = -1L,
+            ingredientId = -1,
+            measureId = -1,
+            amount = "",
+            measure = "",
+            ingredient = "",
+            ingredientName = "",
+            type = ""
         )
     }
 }

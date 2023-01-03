@@ -36,8 +36,8 @@ fun RecipeItem(
     cutCornerSize: Dp = 30.dp,
     onDeleteClick: () -> Unit
 ) {
-    val categoryColor = Color(recipe.category.categoryColor.background(isSystemInDarkTheme()))
-    val onCategoryColor = Color(recipe.category.categoryColor.onBackground(isSystemInDarkTheme()))
+    val categoryColor = Color(recipe.background(isSystemInDarkTheme()))
+    val onCategoryColor = Color(recipe.onBackground(isSystemInDarkTheme()))
 
     RecipeItemContent(
         modifier = modifier,
@@ -103,8 +103,8 @@ fun RecipeItemContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Prep " + if(recipe.recipe.prepTime!!.toInt() / 60 > 0 || recipe.recipe.prepTime!!.toInt() % 60 > 0) {
-                        "${recipe.recipe.prepTime!!.toInt() / 60}:" + "${recipe.recipe.prepTime!!.toInt() % 60}"
+                    text = "Prep " + if(recipe.prepTime!!.toInt() / 60 > 0 || recipe.prepTime!!.toInt() % 60 > 0) {
+                        "${recipe.prepTime!!.toInt() / 60}:" + "${recipe.prepTime!!.toInt() % 60}"
                     }
                     //else if(recipe.recipe.prepTime!!.toInt() % 60 > 0) {
                     //    "${recipe.recipe.prepTime!!.toInt() % 60}"
@@ -117,11 +117,11 @@ fun RecipeItemContent(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "Cook " + if(recipe.recipe.cookTime!!.toInt() / 60 > 0) {
-                        "${recipe.recipe.cookTime!!.toInt() / 60}:" + "${recipe.recipe.cookTime!!.toInt() % 60}"
+                    text = "Cook " + if(recipe.cookTime!!.toInt() / 60 > 0) {
+                        "${recipe.cookTime!!.toInt() / 60}:" + "${recipe.cookTime!!.toInt() % 60}"
                     }
-                    else if(recipe.recipe.cookTime!!.toInt() % 60 > 0) {
-                        ":${recipe.recipe.cookTime!!.toInt() % 60}"
+                    else if(recipe.cookTime!!.toInt() % 60 > 0) {
+                        ":${recipe.cookTime!!.toInt() % 60}"
                     } else "",
                     //TODO: Font Size
                     //style = MaterialTheme.typography.caption,
@@ -131,7 +131,7 @@ fun RecipeItemContent(
                 )
                 Text(
                     //modifier = Modifier.align(Alignment.End),
-                    text = recipe.category.category.name,
+                    text = recipe.category,
                     //TODO: Font Size
                     //style = MaterialTheme.typography.caption,
                     color = categoryTextColor,
@@ -147,14 +147,14 @@ fun RecipeItemContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = recipe.recipe.name,
+                    text = recipe.name,
                     //TODO: Font Size
                     style = MaterialTheme.typography.titleLarge,
                     color = categoryTextColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (recipe.recipe.favorite == true) {
+                if (recipe.favorite == true) {
                     Spacer(modifier = Modifier.width(MaterialTheme.spacing.medium))
                     Icon(
                         imageVector = Icons.Default.Favorite,
@@ -166,7 +166,7 @@ fun RecipeItemContent(
             }
             Spacer(modifier = Modifier.height(MaterialTheme.spacing.extraSmall))
             Text(
-                text = recipe.recipe.description,
+                text = recipe.description,
                 //TODO: Font Size
                 //style = MaterialTheme.typography.body1,
                 color = categoryTextColor,

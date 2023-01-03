@@ -64,7 +64,7 @@ fun DropdownWithLabel(
                     //.background(Color.White)       //.background(Color(items[menuIndex].color))
             )*/
             TextWithAppendedContent(
-                text = items[menuIndex].category.name,
+                text = items[menuIndex].name,
                 onTextClicked = { showMenu = true },
                 placeholderWidth = 24.sp,
                 placeholderHeight = 24.sp,
@@ -72,7 +72,7 @@ fun DropdownWithLabel(
                 appendContent = {
                     Badge(
                         modifier = Modifier.padding(start = 5.dp, top = 1.dp),
-                        containerColor = Color(items[menuIndex].categoryColor.background(isSystemInDarkTheme()))
+                        containerColor = Color(items[menuIndex].background(isSystemInDarkTheme()))
                     ){
                         Text(text = "")
                     }
@@ -102,11 +102,11 @@ fun DropdownWithLabel(
                     DropdownMenuItem(
                         text = {
                             TextWithAppendedContent(
-                                text = items[index].category.name,
+                                text = items[index].name,
                                 onTextClicked = {
                                     menuIndex = index
                                     showMenu = false
-                                    onDropdownItemSelected(items[index].category.categoryId!!)
+                                    onDropdownItemSelected(items[index].categoryId!!)
                                 },
                                 placeholderWidth = 24.sp,
                                 placeholderHeight = 24.sp,
@@ -114,7 +114,7 @@ fun DropdownWithLabel(
                                 appendContent = {
                                     Badge(
                                         modifier = Modifier.padding(start = 5.dp, top = 1.dp),
-                                        containerColor = Color(items[index].categoryColor.background(isSystemInDarkTheme()))
+                                        containerColor = Color(items[index].background(isSystemInDarkTheme()))
                                     ){
                                         Text(text = "")
                                     }
@@ -122,17 +122,17 @@ fun DropdownWithLabel(
                             )
                         },
                         trailingIcon = {
-                            if(items[index].category.name == items[menuIndex].category.name) {
+                            if(items[index].name == items[menuIndex].name) {
                                 Icon(imageVector = Icons.Default.Check, contentDescription = "Localized content description", tint = Color.Green.copy(alpha = .5f))
                             } else { }
                         },
                         onClick = {
                             menuIndex = index
                             showMenu = false
-                            onDropdownItemSelected(items[index].category.categoryId!!)
+                            onDropdownItemSelected(items[index].categoryId!!)
                         },
                         modifier =
-                        if(items[index].category.name == items[menuIndex].category.name) {
+                        if(items[index].name == items[menuIndex].name) {
                             Modifier
                                 .background(MaterialTheme.colorScheme.background.copy(alpha = .3f))
                                 .wrapContentSize(Alignment.BottomEnd)

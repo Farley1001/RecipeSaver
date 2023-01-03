@@ -18,16 +18,16 @@ class GetRecipesUseCase(
             when (recipeOrder.orderType) {
                 is OrderType.Ascending -> {
                     when(recipeOrder) {
-                        is RecipeOrder.Name -> recipes.sortedBy { it.recipe.name.lowercase() }
-                        is RecipeOrder.Category -> recipes.sortedBy { it.category.category.name.lowercase() }
-                        is RecipeOrder.Date -> recipes.sortedBy { it.recipe.timeStamp}
+                        is RecipeOrder.Name -> recipes.sortedBy { it.name.lowercase() }
+                        is RecipeOrder.Category -> recipes.sortedBy { it.category.lowercase() }
+                        is RecipeOrder.Date -> recipes.sortedBy { it.timeStamp}
                     }
                 }
                 is OrderType.Descending -> {
                     when(recipeOrder) {
-                        is RecipeOrder.Name -> recipes.sortedByDescending { it.recipe.name.lowercase() }
-                        is RecipeOrder.Category -> recipes.sortedByDescending { it.category.category.name.lowercase() }
-                        is RecipeOrder.Date -> recipes.sortedByDescending { it.recipe.timeStamp}
+                        is RecipeOrder.Name -> recipes.sortedByDescending { it.name.lowercase() }
+                        is RecipeOrder.Category -> recipes.sortedByDescending { it.category.lowercase() }
+                        is RecipeOrder.Date -> recipes.sortedByDescending { it.timeStamp}
                     }
                 }
             }

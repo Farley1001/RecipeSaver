@@ -64,31 +64,22 @@ class RecipeViewModel @Inject constructor(
     private var getFbIngredientsJob: Job? = null
 
     private val newRecipe = RecipeWithCategoryAndColor(
-        category = CategoryWithColor(
-            category = Category(
-                categoryId = -1,
-                name = "",
-                colorId = 1,
-                timeStamp = System.currentTimeMillis()
-            ),
-            categoryColor = CategoryColor(
-                name = "Light Indigo",
-                lightThemeColor = Color(0xFF8C9EFF).toArgb(),
-                onLightThemeColor = Color(0xFF000000).toArgb(),
-                darkThemeColor = Color(0xFF3F51B5).toArgb(),
-                onDarkThemeColor = Color(0xFFFFFFFF).toArgb(),
-                timeStamp = System.currentTimeMillis()
-            )
-        ), recipe = Recipe(
-            recipeId = -1,
-            categoryId = -1,
-            name = "",
-            description = "",
-            prepTime = 0,
-            cookTime = 0,
-            favorite = false,
-            timeStamp = System.currentTimeMillis()
-        )
+        recipeId = null,
+        categoryId = -1,
+        name = "",
+        description = "",
+        imagePath = null,
+        prepTime = null,
+        cookTime = null,
+        favorite = false,
+        category = "",
+        colorId = -1,
+        color = "",
+        lightThemeColor = -1,
+        onLightThemeColor = -1,
+        darkThemeColor = -1,
+        onDarkThemeColor = -1,
+        timeStamp = System.currentTimeMillis()
     )
 
     init {
@@ -156,13 +147,13 @@ class RecipeViewModel @Inject constructor(
                 )
 
                 // update the recipe with new categoryId
-                val r = recipe.value?.recipe?.copy(
+                val saveRecipe = recipe.value?.copy(
                     categoryId = state.value.newCategoryId
                 )
 
                 // save the recipe
-                if (r != null) {
-                    saveRecipe(r)
+                if (saveRecipe != null) {
+                    saveRecipe(saveRecipe.toRecipe())
                     // because the category and category colors are embedded
                     // get the recipe again
                     getRecipe(currentRecipeId!!)
@@ -175,13 +166,13 @@ class RecipeViewModel @Inject constructor(
                 _prepTime.value = event.prepTime
 
                 // update the recipe with new prep time
-                val r = recipe.value?.recipe?.copy(
+                val saveRecipe = recipe.value?.copy(
                     prepTime = event.prepTime
                 )
 
                 // save the recipe
-                if (r != null) {
-                    saveRecipe(r)
+                if (saveRecipe != null) {
+                    saveRecipe(saveRecipe.toRecipe())
                 }
             }
             is RecipeEvent.SaveCookTime -> {
@@ -189,13 +180,13 @@ class RecipeViewModel @Inject constructor(
                 _cookTime.value = event.cookTime
 
                 // update the recipe with new cook time
-                val r = recipe.value?.recipe?.copy(
+                val saveRecipe = recipe.value?.copy(
                     cookTime = event.cookTime
                 )
 
                 // save the recipe
-                if (r != null) {
-                    saveRecipe(r)
+                if (saveRecipe != null) {
+                    saveRecipe(saveRecipe.toRecipe())
                 }
             }
             is RecipeEvent.ToggleFavorite -> {
@@ -203,13 +194,13 @@ class RecipeViewModel @Inject constructor(
                 _favorite.value = !favorite.value
 
                 /// update the recipe with new favorite
-                val r = recipe.value?.recipe?.copy(
+                val saveRecipe = recipe.value?.copy(
                     favorite = favorite.value
                 )
 
                 // save the recipe
-                if (r != null) {
-                    saveRecipe(r)
+                if (saveRecipe != null) {
+                    saveRecipe(saveRecipe.toRecipe())
                 }
             }
             is RecipeEvent.ChangeRecipeName -> {
@@ -221,24 +212,24 @@ class RecipeViewModel @Inject constructor(
     private fun getRecipe(recipeId: Long) {
         viewModelScope.launch {
             recipeUseCases.getRecipe(recipeId)?.also { recipe ->
-                currentRecipeId = recipe.recipe.recipeId
+                currentRecipeId = recipe.recipeId
 
                 _recipe.value = recipe
 
-                _name.value = recipe.recipe.name
+                _name.value = recipe.name
 
-                _categoryName.value = recipe.category.category.name
+                _categoryName.value = recipe.category
 
-                _prepTime.value = recipe.recipe.prepTime!!
+                _prepTime.value = recipe.prepTime!!
 
-                _cookTime.value = recipe.recipe.cookTime!!
+                _cookTime.value = recipe.cookTime!!
 
-                _favorite.value = recipe.recipe.favorite!!
+                _favorite.value = recipe.favorite!!
 
                 // set the initial selected value
                 _state.value = state.value.copy(
                     selectedCategoryIndex = state.value.categories.indexOfFirst{
-                        it.category.categoryId == recipe.recipe.categoryId
+                        it.categoryId == recipe.categoryId
                     }
                 )
 

@@ -83,8 +83,8 @@ fun RecipeScreen(
 
 
     if (recipe != null) {
-        categoryColor = Color(viewModel.recipe.value!!.category.categoryColor.background(isSystemInDarkTheme()))
-        onCategoryColor = Color(viewModel.recipe.value!!.category.categoryColor.onBackground(isSystemInDarkTheme()))
+        categoryColor = Color(viewModel.recipe.value!!.background(isSystemInDarkTheme()))
+        onCategoryColor = Color(viewModel.recipe.value!!.onBackground(isSystemInDarkTheme()))
         // TODO Color
         if(favorite) { favoriteColor = Color.Red }
 

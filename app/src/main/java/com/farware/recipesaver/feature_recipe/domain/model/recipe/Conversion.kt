@@ -1,11 +1,6 @@
 package com.farware.recipesaver.feature_recipe.domain.model.recipe
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity(tableName = "conversion")
 data class Conversion(
-    @PrimaryKey(autoGenerate = true)
     val conversionId: Int,
     val name: String,
     val shortName: String,
@@ -19,8 +14,6 @@ data class Conversion(
     /**
      * create any functions that are needed to operate on this entity
      */
-    /*fun shouldBeWatered(since: Calendar, lastWateringDate: Calendar) =
-        since > lastWateringDate.apply { add(DAY_OF_YEAR, wateringInterval) }*/
 
     /**
      * override toString() to return name as the default

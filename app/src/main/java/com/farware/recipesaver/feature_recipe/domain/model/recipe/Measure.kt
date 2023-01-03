@@ -1,21 +1,6 @@
 package com.farware.recipesaver.feature_recipe.domain.model.recipe
 
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
-
-/*
- * This entity contains the measures selected from a master list on firebase
- * and used in a local recipe.
-*/
-@Entity(
-    tableName = "measure",
-    indices = [
-        Index(value = ["name"], unique = true)
-    ]
-)
 data class Measure(
-    @PrimaryKey(autoGenerate = false)
     val measureId: Int? = null,
     val name: String,
     val shortName: String

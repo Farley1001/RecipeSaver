@@ -1,15 +1,27 @@
 package com.farware.recipesaver.feature_recipe.domain.model.recipe.relations
 
-import androidx.room.Embedded
-import androidx.room.Relation
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.Measure
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.RecipeIngredient
 
 data class FullRecipeIngredient(
-    @Embedded var recipeIngredientWithIngredient: RecipeIngredientWithIngredient,
-    @Relation(
-        entity = Measure::class,
-        parentColumn = "measureId",
-        entityColumn = "measureId"
-    )
-    val measure: Measure
-)
+    val recipeIngredientId: Long? = null,
+    val recipeId: Long,
+    val ingredientId: Int,
+    val measureId: Int,
+    val amount: String,
+    val measure: String,
+    val ingredient: String,
+    val ingredientName: String,
+    val type: String
+) {
+    fun toRecipeIngredient(): RecipeIngredient {
+        return RecipeIngredient(
+            recipeIngredientId,
+            recipeId,
+            ingredientId,
+            measureId,
+            amount,
+            measure,
+            ingredient
+        )
+    }
+}
