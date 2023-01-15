@@ -17,7 +17,7 @@ import com.farware.recipesaver.feature_recipe.domain.model.recipe.Ingredient
 )
 data class IngredientEntity(
     @PrimaryKey(autoGenerate = true)
-    val ingredientId: Int,
+    val ingredientId: Long? = null,
     val name: String,
     val type: String
 ) {

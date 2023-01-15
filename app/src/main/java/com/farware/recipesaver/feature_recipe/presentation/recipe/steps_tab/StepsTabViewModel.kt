@@ -27,7 +27,7 @@ class StepsTabViewModel @Inject constructor(
     private var _state =  mutableStateOf(StepsTabState())
     val state: State<StepsTabState> = _state
 
-    private var _newStep = mutableStateOf(Step(-1L, -1L, 0, null, ""))
+    private var _newStep = mutableStateOf(Step.new())
     val newStep: State<Step> = _newStep
 
     private var getStepsJob: Job? = null
@@ -86,17 +86,11 @@ class StepsTabViewModel @Inject constructor(
                     stepsFocus = sfList
                 )
 
-                _newStep.value = newStep(recipeId, state.value.steps.size + 1)
+                _newStep.value = _newStep.value.copy(
+                    recipeId = recipeId,
+                    stepNumber = steps.size + 1
+                )
 
             }.launchIn(viewModelScope)
-    }
-
-    private fun newStep(recipeId: Long, stepNumber: Int): Step {
-        return Step(
-            stepId = -1,
-            recipeId = recipeId ,
-            stepNumber = stepNumber,
-            text = "",
-        )
     }
 }

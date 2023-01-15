@@ -101,9 +101,21 @@ class RecipeRepositoryImpl(
     /*
            measure
     */
+    override fun getMeasures(): Flow<List<Measure>> {
+        return dao.getMeasures().map { measures -> measures.map { it.toMeasure() } }
+    }
+
+    override suspend fun getMeasureById(id: Int): Measure? {
+        return dao.getMeasureById(id)?.toMeasure()
+    }
+
     override suspend fun insertMeasure(measure: Measure) {
         // measure come from a master on firebase
         dao.insertMeasure(MeasureEntity.from(measure))
+    }
+
+    override suspend fun insertMeasureReturnId(measure: Measure): Long {
+        return dao.insertMeasureReturnId(MeasureEntity.from(measure))
     }
 
     override suspend fun insertAllMeasures(measures: List<Measure>) {
@@ -112,13 +124,29 @@ class RecipeRepositoryImpl(
     }
 
     /*
-            ingredients  (contains only ingredients used in a local recipe)
+            ingredients
     */
-    override suspend fun insertLocalIngredient(ingredient: Ingredient) {
+    override fun getIngredients(): Flow<List<Ingredient>> {
+        return dao.getIngredients().map { ingredients -> ingredients.map { it.toIngredient() } }
+    }
+
+    override suspend fun getIngredientById(id: Long): Ingredient? {
+        return dao.getIngredientById(id)?.toIngredient()
+    }
+
+    override suspend fun getIngredientByName(name: String): Ingredient? {
+        return dao.getIngredientByName(name)?.toIngredient()
+    }
+
+    override suspend fun insertIngredient(ingredient: Ingredient) {
         dao.insertIngredient(IngredientEntity.from(ingredient))
     }
 
-    override suspend fun deleteLocalIngredient(ingredient: Ingredient) {
+    override suspend fun insertIngredientReturnId(ingredient: Ingredient): Long {
+        return dao.insertIngredientReturnId(IngredientEntity.from(ingredient))
+    }
+
+    override suspend fun deleteIngredient(ingredient: Ingredient) {
         dao.deleteIngredient(IngredientEntity.from(ingredient))
     }
 

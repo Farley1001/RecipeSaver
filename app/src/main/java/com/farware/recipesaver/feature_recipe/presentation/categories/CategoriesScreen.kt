@@ -155,7 +155,19 @@ fun CategoriesContent(
     ) {
         Scaffold(
             topBar = {
-                SmallTopAppBar(
+                // show 3 icons including overflow
+                TopAppBar(title = {
+                    Text(
+                        text = "Categories",
+                        style = mainTitle,
+                        //TODO: Fix color...copy from recipes
+                        //color = MaterialTheme.colors.onPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Visible,
+                        modifier = Modifier
+                            .width(130.dp)
+                    )
+                },
                     navigationIcon = {
                         IconButton(
                             onClick = {
@@ -164,18 +176,6 @@ fun CategoriesContent(
                         ) {
                             Icon(Icons.Filled.Menu, contentDescription = "Open Nav")
                         }
-                    },
-                    title = {
-                        Text(
-                            text = "Categories",
-                            style = mainTitle,
-                            //TODO: Fix color...copy from recipes
-                            //color = MaterialTheme.colors.onPrimary,
-                            maxLines = 1,
-                            overflow = TextOverflow.Visible,
-                            modifier = Modifier
-                                .width(130.dp)
-                        )
                     },
                     actions = {
                         // show 3 icons including overflow
@@ -187,8 +187,7 @@ fun CategoriesContent(
                             searchSectionVisible = searchSectionVisible,
                             orderSectionVisible = orderSectionVisible
                         )
-                    }
-                )
+                    })
             },
             floatingActionButton = {
                 ExtendedFloatingActionButton(

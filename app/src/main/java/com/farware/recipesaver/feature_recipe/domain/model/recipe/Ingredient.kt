@@ -1,7 +1,7 @@
 package com.farware.recipesaver.feature_recipe.domain.model.recipe
 
 data class Ingredient(
-    val ingredientId: Int,
+    val ingredientId: Long? = null,
     val name: String,
     val type: String
 ) {

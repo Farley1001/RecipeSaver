@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,8 +42,16 @@ import com.farware.recipesaver.feature_recipe.presentation.util.TabOrder
 @Composable
 fun RecipeScreen(
     navController: NavController,
+    snackbarHostState: SnackbarHostState,
     viewModel: RecipeViewModel = hiltViewModel()
 ) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    // following is used to show snackbars
+    val showSnackbarMessage = remember { mutableStateOf(false) }
+
+    // display any errors in a toast
     if(viewModel.state.value.error != "") {
         Toast.makeText(LocalContext.current, "error: ${viewModel.state.value.error}", Toast.LENGTH_LONG).show()
     }
@@ -61,8 +70,6 @@ fun RecipeScreen(
     val prepTime = viewModel.prepTime.value
     val cookTime = viewModel.cookTime.value
     val favorite = viewModel.favorite.value
-
-    val context = LocalContext.current
 
     val tabList = listOf(TabItem.Steps, TabItem.Ingredients, TabItem.Tips)
 
@@ -133,6 +140,7 @@ fun RecipeScreen(
     }
 
     RecipeContent(
+        snackbarHostState = snackbarHostState,
         categories = viewModel.state.value.categories,
         selectedCategoryIndex = viewModel.state.value.selectedCategoryIndex,
         newCategorySelected = { viewModel.onEvent(RecipeEvent.NewSelectedCategory(it)) },
@@ -163,6 +171,7 @@ fun RecipeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeContent(
+    snackbarHostState: SnackbarHostState,
     categories: List<CategoryWithColor>,
     selectedCategoryIndex: Int,
     newCategorySelected: (Long) -> Unit,
@@ -199,8 +208,18 @@ fun RecipeContent(
     }
     if (name != null) {
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
-                SmallTopAppBar(
+                TopAppBar(title = {
+                    Text(
+                        text = name,
+                        style = mainTitle,
+                        //color = MaterialTheme.colors.onPrimary,
+                        color = onCategoryColor,
+                        maxLines = 2,
+                        overflow = TextOverflow.Visible
+                    )
+                },
                     navigationIcon = {
                         IconButton(
                             onClick = {
@@ -210,19 +229,9 @@ fun RecipeContent(
                             Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                         }
                     },
-                    title = {
-                        Text(
-                            text = name,
-                            style = mainTitle,
-                            //color = MaterialTheme.colors.onPrimary,
-                            color = onCategoryColor,
-                            maxLines = 2,
-                            overflow = TextOverflow.Visible
-                        )
-                    },
                     actions = {
-                    }
-                )
+                        // TODO: Add any actions to the appbar
+                    })
             }
         ) { paddingValue ->
             Column(
@@ -334,7 +343,7 @@ fun RecipeContent(
                         StepsTabScreen()
                     }
                     if(selectedTabIndex == TabOrder.INGREDIENT.ordinal) {
-                        IngredientsTabScreen()
+                        IngredientsTabScreen(snackbarHostState = snackbarHostState)
                     }
                     if(selectedTabIndex == TabOrder.TIP.ordinal) {
                         TipsTabScreen()

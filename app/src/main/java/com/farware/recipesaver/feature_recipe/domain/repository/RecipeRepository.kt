@@ -59,16 +59,30 @@ interface RecipeRepository {
     /*
             measure
     */
+    fun getMeasures(): Flow<List<Measure>>
+
+    suspend fun getMeasureById(id: Int): Measure?
+
     suspend fun insertMeasure(measure: Measure)
+
+    suspend fun insertMeasureReturnId(measure: Measure): Long
 
     suspend fun insertAllMeasures(measures: List<Measure>)
 
     /*
             ingredient
     */
-    suspend fun insertLocalIngredient(ingredient: Ingredient)
+    fun getIngredients(): Flow<List<Ingredient>>
 
-    suspend fun deleteLocalIngredient(ingredient: Ingredient)
+    suspend fun getIngredientById(id: Long): Ingredient?
+
+    suspend fun getIngredientByName(name: String): Ingredient?
+
+    suspend fun insertIngredient(ingredient: Ingredient)
+
+    suspend fun insertIngredientReturnId(ingredient: Ingredient): Long
+
+    suspend fun deleteIngredient(ingredient: Ingredient)
 
     /*
             recipe ingredient

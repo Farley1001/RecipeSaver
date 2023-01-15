@@ -31,7 +31,7 @@ data class FullRecipeIngredientRelation(
                     ),
                     IngredientEntity(
                         fullRecipeIngredient.ingredientId,
-                        fullRecipeIngredient.ingredientName,
+                        fullRecipeIngredient.ingredient,
                         fullRecipeIngredient.type
                     )
                 ),
@@ -53,8 +53,7 @@ data class FullRecipeIngredientRelation(
             fullRecipeIngredient.recipeIngredient.ingredientId,
             fullRecipeIngredient.recipeIngredient.measureId,
             fullRecipeIngredient.recipeIngredient.amount,
-            fullRecipeIngredient.recipeIngredient.measure,
-            fullRecipeIngredient.recipeIngredient.ingredient,
+            measure.shortName,
             fullRecipeIngredient.ingredient.name,
             fullRecipeIngredient.ingredient.type
         )

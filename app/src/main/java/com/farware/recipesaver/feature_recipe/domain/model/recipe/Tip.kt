@@ -7,11 +7,21 @@ data class Tip(
     val imagePath: String? = null,
     val text: String
 ) {
+    companion object {
+        fun new(): Tip {
+            return Tip(
+                tipId = null,
+                recipeId = -1L,
+                tipNumber = -1,
+                imagePath = "",
+                text = ""
+            )
+        }
+    }
     /**
      * create any functions that are needed to operate on this entity
      */
-    /*fun shouldBeWatered(since: Calendar, lastWateringDate: Calendar) =
-        since > lastWateringDate.apply { add(DAY_OF_YEAR, wateringInterval) }*/
+
 
     /**
      * override toString() to return name as the default

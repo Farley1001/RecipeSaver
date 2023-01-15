@@ -5,6 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.Category
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.CategoryColor
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Tip
 import com.farware.recipesaver.feature_recipe.domain.use_cases.TipUseCases
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.TipFocus
@@ -23,7 +25,7 @@ class TipsTabViewModel @Inject constructor(
     private var _state =  mutableStateOf(TipsTabState())
     val state: State<TipsTabState> = _state
 
-    private var _newTip = mutableStateOf(Tip(-1L, -1L, 0, null, ""))
+    private var _newTip = mutableStateOf(Tip.new())
     val newTip: State<Tip> = _newTip
 
     private var getTipsJob: Job? = null
@@ -80,18 +82,11 @@ class TipsTabViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     tipsFocus = tfList
                 )
-
-                _newTip.value = newTip(recipeId, state.value.tips.size + 1)
+                _newTip.value = _newTip.value.copy(
+                    recipeId = recipeId,
+                    tipNumber = tips.size + 1
+                )
             }
             .launchIn(viewModelScope)
-    }
-
-    private fun newTip(recipeId: Long, tipNumber: Int): Tip {
-        return Tip(
-            tipId = -1,
-            recipeId = recipeId ,
-            tipNumber = tipNumber,
-            text = "",
-        )
     }
 }

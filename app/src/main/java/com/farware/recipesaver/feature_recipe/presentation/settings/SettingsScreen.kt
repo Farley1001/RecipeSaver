@@ -155,7 +155,18 @@ fun SettingsContent(
     ) {
         Scaffold(
             topBar = {
-                SmallTopAppBar(
+                TopAppBar(title = {
+                    Text(
+                        text = "Settings",
+                        style = mainTitle,
+                        // TODO: Color
+                        //color = MaterialTheme.colorScheme.onPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Visible,
+                        modifier = Modifier
+                            .width(130.dp)
+                    )
+                },
                     // TODO: Color
                     //backgroundColor = MaterialTheme.colorScheme.primary,
                     navigationIcon = {
@@ -166,20 +177,7 @@ fun SettingsContent(
                         ) {
                             Icon(Icons.Filled.Menu, contentDescription = "Open Nav")
                         }
-                    },
-                    title = {
-                        Text(
-                            text = "Settings",
-                            style = mainTitle,
-                            // TODO: Color
-                            //color = MaterialTheme.colorScheme.onPrimary,
-                            maxLines = 1,
-                            overflow = TextOverflow.Visible,
-                            modifier = Modifier
-                                .width(130.dp)
-                        )
-                    }
-                )
+                    })
             }
         ) {
             Column(

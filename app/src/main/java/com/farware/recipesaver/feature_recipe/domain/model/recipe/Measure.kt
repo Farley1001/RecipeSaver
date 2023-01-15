@@ -5,6 +5,15 @@ data class Measure(
     val name: String,
     val shortName: String
 ){
+    companion object {
+        fun new(): Measure {
+            return Measure(
+                measureId = null,
+                name = "",
+                shortName = ""
+            )
+        }
+    }
     /**
      * create any functions that are needed to operate on this entity
      */

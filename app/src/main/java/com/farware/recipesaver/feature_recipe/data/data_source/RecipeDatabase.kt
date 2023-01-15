@@ -47,10 +47,10 @@ abstract class RecipeDatabase: RoomDatabase() {
                 context.applicationContext,
                 RecipeDatabase::class.java,
                 DATABASE_NAME
-            ).allowMainThreadQueries()
-                .fallbackToDestructiveMigration()
-                .build()
+            ).build()
 
+        //.allowMainThreadQueries()
+        //.fallbackToDestructiveMigration()
         //.createFromAsset("recipes_db.db")
         //.addMigrations(MIGRATION_1_2)
 

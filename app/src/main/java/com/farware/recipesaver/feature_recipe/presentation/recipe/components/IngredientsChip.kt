@@ -1,9 +1,8 @@
 package com.farware.recipesaver.feature_recipe.presentation.recipe.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -12,10 +11,14 @@ import androidx.compose.material3.AssistChipDefaults.assistChipColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.FullRecipeIngredient
+import com.farware.recipesaver.feature_recipe.presentation.components.OutlinedTextFieldWithError
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.chipShape
+import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 import com.farware.recipesaver.feature_recipe.presentation.util.CustomDialogPosition
 import com.farware.recipesaver.feature_recipe.presentation.util.customDialogPosition
 
@@ -25,17 +28,20 @@ fun IngredientsChip(
     ingredient: IngredientFocus,
     focused: Boolean,
     onChangeFocus: (IngredientFocus) -> Unit,
-    onSaveClicked: (FullRecipeIngredient) -> Unit,
+    onSaveClicked: (IngredientFocus) -> Unit,
     onDeleteClicked: (FullRecipeIngredient) -> Unit,
 ) {
-    val text = remember { mutableStateOf("") }
+    val amountAndMeasureText = remember { mutableStateOf("") }
+    val ingredientText = remember { mutableStateOf("") }
     val displayText = remember { mutableStateOf("") }
     val isFocused = remember { mutableStateOf(false) }
     val isEditMode = remember { mutableStateOf(false) }
     val openEditDialog = remember { mutableStateOf(true) }
     val openConfirmDeleteDialog = remember { mutableStateOf(false) }
-    text.value = ingredient.fullIngredient.ingredient
-    displayText.value = "${ingredient.fullIngredient.amount} ${ingredient.fullIngredient.measure} ${ingredient.fullIngredient.ingredient}"
+
+    amountAndMeasureText.value = if(ingredient.fullIngredient.amount[0] >= '2' && ingredient.fullIngredient.measureId > 2) {"${ingredient.fullIngredient.amount} ${ingredient.fullIngredient.measure}s"} else {"${ingredient.fullIngredient.amount} ${ingredient.fullIngredient.measure}"}
+    ingredientText.value = ingredient.fullIngredient.ingredient
+    displayText.value = "${amountAndMeasureText.value} ${ingredient.fullIngredient.ingredient}"
 
     if(!focused) {
         isFocused.value = false
@@ -57,33 +63,44 @@ fun IngredientsChip(
                 isEditMode.value = false
             },
             title = {
-                Text(text = "Edit Ingredient")
+                Text(text = "Edit Ingredient from chip")
             },
             text = {
-                TextField(
-                    //modifier = Modifier.fillMaxHeight(0.5F),
-                    value = displayText.value,
-                    onValueChange = {
-                        displayText.value = it
-                    }
-                )
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    OutlinedTextFieldWithError(
+                        text = amountAndMeasureText.value,
+                        onTextChanged = { amountAndMeasureText.value = it },
+                        label = "Amount and Measure",
+                        onFocusChanged = {
+                            // TODO: Add focus change if needed
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
+                    OutlinedTextFieldWithError(
+                        text = ingredientText.value,
+                        onTextChanged = { ingredientText.value = it },
+                        label = "Ingredient",
+                        onFocusChanged = {
+                            // TODO: Add focus change if needed
+                        }
+                    )
+                }
             },
             confirmButton = {
                 TextButton(
                     onClick = {
                         openEditDialog.value = false
                         isEditMode.value = false
-                        // TODO: Save the ingredient
-                        onSaveClicked(
-                            // TODO: how to change
-                            // 2field for measure and a field for ingredient name
-                            //step.copy(
-                            //    step = step.step.copy(
-                            //        text = text.value
-                            //    )
-                            //)
-                            ingredient.fullIngredient
-                        )
+                        if("${ingredient.fullIngredient.amount} ${ingredient.fullIngredient.measure}" != amountAndMeasureText.value) {
+                            ingredient.amountAndMeasure = amountAndMeasureText.value
+                        }
+                        if(ingredient.fullIngredient.ingredient != ingredientText.value) {
+                            ingredient.ingredient = ingredientText.value
+                        }
+                        onSaveClicked(ingredient)
                     }
                 ) {
                     Text("Save")

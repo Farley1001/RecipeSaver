@@ -5,7 +5,6 @@ import com.farware.recipesaver.feature_recipe.presentation.recipe.components.Ing
 
 sealed class IngredientsTabEvent{
     data class IngredientFocusChanged(val ingredientFocus: IngredientFocus) : IngredientsTabEvent()
-    object NewIngredient: IngredientsTabEvent()
-    data class SaveIngredient(val ingredient: FullRecipeIngredient): IngredientsTabEvent()
+    data class SaveIngredient(val ingredient: IngredientFocus): IngredientsTabEvent()
     data class DeleteIngredient(val ingredient: FullRecipeIngredient): IngredientsTabEvent()
 }

@@ -10,17 +10,16 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Ingredient
@@ -35,21 +34,32 @@ import com.farware.recipesaver.feature_recipe.presentation.ui.theme.fabShape
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 import com.farware.recipesaver.feature_recipe.presentation.util.CustomDialogPosition
 import com.farware.recipesaver.feature_recipe.presentation.util.customDialogPosition
+import kotlinx.coroutines.coroutineScope
+import javax.inject.Inject
 
 @Composable
 fun IngredientsTabScreen(
+    snackbarHostState: SnackbarHostState,
     viewModel: IngredientsTabViewModel = hiltViewModel()
 ) {
-    val text = remember { mutableStateOf("") }
     val showNewIngredientDialog = remember { mutableStateOf(false) }
+
+    if(viewModel.state.value.showSnackbar) {
+        LaunchedEffect(key1 = "") {
+            snackbarHostState.showSnackbar(viewModel.state.value.message)
+        }
+        viewModel.state.value.copy(
+            showSnackbar = false
+        )
+    }
+
 
     IngredientsTabContent(
         ingredients = viewModel.state.value.ingredientFocus,
-        ingredient = "${viewModel.recipeIngredient.value.ingredient} ${viewModel.recipeIngredient.value.amount} ${viewModel.recipeIngredient.value.measure}",
         onIngredientFocusChanged = { viewModel.onEvent(IngredientsTabEvent.IngredientFocusChanged(it)) },
-        newIngredient = viewModel.newIngredient.value,
+        newFullIngredient = viewModel.newFullIngredient.value,
         dialogAmountAndMeasure = "${viewModel.recipeIngredient.value.amount} ${viewModel.recipeIngredient.value.measure}" ,
-        onDialogAmountAndMeasureChanged = {},
+        onDialogAmountAndMeasureChanged = { },
         onDialogAmountAndMeasureFocusChanged = {},
         dialogIngredient = "${viewModel.recipeIngredient.value.ingredient}",
         onDialogIngredientChanged = {  },
@@ -64,9 +74,8 @@ fun IngredientsTabScreen(
 @Composable
 fun IngredientsTabContent(
     ingredients: List<IngredientFocus>,
-    ingredient: String,
     onIngredientFocusChanged: (IngredientFocus) -> Unit,
-    newIngredient: FullRecipeIngredient,
+    newFullIngredient: (IngredientFocus),
     dialogAmountAndMeasure: String,
     onDialogAmountAndMeasureChanged: (String) -> Unit,
     onDialogAmountAndMeasureFocusChanged: (FocusState) -> Unit,
@@ -74,13 +83,13 @@ fun IngredientsTabContent(
     onDialogIngredientChanged: (String) -> Unit,
     onDialogIngredientFocusChanged: (FocusState) -> Unit,
     showNewIngredientDialog: MutableState<Boolean>,
-    saveIngredientClicked: (FullRecipeIngredient) -> Unit,
+    saveIngredientClicked: (IngredientFocus) -> Unit,
     deleteIngredientClicked: (FullRecipeIngredient) -> Unit
 ) {
-    //val showNewIngredientDialog = remember { mutableStateOf(false) }
-    //val text = remember { mutableStateOf("") }
-
     if(showNewIngredientDialog.value) {
+        val newDialogAmountAndMeasure = remember { mutableStateOf(dialogAmountAndMeasure) }
+        val newDialogIngredient = remember { mutableStateOf(dialogIngredient) }
+
         AlertDialog(
             modifier = Modifier
                 .customDialogPosition(CustomDialogPosition.TOP)
@@ -92,7 +101,7 @@ fun IngredientsTabContent(
                 showNewIngredientDialog.value = false
             },
             title = {
-                Text(text = "Edit Ingredient")
+                Text(text = "New Ingredient")
             },
             text = {
                 Column(
@@ -100,17 +109,17 @@ fun IngredientsTabContent(
                     verticalArrangement = Arrangement.Top
                 ) {
                     OutlinedTextFieldWithError(
-                        text = dialogAmountAndMeasure,
-                        onTextChanged = onDialogAmountAndMeasureChanged,
+                        text = newDialogAmountAndMeasure.value,
+                        onTextChanged = { newDialogAmountAndMeasure.value = it },
                         label = "Amount and Measure",
-                        onFocusChanged = onDialogAmountAndMeasureFocusChanged
+                        onFocusChanged = { onDialogAmountAndMeasureFocusChanged(it) }
                     )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
                     OutlinedTextFieldWithError(
-                        text = dialogIngredient,
-                        onTextChanged = onDialogIngredientChanged,
+                        text = newDialogIngredient.value,
+                        onTextChanged = { newDialogIngredient.value = it },
                         label = "Ingredient",
-                        onFocusChanged = onDialogIngredientFocusChanged
+                        onFocusChanged = { onDialogIngredientFocusChanged(it) }
                     )
                 }
             },
@@ -118,11 +127,10 @@ fun IngredientsTabContent(
                 TextButton(
                     onClick = {
                         showNewIngredientDialog.value = false
-                        saveIngredientClicked(
-                            newIngredient.copy(
-                                //recipeIngredientWithIngredient.recipeIngredient
-                            )
-                        )
+                        // TODO: Save new ingredient
+                        newFullIngredient.amountAndMeasure = newDialogAmountAndMeasure.value
+                        newFullIngredient.ingredient = newDialogIngredient.value
+                        saveIngredientClicked(newFullIngredient)
                     }
                 ) {
                     Text("Save")

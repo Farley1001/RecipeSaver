@@ -10,6 +10,8 @@ data class StepFocus(
 
 data class IngredientFocus(
     val fullIngredient: FullRecipeIngredient,
+    var amountAndMeasure: String? = null,
+    var ingredient: String? = null,
     var focused: Boolean
 )
 

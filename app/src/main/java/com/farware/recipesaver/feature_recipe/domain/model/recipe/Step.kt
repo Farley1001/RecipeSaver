@@ -7,6 +7,18 @@ data class Step(
     val imagePath: String? = null,
     val text: String
 ) {
+    companion object {
+        fun new(): Step {
+            return Step(
+                stepId = null,
+                recipeId = -1L,
+                stepNumber = -1,
+                imagePath = "",
+                text = ""
+            )
+        }
+    }
+
     /**
      * create any functions that are needed to operate on this entity
      */

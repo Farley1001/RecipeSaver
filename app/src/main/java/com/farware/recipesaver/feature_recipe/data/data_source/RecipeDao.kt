@@ -129,10 +129,16 @@ interface RecipeDao {
     fun getIngredients(): Flow<List<IngredientEntity>>
 
     @Query("Select * from ingredient_table where ingredientId = :id")
-    suspend fun getIngredientById(id: Int): IngredientEntity?
+    suspend fun getIngredientById(id: Long): IngredientEntity?
+
+    @Query("Select * from ingredient_table where name = :name")
+    suspend fun getIngredientByName(name: String): IngredientEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertIngredient(ingredient: IngredientEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertIngredientReturnId(ingredient: IngredientEntity): Long
 
     @Delete
     suspend fun deleteIngredient(ingredient: IngredientEntity)
@@ -169,6 +175,9 @@ interface RecipeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMeasure(measure: MeasureEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMeasureReturnId(measure: MeasureEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllMeasures(conversions: List<MeasureEntity>)

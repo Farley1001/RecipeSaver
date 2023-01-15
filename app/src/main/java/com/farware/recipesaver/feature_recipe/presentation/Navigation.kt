@@ -4,8 +4,10 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,6 +26,7 @@ import com.farware.recipesaver.feature_recipe.presentation.splash.SplashScreen
 fun Navigation() {
     val navController = rememberNavController()
     val navDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val snackbarHostState = remember { SnackbarHostState() }
 
     NavHost(navController = navController, startDestination = Screen.SplashScreen.route) {
         composable(route = Screen.SplashScreen.route) {
@@ -54,7 +57,7 @@ fun Navigation() {
             )
         ) {
             RecipeScreen(
-                navController = navController,
+                navController = navController, snackbarHostState = snackbarHostState
             )
         }
         composable(

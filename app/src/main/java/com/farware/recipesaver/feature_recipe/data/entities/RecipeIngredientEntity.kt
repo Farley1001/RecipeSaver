@@ -25,7 +25,7 @@ data class RecipeIngredientEntity(
     @PrimaryKey(autoGenerate = true)
     val recipeIngredientId: Long? = null,
     val recipeId: Long,
-    val ingredientId: Int,
+    val ingredientId: Long,
     val measureId: Int,
     val amount: String,
     val measure: String,

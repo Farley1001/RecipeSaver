@@ -14,6 +14,13 @@ import com.farware.recipesaver.feature_recipe.domain.repository.RecipeRepository
 import com.farware.recipesaver.feature_recipe.domain.use_cases.*
 import com.farware.recipesaver.feature_recipe.domain.use_cases.data_store.*
 import com.farware.recipesaver.feature_recipe.domain.use_cases.firebase.*
+import com.farware.recipesaver.feature_recipe.domain.use_cases.ingredient.GetIngredientByIdUseCase
+import com.farware.recipesaver.feature_recipe.domain.use_cases.ingredient.GetIngredientByNameUseCase
+import com.farware.recipesaver.feature_recipe.domain.use_cases.ingredient.GetIngredientsUseCase
+import com.farware.recipesaver.feature_recipe.domain.use_cases.ingredient.InsertIngredientReturnIdUseCase
+import com.farware.recipesaver.feature_recipe.domain.use_cases.measure.GetMeasureByIdUseCase
+import com.farware.recipesaver.feature_recipe.domain.use_cases.measure.GetMeasuresUseCase
+import com.farware.recipesaver.feature_recipe.domain.use_cases.measure.InsertMeasureReturnIdUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.recipe.*
 import com.farware.recipesaver.feature_recipe.domain.use_cases.recipe_ingredient.AddRecipeIngredientUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.recipe_ingredient.DeleteRecipeIngredientUseCase
@@ -60,8 +67,7 @@ object AppModule {
             app,
             RecipeDatabase::class.java,
             RecipeDatabase.DATABASE_NAME
-        ).fallbackToDestructiveMigration()
-            .createFromAsset("database/recipes_db.db")
+        ).createFromAsset("database/recipes_db.db")         //.fallbackToDestructiveMigration()
             .build()
     }
 
@@ -141,6 +147,29 @@ object AppModule {
             getRecipeIngredientsByRecipeId = GetRecipeIngredientsByRecipeIdUseCase(repository),
             addRecipeIngredient = AddRecipeIngredientUseCase(repository),
             deleteRecipeIngredient = DeleteRecipeIngredientUseCase(repository)
+        )
+    }
+
+    @Provides
+    fun provideIngredientUseCases(
+        repository: RecipeRepository
+    ): IngredientUseCases {
+        return IngredientUseCases(
+            getIngredients = GetIngredientsUseCase(repository),
+            getIngredientById = GetIngredientByIdUseCase(repository),
+            getIngredientByName = GetIngredientByNameUseCase(repository),
+            insertIngredientReturnId = InsertIngredientReturnIdUseCase(repository)
+        )
+    }
+
+    @Provides
+    fun provideMeasureUseCases(
+        repository: RecipeRepository
+    ): MeasureUseCases {
+        return MeasureUseCases(
+            getMeasures = GetMeasuresUseCase(repository),
+            getMeasureById = GetMeasureByIdUseCase(repository),
+            insertMeasureReturnId = InsertMeasureReturnIdUseCase(repository)
         )
     }
 

@@ -199,7 +199,19 @@ fun RecipesContent(
     ) {
         Scaffold(
             topBar = {
-                SmallTopAppBar(
+                // show 3 icons including overflow
+                TopAppBar(title = {
+                    Text(
+                        text = "Recipes",
+                        style = mainTitle,
+                        //TODO: Color
+                        //color = MaterialTheme.colors.onPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Visible,
+                        modifier = Modifier
+                            .width(130.dp)
+                    )
+                },
                     navigationIcon = {
                         IconButton(
                             onClick = {
@@ -208,18 +220,6 @@ fun RecipesContent(
                         ) {
                             Icon(Icons.Filled.Menu, contentDescription = "Open Nav")
                         }
-                    },
-                    title = {
-                        Text(
-                            text = "Recipes",
-                            style = mainTitle,
-                            //TODO: Color
-                            //color = MaterialTheme.colors.onPrimary,
-                            maxLines = 1,
-                            overflow = TextOverflow.Visible,
-                            modifier = Modifier
-                                .width(130.dp)
-                        )
                     },
                     actions = {
                         // show 3 icons including overflow

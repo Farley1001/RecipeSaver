@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.farware.recipesaver.feature_recipe.common.Resource
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.Recipe
 import com.farware.recipesaver.feature_recipe.domain.use_cases.FirebaseUseCases
 import com.farware.recipesaver.feature_recipe.domain.use_cases.RecipeUseCases
 import com.farware.recipesaver.feature_recipe.domain.util.OrderType
@@ -48,6 +49,7 @@ class RecipesViewModel @Inject constructor(
     private var getSearchJob: Job? = null
 
     init {
+        //insertRecipe()
         getRecipes(false, RecipeOrder.Date(OrderType.Descending))
     }
 
@@ -190,6 +192,22 @@ class RecipesViewModel @Inject constructor(
                     }
                 }
             }.launchIn(viewModelScope)
+    }
+
+    // used for testing
+    private fun insertRecipe() {
+        viewModelScope.launch {
+            recipeUseCases.addRecipe(
+                Recipe(
+                    recipeId = null,
+                    categoryId = 3,
+                    name = "My New Favorite",
+                    description = "Best chicken recipe ever!",
+                    favorite = true,
+                    timeStamp = System.currentTimeMillis()
+                )
+            )
+        }
     }
 
     private fun getRecipes(favoritesOnly: Boolean, recipeOrder: RecipeOrder) {
