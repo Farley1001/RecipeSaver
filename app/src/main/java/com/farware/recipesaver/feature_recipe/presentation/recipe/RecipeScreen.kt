@@ -1,8 +1,16 @@
 package com.farware.recipesaver.feature_recipe.presentation.recipe
 
 import android.app.TimePickerDialog
+import android.provider.CalendarContract
 import android.widget.Toast
 import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Down
+import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Left
+import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Right
+import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Up
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -168,7 +176,7 @@ fun RecipeScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun RecipeContent(
     snackbarHostState: SnackbarHostState,
@@ -242,7 +250,7 @@ fun RecipeContent(
                 TabRow(
                     selectedTabIndex = selectedTabIndex,
                     // TODO: Colors
-                    //backgroundColor = MaterialTheme.colors.background,
+                    //containerColor = MaterialTheme.colorScheme.inversePrimary,
                     //contentColor = MaterialTheme.colors.onBackground
                 ) {
                     tabs.forEachIndexed { index, tab ->
@@ -281,31 +289,6 @@ fun RecipeContent(
                                 }
                             }
                         )
-
-                        /*
-                        Box(
-                            modifier = Modifier
-                                .padding(start = 4.dp)
-                                //.clickable { editRecipeCategorySection() }
-                        ) {
-                            Badge(
-                                modifier = Modifier
-                                    .padding(top = 4.dp),
-                                containerColor = categoryColor,
-                                contentColor = onCategoryColor
-                            ) {
-                                Text("")
-                            }
-                            Text(
-                                text = categoryName,
-                                //color = onCategoryColor,
-                                overflow = TextOverflow.Clip,
-                                modifier = Modifier
-                                    //.background(categoryColor)
-                                    .padding(start = 20.dp, end = 8.dp)
-                            )
-                        }
-                        */
                         Text(
                             text = "Prep: ${prepTime.toInt()}",
                             modifier = Modifier
@@ -339,14 +322,25 @@ fun RecipeContent(
                     //TODO: Colors
                         //.background(MaterialTheme.colors.background),
                 ) {
-                    if(selectedTabIndex == TabOrder.STEP.ordinal) {
-                        StepsTabScreen()
-                    }
-                    if(selectedTabIndex == TabOrder.INGREDIENT.ordinal) {
-                        IngredientsTabScreen(snackbarHostState = snackbarHostState)
-                    }
-                    if(selectedTabIndex == TabOrder.TIP.ordinal) {
-                        TipsTabScreen()
+                    AnimatedContent(
+                        targetState = selectedTabIndex,
+                        transitionSpec = {
+                            slideIntoContainer(
+                                animationSpec = tween(300, easing = EaseIn),
+                                towards = Right
+                            ).with(
+                                slideOutOfContainer(
+                                    animationSpec = tween(300, easing = EaseOut),
+                                    towards = Right
+                                )
+                            )
+                        }
+                    ) {targetState ->
+                        when(targetState){
+                            TabOrder.STEP.ordinal -> { StepsTabScreen() }
+                            TabOrder.INGREDIENT.ordinal -> { IngredientsTabScreen(snackbarHostState = snackbarHostState) }
+                            TabOrder.TIP.ordinal -> { TipsTabScreen() }
+                        }
                     }
                 }
             }

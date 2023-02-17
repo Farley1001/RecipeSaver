@@ -7,13 +7,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.Tip
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.TipFocus
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.TipTextWithIcon
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.fabShape
@@ -27,11 +24,23 @@ fun TipsTabScreen(
 ) {
 
     TipsTabContent(
-        tips = viewModel.state.value.tipsFocus,
-        newTip = viewModel.newTip.value,
-        tipFocusChanged = { viewModel.onEvent(TipsTabEvent.TipFocusChanged(it)) },
-        saveTipClicked = { viewModel.onEvent(TipsTabEvent.SaveTip(it)) },
-        deleteTipClicked = { viewModel.onEvent(TipsTabEvent.DeleteTip(it)) }
+        tips = viewModel.state.value.tipFocus,
+        newTipText = viewModel.state.value.newTipText,
+        editTipText = viewModel.state.value.editTipText,
+        showEditTipDialog = viewModel.state.value.showEditTipDialog,
+        showConfirmDeleteTipDialog = viewModel.state.value.showDeleteTipDialog,
+        showNewTipDialog = viewModel.state.value.showNewTipDialog,
+        onEditTipTextChanged = { viewModel.onEvent(TipsTabEvent.EditTipTextChanged(it)) },
+        onNewTipTextChanged = { viewModel.onEvent(TipsTabEvent.NewTipTextChanged(it)) },
+        onSaveNewTipClicked = { viewModel.onEvent(TipsTabEvent.SaveNewTip) },
+        onTipFocusChanged = { viewModel.onEvent(TipsTabEvent.TipFocusChanged(it)) },
+        onSaveTipClicked = { viewModel.onEvent(TipsTabEvent.SaveEditTip) },
+        onCancelEditTipClicked = { viewModel.onEvent(TipsTabEvent.CancelEditTip) },
+        onEditTipClicked = { viewModel.onEvent(TipsTabEvent.EditTip(it))},
+        onDeleteTipClicked = { viewModel.onEvent(TipsTabEvent.DeleteTip(it)) },
+        onConfirmDeleteTipClicked = { viewModel.onEvent(TipsTabEvent.ConfirmDeleteTip) },
+        onCancelConfirmDelete = { viewModel.onEvent(TipsTabEvent.CancelConfirmDeleteTip) },
+        onToggleNewTipDialog = { viewModel.onEvent(TipsTabEvent.ToggleNewTipDialog) }
     )
 }
 
@@ -39,15 +48,24 @@ fun TipsTabScreen(
 @Composable
 fun TipsTabContent(
     tips: List<TipFocus?>,
-    newTip: Tip,
-    tipFocusChanged: (TipFocus) -> Unit,
-    saveTipClicked: (Tip) -> Unit,
-    deleteTipClicked: (Tip) -> Unit
+    newTipText: String,
+    editTipText: String,
+    showEditTipDialog: Boolean,
+    showConfirmDeleteTipDialog: Boolean,
+    showNewTipDialog: Boolean,
+    onEditTipTextChanged: (String) -> Unit,
+    onNewTipTextChanged: (String) -> Unit,
+    onSaveNewTipClicked: () -> Unit,
+    onTipFocusChanged: (TipFocus) -> Unit,
+    onSaveTipClicked: () -> Unit,
+    onCancelEditTipClicked: () -> Unit,
+    onEditTipClicked: (TipFocus) -> Unit,
+    onDeleteTipClicked: (TipFocus) -> Unit,
+    onConfirmDeleteTipClicked: () -> Unit,
+    onCancelConfirmDelete: () -> Unit,
+    onToggleNewTipDialog: () -> Unit
 ) {
-    val showNewTipDialog = remember { mutableStateOf(false) }
-    val text = remember { mutableStateOf("") }
-
-    if(showNewTipDialog.value) {
+    if(showNewTipDialog) {
         AlertDialog(
             modifier = Modifier
                 .customDialogPosition(CustomDialogPosition.TOP)
@@ -56,29 +74,24 @@ fun TipsTabContent(
                 // Dismiss the dialog when the user clicks outside the dialog or on the back
                 // button. If you want to disable that functionality, simply use an empty
                 // onDismissRequest.
-                showNewTipDialog.value = false
+                onToggleNewTipDialog()
             },
             title = {
-                Text(text = "Edit Tip")
+                Text(text = "New Tip")
             },
             text = {
                 TextField(
                     modifier = Modifier.fillMaxHeight(0.5F),
-                    value = text.value,
+                    value = newTipText,
                     onValueChange = {
-                        text.value = it
+                        onNewTipTextChanged(it)
                     }
                 )
             },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        showNewTipDialog.value = false
-                        saveTipClicked(
-                            newTip.copy(
-                                text = text.value
-                            )
-                        )
+                        onSaveNewTipClicked()
                     }
                 ) {
                     Text("Save")
@@ -87,7 +100,7 @@ fun TipsTabContent(
             dismissButton = {
                 TextButton(
                     onClick = {
-                        showNewTipDialog.value = false
+                        onToggleNewTipDialog()
                     }
                 ) {
                     Text("Cancel")
@@ -120,10 +133,18 @@ fun TipsTabContent(
                     ) {
                         TipTextWithIcon(
                             tip = tip!!,
-                            focused = tip.focused,
-                            onChangeFocus = { tipFocusChanged(it) },
-                            onSaveClicked = { saveTipClicked(it) },
-                            onDeleteClicked = { deleteTipClicked(it) },
+                            editTipText = editTipText,
+                            isFocused = tip.focused,
+                            showEditTipDialog = showEditTipDialog,
+                            showConfirmDeleteTipDialog = showConfirmDeleteTipDialog,
+                            onTipTextChanged = { onEditTipTextChanged(it) },
+                            onTipFocusChanged = { onTipFocusChanged(it) },
+                            onSaveTipClicked = { onSaveTipClicked() },
+                            onCancelEditTipClicked = { onCancelEditTipClicked() },
+                            onEditTipClicked = { onEditTipClicked(it) },
+                            onDeleteTipClicked = { onDeleteTipClicked(it) },
+                            onConfirmDeleteTipClicked = { onConfirmDeleteTipClicked() },
+                            onCancelConfirmDelete = { onCancelConfirmDelete() }
                         )
                     }
                 }
@@ -132,7 +153,7 @@ fun TipsTabContent(
                 modifier = Modifier
                     .align(Alignment.End)
                     .padding(bottom = 15.dp, end = 15.dp),
-                onClick = { showNewTipDialog.value = true },
+                onClick = { onToggleNewTipDialog() },
                 shape = fabShape,
                 icon = { Icon(Icons.Filled.Add, "Add new tip") },
                 text = { Text(text = "New Tip") },

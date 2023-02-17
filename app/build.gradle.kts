@@ -7,11 +7,12 @@ plugins {
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
-
 }
 
 android {
+    namespace = "com.farware.recipesaver"
     compileSdk = 33
 
     defaultConfig {
@@ -123,7 +124,12 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     // Declare the dependency for the Realtime Database library
     implementation("com.google.firebase:firebase-database-ktx")
+    // Declare the dependencies for the Crashlytics and Analytics libraries
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    // google play services dependency
     implementation("com.google.android.gms:play-services-auth:20.4.0")
+
 
     // Compose dependencies
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")

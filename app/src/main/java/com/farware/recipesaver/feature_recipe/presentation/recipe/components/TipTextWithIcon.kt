@@ -7,8 +7,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.unit.dp
@@ -21,31 +19,25 @@ import com.farware.recipesaver.feature_recipe.presentation.util.customDialogPosi
 @Composable
 fun TipTextWithIcon(
     tip: TipFocus,
-    focused: Boolean,
-    onChangeFocus: (TipFocus) -> Unit,
-    onSaveClicked: (Tip) -> Unit,
-    onDeleteClicked: (Tip) -> Unit,
+    editTipText: String,
+    isFocused: Boolean,
+    showEditTipDialog: Boolean,
+    showConfirmDeleteTipDialog: Boolean,
+    onTipTextChanged: (String) -> Unit,
+    onTipFocusChanged: (TipFocus) -> Unit,
+    onSaveTipClicked: () -> Unit,
+    onCancelEditTipClicked: () -> Unit,
+    onEditTipClicked: (TipFocus) -> Unit,
+    onDeleteTipClicked: (TipFocus) -> Unit,
+    onConfirmDeleteTipClicked: () -> Unit,
+    onCancelConfirmDelete: () -> Unit
 ) {
-    val text = remember { mutableStateOf("") }
-    val isFocused = remember { mutableStateOf(false) }
-    val isEditMode = remember { mutableStateOf(false) }
-    val openEditDialog = remember { mutableStateOf(true) }
-    val openConfirmDeleteDialog = remember { mutableStateOf(false) }
-    text.value = tip.tip.text
-
-    if(!focused) {
-        isFocused.value = false
-        isEditMode.value = false
-    } else {
-        isFocused.value = true
-    }
-
     Column(
         Modifier
             //.fillMaxSize()
             .wrapContentSize()
     ) {
-        if(isEditMode.value) {
+        if(showEditTipDialog) {
             AlertDialog(
                 modifier = Modifier
                     .customDialogPosition(CustomDialogPosition.TOP)
@@ -54,8 +46,7 @@ fun TipTextWithIcon(
                     // Dismiss the dialog when the user clicks outside the dialog or on the back
                     // button. If you want to disable that functionality, simply use an empty
                     // onDismissRequest.
-                    openEditDialog.value = false
-                    isEditMode.value = false
+                    onCancelEditTipClicked()
                 },
                 title = {
                     Text(text = "Edit Tip")
@@ -63,25 +54,16 @@ fun TipTextWithIcon(
                 text = {
                     TextField(
                         modifier = Modifier.fillMaxHeight(0.5F),
-                        value = text.value,
+                        value = editTipText,
                         onValueChange = {
-                            text.value = it
+                            onTipTextChanged(it)
                         }
                     )
                 },
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            openEditDialog.value = false
-                            isEditMode.value = false
-                            tip.copy(
-                                tip = tip.tip.copy(
-                                    text = text.value
-                                )
-                            )
-                            onSaveClicked(tip.tip.copy(
-                                text = text.value
-                            ))
+                            onSaveTipClicked()
                         }
                     ) {
                         Text("Save")
@@ -90,8 +72,7 @@ fun TipTextWithIcon(
                 dismissButton = {
                     TextButton(
                         onClick = {
-                            openEditDialog.value = false
-                            isEditMode.value = false
+                            onCancelEditTipClicked()
                         }
                     ) {
                         Text("Cancel")
@@ -100,13 +81,13 @@ fun TipTextWithIcon(
             )
         } else {
             TextWithAppendedContent(
-                text = tip.tip.text,
-                onTextClicked = { onChangeFocus(tip) },
+                text = "${tip.tip.tipNumber}.  ${tip.tip.text}",
+                onTextClicked = { onTipFocusChanged(tip) },
                 placeholderWidth = 84.sp,
                 placeholderHeight = 24.sp,
                 placeholderVertAlign = PlaceholderVerticalAlign.TextTop,
                 appendContent = {
-                    if(isFocused.value) {
+                    if(isFocused) {
                         Icon(
                             imageVector = Icons.Filled.Edit,
                             contentDescription = "Local Description",
@@ -114,7 +95,7 @@ fun TipTextWithIcon(
                             modifier = Modifier
                                 .size(24.dp)
                                 .clickable {
-                                    isEditMode.value = true
+                                    onEditTipClicked(tip)
                                 }
                         )
                         Icon(
@@ -125,20 +106,19 @@ fun TipTextWithIcon(
                                 .padding(start = 30.dp)
                                 .size(24.dp)
                                 .clickable {
-                                    isFocused.value = false
-                                    openConfirmDeleteDialog.value = true
+                                    onDeleteTipClicked(tip)
                                 }
                         )
                     }
                 }
             )
-            if(openConfirmDeleteDialog.value) {
+            if(showConfirmDeleteTipDialog) {
                 AlertDialog(
                     onDismissRequest = {
                         // Dismiss the dialog when the user clicks outside the dialog or on the back
                         // button. If you want to disable that functionality, simply use an empty
                         // onDismissRequest.
-                        openConfirmDeleteDialog.value = false
+                        onCancelConfirmDelete()
                     },
                     title = {
                         Text(text = "Confirm Delete Tip")
@@ -149,8 +129,7 @@ fun TipTextWithIcon(
                     confirmButton = {
                         TextButton(
                             onClick = {
-                                openConfirmDeleteDialog.value = false
-                                onDeleteClicked(tip.tip)
+                                onConfirmDeleteTipClicked()
                             }
                         ) {
                             Text("Delete")
@@ -159,7 +138,7 @@ fun TipTextWithIcon(
                     dismissButton = {
                         TextButton(
                             onClick = {
-                                openConfirmDeleteDialog.value = false
+                                onCancelConfirmDelete()
                             }
                         ) {
                             Text("Cancel")

@@ -1,11 +1,14 @@
 package com.farware.recipesaver.feature_recipe.presentation
 
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
@@ -54,6 +57,8 @@ class MainActivity : ComponentActivity() {
 
                 println("onCreate: the app context: $app")
                 println("onCreate: $randomString")
+
+
 
                 // A surface container using the 'background' color from the theme
                 Surface(

@@ -10,6 +10,17 @@ data class IngredientsTabState(
     val ingredientFocus: List<IngredientFocus> = emptyList(),
     val measures: List<Measure> = emptyList(),
     val allIngredients: List<Ingredient> = emptyList(),
+    val editedIngredient: FullRecipeIngredient = FullRecipeIngredient.new(),
+    val ingredientToDelete: FullRecipeIngredient = FullRecipeIngredient.new(),
+    val editAmountText: String = "",
+    val editMeasureText: String = "",
+    val editIngredientText: String = "",
+    val newAmountText: String = "",
+    val newMeasureText: String = "",
+    val newIngredientText: String = "",
+    val showEditIngredientDialog: Boolean = false,
+    val showDeleteIngredientDialog: Boolean = false,
+    val showNewIngredientDialog: Boolean = false,
     val showSnackbar: Boolean = false,
     val message: String = ""
 )

@@ -5,5 +5,12 @@ import com.farware.recipesaver.feature_recipe.presentation.recipe.components.Tip
 
 data class TipsTabState(
     val tips: List<Tip?> = emptyList(),
-    val tipsFocus: List<TipFocus> = emptyList(),
+    val tipFocus: List<TipFocus> = emptyList(),
+    val editedTip: Tip = Tip.new(),
+    val tipToDelete: Tip = Tip.new(),
+    val editTipText: String = "",
+    val newTipText: String = "",
+    val showEditTipDialog: Boolean = false,
+    val showDeleteTipDialog: Boolean = false,
+    val showNewTipDialog: Boolean = false
 )

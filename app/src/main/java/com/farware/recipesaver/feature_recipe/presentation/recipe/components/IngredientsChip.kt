@@ -26,165 +26,165 @@ import com.farware.recipesaver.feature_recipe.presentation.util.customDialogPosi
 @Composable
 fun IngredientsChip(
     ingredient: IngredientFocus,
-    focused: Boolean,
-    onChangeFocus: (IngredientFocus) -> Unit,
-    onSaveClicked: (IngredientFocus) -> Unit,
-    onDeleteClicked: (FullRecipeIngredient) -> Unit,
+    editAmountText: String,
+    editMeasureText: String,
+    editIngredientText: String,
+    isFocused: Boolean,
+    showEditIngredientDialog: Boolean,
+    showConfirmDeleteIngredientDialog: Boolean,
+    onEditAmountTextChanged: (String) -> Unit,
+    onEditMeasureTextChanged: (String) -> Unit,
+    onEditIngredientTextChanged: (String) -> Unit,
+    onIngredientFocusChanged: (IngredientFocus) -> Unit,
+    onSaveIngredientClicked: () -> Unit,
+    onCancelEditIngredientClicked: () -> Unit,
+    onEditIngredientClicked: (IngredientFocus) -> Unit,
+    onDeleteIngredientClicked: (IngredientFocus) -> Unit,
+    onConfirmDeleteIngredientClicked: () -> Unit,
+    onCancelConfirmDelete: () -> Unit
 ) {
-    val amountAndMeasureText = remember { mutableStateOf("") }
-    val ingredientText = remember { mutableStateOf("") }
-    val displayText = remember { mutableStateOf("") }
-    val isFocused = remember { mutableStateOf(false) }
-    val isEditMode = remember { mutableStateOf(false) }
-    val openEditDialog = remember { mutableStateOf(true) }
-    val openConfirmDeleteDialog = remember { mutableStateOf(false) }
-
-    amountAndMeasureText.value = if(ingredient.fullIngredient.amount[0] >= '2' && ingredient.fullIngredient.measureId > 2) {"${ingredient.fullIngredient.amount} ${ingredient.fullIngredient.measure}s"} else {"${ingredient.fullIngredient.amount} ${ingredient.fullIngredient.measure}"}
-    ingredientText.value = ingredient.fullIngredient.ingredient
-    displayText.value = "${amountAndMeasureText.value} ${ingredient.fullIngredient.ingredient}"
-
-    if(!focused) {
-        isFocused.value = false
-        isEditMode.value = false
-    } else {
-        isFocused.value = true
-    }
-
-    if(isEditMode.value) {
-        AlertDialog(
-            modifier = Modifier
-                .customDialogPosition(CustomDialogPosition.TOP)
-                .padding(top = 20.dp),
-            onDismissRequest = {
-                // Dismiss the dialog when the user clicks outside the dialog or on the back
-                // button. If you want to disable that functionality, simply use an empty
-                // onDismissRequest.
-                openEditDialog.value = false
-                isEditMode.value = false
-            },
-            title = {
-                Text(text = "Edit Ingredient from chip")
-            },
-            text = {
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    OutlinedTextFieldWithError(
-                        text = amountAndMeasureText.value,
-                        onTextChanged = { amountAndMeasureText.value = it },
-                        label = "Amount and Measure",
-                        onFocusChanged = {
-                            // TODO: Add focus change if needed
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
-                    OutlinedTextFieldWithError(
-                        text = ingredientText.value,
-                        onTextChanged = { ingredientText.value = it },
-                        label = "Ingredient",
-                        onFocusChanged = {
-                            // TODO: Add focus change if needed
-                        }
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        openEditDialog.value = false
-                        isEditMode.value = false
-                        if("${ingredient.fullIngredient.amount} ${ingredient.fullIngredient.measure}" != amountAndMeasureText.value) {
-                            ingredient.amountAndMeasure = amountAndMeasureText.value
-                        }
-                        if(ingredient.fullIngredient.ingredient != ingredientText.value) {
-                            ingredient.ingredient = ingredientText.value
-                        }
-                        onSaveClicked(ingredient)
-                    }
-                ) {
-                    Text("Save")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        openEditDialog.value = false
-                        isEditMode.value = false
-                    }
-                ) {
-                    Text("Cancel")
-                }
-            }
-        )
-    } else {
-        ElevatedAssistChip(
-            onClick = { onChangeFocus(ingredient) },
-            label = { Text(text = displayText.value) },
-            shape = chipShape,
-            colors = assistChipColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
-                    alpha = .5f
-                )
-            ),
-            trailingIcon = {
-                if (isFocused.value) {
-                    Icon(
-                        Icons.Filled.Edit,
-                        contentDescription = "Localized description",
-                        Modifier
-                            .size(AssistChipDefaults.IconSize)
-                            .clickable {
-                                isEditMode.value = true
+    Column(
+        Modifier
+            //.fillMaxSize()
+            .wrapContentSize()
+    ) {
+        if (showEditIngredientDialog) {
+            AlertDialog(
+                modifier = Modifier
+                    .customDialogPosition(CustomDialogPosition.TOP)
+                    .padding(top = 20.dp),
+                onDismissRequest = {
+                    // Dismiss the dialog when the user clicks outside the dialog or on the back
+                    // button. If you want to disable that functionality, simply use an empty
+                    // onDismissRequest.
+                    onCancelEditIngredientClicked()
+                },
+                title = {
+                    Text(text = "Edit Ingredient from chip")
+                },
+                text = {
+                    Column(
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.Top
+                    ) {
+                        OutlinedTextFieldWithError(
+                            text = editAmountText,
+                            onTextChanged = { onEditAmountTextChanged(it)},
+                            label = "Amount",
+                            onFocusChanged = {
+                                // TODO: Add focus change if needed
                             }
-                    )
-                    Icon(
-                        Icons.Filled.Delete,
-                        contentDescription = "Localized description",
-                        Modifier
-                            .size(AssistChipDefaults.IconSize)
-                            .clickable {
-                                isFocused.value = false
-                                openConfirmDeleteDialog.value = true
+                        )
+                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
+                        OutlinedTextFieldWithError(
+                            text = editMeasureText,
+                            onTextChanged = { onEditMeasureTextChanged(it)},
+                            label = "Measure",
+                            onFocusChanged = {
+                                // TODO: Add focus change if needed
                             }
+                        )
+                        Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
+                        OutlinedTextFieldWithError(
+                            text = editIngredientText,
+                            onTextChanged = { onEditIngredientTextChanged(it) },
+                            label = "Ingredient",
+                            onFocusChanged = {
+                                // TODO: Add focus change if needed
+                            }
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            onSaveIngredientClicked()
+                        }
+                    ) {
+                        Text("Save")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            onCancelEditIngredientClicked()
+                        }
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        } else {
+            ElevatedAssistChip(
+                onClick = { onIngredientFocusChanged(ingredient) },
+                label = {
+                    Text(
+                        text = "${ingredient.fullIngredient.amount}.${ingredient.fullIngredient.measure} ${ingredient.fullIngredient.ingredient}"
                     )
-                }
-            }
-        )
-    }
-    if(openConfirmDeleteDialog.value) {
-        AlertDialog(
-            onDismissRequest = {
-                // Dismiss the dialog when the user clicks outside the dialog or on the back
-                // button. If you want to disable that functionality, simply use an empty
-                // onDismissRequest.
-                openConfirmDeleteDialog.value = false
-            },
-            title = {
-                Text(text = "Confirm Delete Ingredient")
-            },
-            text = {
-                Text(text = "Are you sure you want to delete this ingredient?")
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        openConfirmDeleteDialog.value = false
-                        onDeleteClicked(ingredient.fullIngredient)
+                },
+                shape = chipShape,
+                colors = assistChipColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
+                        alpha = .5f
+                    )
+                ),
+                trailingIcon = {
+                    if (isFocused) {
+                        Icon(
+                            Icons.Filled.Edit,
+                            contentDescription = "Localized description",
+                            Modifier
+                                .size(AssistChipDefaults.IconSize)
+                                .clickable {
+                                    onEditIngredientClicked(ingredient)
+                                }
+                        )
+                        Icon(
+                            Icons.Filled.Delete,
+                            contentDescription = "Localized description",
+                            Modifier
+                                .size(AssistChipDefaults.IconSize)
+                                .clickable {
+                                    onDeleteIngredientClicked(ingredient)
+                                }
+                        )
                     }
-                ) {
-                    Text("Delete")
                 }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = {
-                        openConfirmDeleteDialog.value = false
+            )
+        }
+        if (showConfirmDeleteIngredientDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    // Dismiss the dialog when the user clicks outside the dialog or on the back
+                    // button. If you want to disable that functionality, simply use an empty
+                    // onDismissRequest.
+                    onCancelConfirmDelete()
+                },
+                title = {
+                    Text(text = "Confirm Delete Ingredient")
+                },
+                text = {
+                    Text(text = "Are you sure you want to delete this ingredient?")
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            onConfirmDeleteIngredientClicked()
+                        }
+                    ) {
+                        Text("Delete")
                     }
-                ) {
-                    Text("Cancel")
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            onCancelConfirmDelete()
+                        }
+                    ) {
+                        Text("Cancel")
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }

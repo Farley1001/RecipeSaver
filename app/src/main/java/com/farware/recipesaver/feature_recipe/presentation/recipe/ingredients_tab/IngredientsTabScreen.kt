@@ -29,8 +29,10 @@ import com.farware.recipesaver.feature_recipe.presentation.recipe.components.Ing
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.IngredientsChip
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.StepFocus
 import com.farware.recipesaver.feature_recipe.presentation.recipe.steps_tab.StepsTabEvent
+import com.farware.recipesaver.feature_recipe.presentation.recipe.tips_tab.TipsTabEvent
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.Spacing
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.fabShape
+import com.farware.recipesaver.feature_recipe.presentation.ui.theme.md_theme_dark_onPrimaryContainer
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 import com.farware.recipesaver.feature_recipe.presentation.util.CustomDialogPosition
 import com.farware.recipesaver.feature_recipe.presentation.util.customDialogPosition
@@ -42,54 +44,75 @@ fun IngredientsTabScreen(
     snackbarHostState: SnackbarHostState,
     viewModel: IngredientsTabViewModel = hiltViewModel()
 ) {
-    val showNewIngredientDialog = remember { mutableStateOf(false) }
-
     if(viewModel.state.value.showSnackbar) {
-        LaunchedEffect(key1 = "") {
-            snackbarHostState.showSnackbar(viewModel.state.value.message)
-        }
         viewModel.state.value.copy(
             showSnackbar = false
         )
+        LaunchedEffect(key1 = "") {
+            snackbarHostState.showSnackbar(viewModel.state.value.message)
+        }
     }
-
 
     IngredientsTabContent(
         ingredients = viewModel.state.value.ingredientFocus,
+        newAmountText = viewModel.state.value.newAmountText,
+        newMeasureText = viewModel.state.value.newMeasureText,
+        newIngredientText = viewModel.state.value.newIngredientText,
+        editAmountText = viewModel.state.value.editAmountText,
+        editMeasureText = viewModel.state.value.editMeasureText,
+        editIngredientText = viewModel.state.value.editIngredientText,
+        showEditIngredientDialog= viewModel.state.value.showEditIngredientDialog,
+        showConfirmDeleteIngredientDialog = viewModel.state.value.showDeleteIngredientDialog,
+        showNewIngredientDialog = viewModel.state.value.showNewIngredientDialog,
+        onEditAmountTextChanged = { viewModel.onEvent(IngredientsTabEvent.EditAmountTextChanged(it)) },
+        onEditMeasureTextChanged = { viewModel.onEvent(IngredientsTabEvent.EditMeasureTextChanged(it)) },
+        onEditIngredientTextChanged = { viewModel.onEvent(IngredientsTabEvent.EditIngredientTextChanged(it)) },
+        onNewAmountTextChanged = { viewModel.onEvent(IngredientsTabEvent.NewAmountTextChanged(it)) },
+        onNewMeasureTextChanged = { viewModel.onEvent(IngredientsTabEvent.NewMeasureTextChanged(it)) },
+        onNewIngredientTextChanged = { viewModel.onEvent(IngredientsTabEvent.NewIngredientTextChanged(it)) },
+        onSaveNewIngredientClicked = { viewModel.onEvent(IngredientsTabEvent.SaveNewIngredient) },
         onIngredientFocusChanged = { viewModel.onEvent(IngredientsTabEvent.IngredientFocusChanged(it)) },
-        newFullIngredient = viewModel.newFullIngredient.value,
-        dialogAmountAndMeasure = "${viewModel.recipeIngredient.value.amount} ${viewModel.recipeIngredient.value.measure}" ,
-        onDialogAmountAndMeasureChanged = { },
-        onDialogAmountAndMeasureFocusChanged = {},
-        dialogIngredient = "${viewModel.recipeIngredient.value.ingredient}",
-        onDialogIngredientChanged = {  },
-        onDialogIngredientFocusChanged = {  },
-        showNewIngredientDialog = showNewIngredientDialog,
-        saveIngredientClicked = { viewModel.onEvent(IngredientsTabEvent.SaveIngredient(it)) },
-        deleteIngredientClicked = { viewModel.onEvent(IngredientsTabEvent.DeleteIngredient(it)) }
+        onSaveIngredientClicked = { viewModel.onEvent(IngredientsTabEvent.SaveEditIngredient) },
+        onCancelEditIngredientClicked = { viewModel.onEvent(IngredientsTabEvent.CancelEditIngredient) },
+        onEditIngredientClicked = { viewModel.onEvent(IngredientsTabEvent.EditIngredient(it)) },
+        onDeleteIngredientClicked = { viewModel.onEvent(IngredientsTabEvent.DeleteIngredient(it)) },
+        onConfirmDeleteIngredientClicked = { viewModel.onEvent(IngredientsTabEvent.ConfirmDeleteIngredient) },
+        onCancelConfirmDelete = { viewModel.onEvent(IngredientsTabEvent.CancelConfirmDeleteIngredient) },
+        onToggleNewIngredientDialog = { viewModel.onEvent(IngredientsTabEvent.ToggleNewIngredientDialog) }
     )
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IngredientsTabContent(
     ingredients: List<IngredientFocus>,
+    newAmountText: String,
+    newMeasureText: String,
+    newIngredientText: String,
+    editAmountText: String,
+    editMeasureText: String,
+    editIngredientText: String,
+    showEditIngredientDialog: Boolean,
+    showConfirmDeleteIngredientDialog: Boolean,
+    showNewIngredientDialog: Boolean,
+    onEditAmountTextChanged: (String) -> Unit,
+    onEditMeasureTextChanged: (String) -> Unit,
+    onEditIngredientTextChanged: (String) -> Unit,
+    onNewAmountTextChanged: (String) -> Unit,
+    onNewMeasureTextChanged: (String) -> Unit,
+    onNewIngredientTextChanged: (String) -> Unit,
+    onSaveNewIngredientClicked: () -> Unit,
     onIngredientFocusChanged: (IngredientFocus) -> Unit,
-    newFullIngredient: (IngredientFocus),
-    dialogAmountAndMeasure: String,
-    onDialogAmountAndMeasureChanged: (String) -> Unit,
-    onDialogAmountAndMeasureFocusChanged: (FocusState) -> Unit,
-    dialogIngredient: String,
-    onDialogIngredientChanged: (String) -> Unit,
-    onDialogIngredientFocusChanged: (FocusState) -> Unit,
-    showNewIngredientDialog: MutableState<Boolean>,
-    saveIngredientClicked: (IngredientFocus) -> Unit,
-    deleteIngredientClicked: (FullRecipeIngredient) -> Unit
+    onSaveIngredientClicked: () -> Unit,
+    onCancelEditIngredientClicked: () -> Unit,
+    onEditIngredientClicked: (IngredientFocus) -> Unit,
+    onDeleteIngredientClicked: (IngredientFocus) -> Unit,
+    onConfirmDeleteIngredientClicked: () -> Unit,
+    onCancelConfirmDelete: () -> Unit,
+    onToggleNewIngredientDialog: () -> Unit
 ) {
-    if(showNewIngredientDialog.value) {
-        val newDialogAmountAndMeasure = remember { mutableStateOf(dialogAmountAndMeasure) }
-        val newDialogIngredient = remember { mutableStateOf(dialogIngredient) }
-
+    if(showNewIngredientDialog) {
         AlertDialog(
             modifier = Modifier
                 .customDialogPosition(CustomDialogPosition.TOP)
@@ -98,7 +121,7 @@ fun IngredientsTabContent(
                 // Dismiss the dialog when the user clicks outside the dialog or on the back
                 // button. If you want to disable that functionality, simply use an empty
                 // onDismissRequest.
-                showNewIngredientDialog.value = false
+                onToggleNewIngredientDialog()
             },
             title = {
                 Text(text = "New Ingredient")
@@ -109,28 +132,40 @@ fun IngredientsTabContent(
                     verticalArrangement = Arrangement.Top
                 ) {
                     OutlinedTextFieldWithError(
-                        text = newDialogAmountAndMeasure.value,
-                        onTextChanged = { newDialogAmountAndMeasure.value = it },
-                        label = "Amount and Measure",
-                        onFocusChanged = { onDialogAmountAndMeasureFocusChanged(it) }
+                        text = newAmountText,
+                        onTextChanged = { onNewAmountTextChanged(it) },
+                        label = "Amount",
+                        onFocusChanged = {
+                            // TODO: Add if necessary do the amount and measure parse
+                        }
                     )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
                     OutlinedTextFieldWithError(
-                        text = newDialogIngredient.value,
-                        onTextChanged = { newDialogIngredient.value = it },
+                        text = newMeasureText,
+                        onTextChanged = { onNewMeasureTextChanged(it) },
+                        label = "Measure",
+                        onFocusChanged = {
+                            // TODO: Add if necessary do the amount and measure parse
+                            // onNewAmountAndMeasureFocusChanged
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
+                    OutlinedTextFieldWithError(
+                        text = newIngredientText,
+                        onTextChanged = { onNewIngredientTextChanged(it) },
                         label = "Ingredient",
-                        onFocusChanged = { onDialogIngredientFocusChanged(it) }
+                        onFocusChanged = {
+                            // TODO: Add if necessary do the ingredient parse
+                            // onNewIngredientFocusChanged
+
+                        }
                     )
                 }
             },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        showNewIngredientDialog.value = false
-                        // TODO: Save new ingredient
-                        newFullIngredient.amountAndMeasure = newDialogAmountAndMeasure.value
-                        newFullIngredient.ingredient = newDialogIngredient.value
-                        saveIngredientClicked(newFullIngredient)
+                        onSaveNewIngredientClicked()
                     }
                 ) {
                     Text("Save")
@@ -139,7 +174,7 @@ fun IngredientsTabContent(
             dismissButton = {
                 TextButton(
                     onClick = {
-                        showNewIngredientDialog.value = false
+                        onToggleNewIngredientDialog()
                     }
                 ) {
                     Text("Cancel")
@@ -165,10 +200,22 @@ fun IngredientsTabContent(
                 items(ingredients) { ingredient ->
                     IngredientsChip(
                         ingredient = ingredient,
-                        focused = ingredient.focused,
-                        onChangeFocus = { onIngredientFocusChanged(it) },
-                        onSaveClicked = { saveIngredientClicked(it) },
-                        onDeleteClicked = { deleteIngredientClicked(it) },
+                        editAmountText = editAmountText,
+                        editMeasureText = editMeasureText,
+                        editIngredientText = editIngredientText,
+                        isFocused = ingredient.focused,
+                        showEditIngredientDialog = showEditIngredientDialog,
+                        showConfirmDeleteIngredientDialog = showConfirmDeleteIngredientDialog,
+                        onEditAmountTextChanged = { onEditAmountTextChanged(it) },
+                        onEditMeasureTextChanged = { onEditMeasureTextChanged(it) },
+                        onEditIngredientTextChanged = { onEditIngredientTextChanged(it) },
+                        onIngredientFocusChanged = { onIngredientFocusChanged(it) },
+                        onSaveIngredientClicked = { onSaveIngredientClicked() },
+                        onCancelEditIngredientClicked = { onCancelEditIngredientClicked() },
+                        onEditIngredientClicked = { onEditIngredientClicked(it) },
+                        onDeleteIngredientClicked = { onDeleteIngredientClicked(it) },
+                        onConfirmDeleteIngredientClicked = { onConfirmDeleteIngredientClicked() },
+                        onCancelConfirmDelete = { onCancelConfirmDelete() }
                     )
                 }
             }
@@ -176,7 +223,7 @@ fun IngredientsTabContent(
                 modifier = Modifier
                     .align(Alignment.End)
                     .padding(bottom = 15.dp, end = 15.dp),
-                onClick = { showNewIngredientDialog.value = true },
+                onClick = { onToggleNewIngredientDialog() },
                 shape = fabShape,
                 icon = { Icon(Icons.Filled.Add, "Add new ingredient") },
                 text = { Text(text = "New Ingredient") },

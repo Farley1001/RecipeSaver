@@ -34,43 +34,6 @@
           ]
         }
       }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:361106271665:android:8a51c57f62a0d7a6cd6190",
-        "android_client_info": {
-          "package_name": "com.farware.recipesaverapp"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "361106271665-qdllvm24b5poiqeduuu35g4iqcb2n89n.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.farware.recipesaverapp",
-            "certificate_hash": "bda27dc9ff4434a2ee3ae90218e2d836fc1c93b2"
-          }
-        },
-        {
-          "client_id": "361106271665-fcoutlca3gsiri8qmmo92kpglh237rn7.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyB8ZaTuyp50YHik1R0vf2riLYDMlnp9Rlo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "361106271665-fcoutlca3gsiri8qmmo92kpglh237rn7.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
     }
   ],
   "configuration_version": "1"

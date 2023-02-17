@@ -1,9 +1,7 @@
 package com.farware.recipesaver.feature_recipe.presentation.recipe.steps_tab
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,13 +20,11 @@ class StepsTabViewModel @Inject constructor(
     private val stepUseCases: StepUseCases,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
-    private val stateHandle  = mutableStateOf(SavedStateHandle)
-
     private var _state =  mutableStateOf(StepsTabState())
     val state: State<StepsTabState> = _state
 
     private var _newStep = mutableStateOf(Step.new())
-    val newStep: State<Step> = _newStep
+    private val newStep: State<Step> = _newStep
 
     private var getStepsJob: Job? = null
 
@@ -55,15 +51,107 @@ class StepsTabViewModel @Inject constructor(
                     stepsFocus = sf
                 )
             }
-            is StepsTabEvent.SaveStep -> {
+            is StepsTabEvent.DeleteStep -> {
+                var sf = state.value.stepsFocus
+                sf = sf.map { item ->
+                    if(item.step.stepId == event.step.step.stepId) {
+                        item.copy(
+                            focused = true
+                        )
+                    }
+                    else {
+                        item.copy(focused = false)
+                    }
+                }
+                _state.value = state.value.copy(
+                    showDeleteStepDialog = true,
+                    stepToDelete = event.step.step
+                )
+            }
+            is StepsTabEvent.CancelConfirmDeleteStep -> {
+                _state.value = state.value.copy(
+                    showDeleteStepDialog = false
+                )
+            }
+            is StepsTabEvent.ConfirmDeleteStep -> {
+                _state.value = state.value.copy(
+                    showDeleteStepDialog = false
+                )
                 viewModelScope.launch {
-                    stepUseCases.addStep(event.step)
+                    stepUseCases.deleteStep(state.value.stepToDelete)
                 }
             }
-            is StepsTabEvent.DeleteStep -> {
-                viewModelScope.launch {
-                    stepUseCases.deleteStep(event.step)
+            is StepsTabEvent.EditStep -> {
+                var sf = state.value.stepsFocus
+                sf = sf.map { item ->
+                    if(item.step.stepId == event.step.step.stepId) {
+                        item.copy(
+                            focused = true
+                        )
+                    }
+                    else {
+                        item.copy(focused = false)
+                    }
                 }
+                _state.value = state.value.copy(
+                    showEditStepDialog = true,
+                    stepsFocus = sf,
+                    editedStep = event.step.step,
+                    editStepText = event.step.step.text
+                )
+            }
+            is StepsTabEvent.EditStepTextChanged -> {
+                _state.value = state.value.copy(
+                    editStepText = event.stepText
+                )
+            }
+            is StepsTabEvent.SaveEditStep -> {
+                // update the step with edited text
+                var step = state.value.editedStep
+                step = step.copy(
+                    text = state.value.editStepText
+                )
+                // save the step
+                viewModelScope.launch {
+                    stepUseCases.addStep(step)
+                }
+                // hide the edit dialog
+                _state.value = _state.value.copy(
+                    showEditStepDialog = false,
+                    editStepText = ""
+                )
+            }
+            is StepsTabEvent.CancelEditStep -> {
+                _state.value = state.value.copy(
+                    showEditStepDialog = false,
+                    editStepText = ""
+                )
+            }
+            is StepsTabEvent.ToggleNewStepDialog -> {
+                _state.value = state.value.copy(
+                    showNewStepDialog = !state.value.showNewStepDialog,
+                    newStepText = ""
+                )
+            }
+            is StepsTabEvent.NewStepTextChanged -> {
+                _state.value = state.value.copy(
+                    newStepText = event.stepText
+                )
+            }
+            is StepsTabEvent.SaveNewStep -> {
+                _newStep.value = newStep.value.copy(
+                    text = state.value.newStepText
+                )
+                viewModelScope.launch {
+                    stepUseCases.addStep(newStep.value)
+                }
+                _newStep.value = newStep.value.copy(
+                    stepNumber = state.value.steps.size + 1,
+                )
+                _state.value = state.value.copy(
+                    showNewStepDialog = !state.value.showNewStepDialog,
+                    newStepText = ""
+                )
             }
         }
     }

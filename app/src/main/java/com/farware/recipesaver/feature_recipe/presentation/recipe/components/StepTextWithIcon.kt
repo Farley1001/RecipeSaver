@@ -14,6 +14,7 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Step
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.Tip
 import com.farware.recipesaver.feature_recipe.presentation.util.CustomDialogPosition
 import com.farware.recipesaver.feature_recipe.presentation.util.customDialogPosition
 
@@ -21,31 +22,25 @@ import com.farware.recipesaver.feature_recipe.presentation.util.customDialogPosi
 @Composable
 fun StepTextWithIcon(
     step: StepFocus,
-    focused: Boolean,
-    onChangeFocus: (StepFocus) -> Unit,
-    onSaveClicked: (Step) -> Unit,
-    onDeleteClicked: (Step) -> Unit,
+    editStepText: String,
+    isFocused: Boolean,
+    showEditStepDialog: Boolean,
+    showConfirmDeleteStepDialog: Boolean,
+    onStepTextChanged: (String) -> Unit,
+    onStepFocusChanged: (StepFocus) -> Unit,
+    onSaveStepClicked: () -> Unit,
+    onCancelEditStepClicked: () -> Unit,
+    onEditStepClicked: (StepFocus) -> Unit,
+    onDeleteStepClicked: (StepFocus) -> Unit,
+    onConfirmDeleteStepClicked: () -> Unit,
+    onCancelConfirmDelete: () -> Unit
 ) {
-    val text = remember { mutableStateOf("")}
-    val isFocused = remember { mutableStateOf(false)}
-    val isEditMode = remember { mutableStateOf(false)}
-    val openEditDialog = remember { mutableStateOf(true) }
-    val openConfirmDeleteDialog = remember { mutableStateOf(false) }
-    text.value = step.step.text
-
-    if(!focused) {
-        isFocused.value = false
-        isEditMode.value = false
-    } else {
-        isFocused.value = true
-    }
-
     Column(
         Modifier
             //.fillMaxSize()
             .wrapContentSize()
     ) {
-        if(isEditMode.value) {
+        if(showEditStepDialog) {
             AlertDialog(
                 modifier = Modifier
                     .customDialogPosition(CustomDialogPosition.TOP)
@@ -54,8 +49,7 @@ fun StepTextWithIcon(
                     // Dismiss the dialog when the user clicks outside the dialog or on the back
                     // button. If you want to disable that functionality, simply use an empty
                     // onDismissRequest.
-                    openEditDialog.value = false
-                    isEditMode.value = false
+                    onCancelEditStepClicked()
                 },
                 title = {
                     Text(text = "Edit Step")
@@ -63,26 +57,16 @@ fun StepTextWithIcon(
                 text = {
                     TextField(
                         modifier = Modifier.fillMaxHeight(0.5F),
-                        value = text.value,
+                        value = editStepText,
                         onValueChange = {
-                            text.value = it
-                            }
+                            onStepTextChanged(it)
+                        }
                     )
                 },
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            openEditDialog.value = false
-                            isEditMode.value = false
-                            step.copy(
-                                step = step.step.copy(
-                                    text = text.value
-                                )
-                            )
-                            onSaveClicked(step.step.copy(
-                                    text = text.value
-                                )
-                            )
+                            onSaveStepClicked()
                         }
                     ) {
                         Text("Save")
@@ -91,8 +75,7 @@ fun StepTextWithIcon(
                 dismissButton = {
                     TextButton(
                         onClick = {
-                            openEditDialog.value = false
-                            isEditMode.value = false
+                            onCancelEditStepClicked()
                         }
                     ) {
                         Text("Cancel")
@@ -101,13 +84,13 @@ fun StepTextWithIcon(
             )
         } else {
             TextWithAppendedContent(
-                text = step.step.text,
-                onTextClicked = { onChangeFocus(step) },
+                text = "${step.step.stepNumber}.  ${step.step.text}",
+                onTextClicked = { onStepFocusChanged(step) },
                 placeholderWidth = 84.sp,
                 placeholderHeight = 24.sp,
                 placeholderVertAlign = PlaceholderVerticalAlign.TextTop,
                 appendContent = {
-                    if(isFocused.value) {
+                    if(isFocused) {
                         Icon(
                             imageVector = Icons.Filled.Edit,
                             contentDescription = "Local Description",
@@ -115,7 +98,7 @@ fun StepTextWithIcon(
                             modifier = Modifier
                                 .size(24.dp)
                                 .clickable {
-                                    isEditMode.value = true
+                                    onEditStepClicked(step)
                                 }
                         )
                         Icon(
@@ -126,20 +109,19 @@ fun StepTextWithIcon(
                                 .padding(start = 30.dp)
                                 .size(24.dp)
                                 .clickable {
-                                    isFocused.value = false
-                                    openConfirmDeleteDialog.value = true
+                                    onDeleteStepClicked(step)
                                 }
                         )
                     }
                 }
             )
-            if(openConfirmDeleteDialog.value) {
+            if(showConfirmDeleteStepDialog) {
                 AlertDialog(
                     onDismissRequest = {
                         // Dismiss the dialog when the user clicks outside the dialog or on the back
                         // button. If you want to disable that functionality, simply use an empty
                         // onDismissRequest.
-                        openConfirmDeleteDialog.value = false
+                        onCancelConfirmDelete()
                     },
                     title = {
                         Text(text = "Confirm Delete Step")
@@ -150,8 +132,7 @@ fun StepTextWithIcon(
                     confirmButton = {
                         TextButton(
                             onClick = {
-                                openConfirmDeleteDialog.value = false
-                                onDeleteClicked(step.step)
+                                onConfirmDeleteStepClicked()
                             }
                         ) {
                             Text("Delete")
@@ -160,7 +141,7 @@ fun StepTextWithIcon(
                     dismissButton = {
                         TextButton(
                             onClick = {
-                                openConfirmDeleteDialog.value = false
+                                onCancelConfirmDelete()
                             }
                         ) {
                             Text("Cancel")

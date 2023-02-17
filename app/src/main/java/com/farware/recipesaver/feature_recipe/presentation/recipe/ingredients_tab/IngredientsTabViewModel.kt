@@ -19,7 +19,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,10 +43,10 @@ class IngredientsTabViewModel @Inject constructor(
     private var _recipeIngredientWithIngredient = mutableStateOf(RecipeIngredientWithIngredient(null, -1, -1, -1, "", "", "", "", ""))
     val recipeIngredientWithIngredient: State<RecipeIngredientWithIngredient> = _recipeIngredientWithIngredient
 
-    private var _newIngredient = mutableStateOf(FullRecipeIngredient.new())
-    val newIngredient: State<FullRecipeIngredient> = _newIngredient
+    private var _newFullRecipeIngredient = mutableStateOf(FullRecipeIngredient.new())
+    val newFullRecipeIngredient: State<FullRecipeIngredient> = _newFullRecipeIngredient
 
-    private var _newFullIngredient = mutableStateOf(IngredientFocus(newIngredient.value, "", "", false))
+    private var _newFullIngredient = mutableStateOf(IngredientFocus(newFullRecipeIngredient.value, "", "", false))
     val newFullIngredient: State<IngredientFocus> = _newFullIngredient
 
     private var getRecipeIngredientsJob: Job? = null
@@ -71,101 +70,236 @@ class IngredientsTabViewModel @Inject constructor(
         when (event) {
             is IngredientsTabEvent.IngredientFocusChanged -> {
                 // used to display the edit and delete icons on the ingredients chip
-                var sf = state.value.ingredientFocus
-                sf = sf.map { item ->
+                var mf = state.value.ingredientFocus
+                mf = mf.map { item ->
                     if(item.fullIngredient.ingredientId == event.ingredientFocus.fullIngredient.ingredientId)
                         item.copy(focused = true)
                     else
                         item.copy(focused = false)
                 }
                 _state.value = state.value.copy(
-                    ingredientFocus = sf
+                    ingredientFocus = mf
                 )
             }
-            is IngredientsTabEvent.SaveIngredient -> {
-                var saveNeeded = false
-                var newFull = event.ingredient.fullIngredient
-
-                // if something in amountAndMeasure it has changed
-                // split and save both parts
-                if (event.ingredient.amountAndMeasure != "") {
-                    var (amount, measure) = splitAmountAndMeasure(event.ingredient.amountAndMeasure.toString())
-                    // Capitalize each word in measure
-                    measure = measure.split(" ")
-                        .joinToString(" ") { it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() } }
-                    if(amount.lowercase() != event.ingredient.fullIngredient.amount.lowercase()) {
-                        newFull.amount = amount
-                        saveNeeded = true
-                    }
-                    if(measure.lowercase() != event.ingredient.fullIngredient.measure.lowercase()) {
-                        // TODO: check for measure in data and get id
-                        var found = findMeasureInMeasures(measure)
-                        if(found != null) {
-                            newFull.measureId = found.measureId!!
-                            newFull.measure = found.name
-                            saveNeeded = true
-                        } else {
-                            //  or insert new measure and get the id
-                            val id = addNewMeasure(measure)
-                            //  add the measureId to newFull
-                            if(id > 0) {
-                                newFull.measureId = id
-                                newFull.measure = measure
-                                saveNeeded = true
-                                // TODO: display new measure added on snackbar
-                                _state.value = state.value.copy(
-                                    message = "A new Measure - $measure has been added.",
-                                    showSnackbar = true
-                                )
-                            }
-                        }
-                    }
-                }
-                if(event.ingredient.fullIngredient.ingredient != event.ingredient.ingredient) {
-                    var ingredient = event.ingredient.ingredient!!.split(" ")
-                        .joinToString(" ") { it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() } }
-                    // TODO: check for ingredient in data and get id
-                    var found = findIngredientInIngredients(ingredient)
-                    if(found != null) {
-                        newFull.ingredientId = found.ingredientId!!
-                        newFull.ingredient = found.name
-                        saveNeeded = true
-                        // TODO: display modified ingredient on snackbar
-                        _state.value = state.value.copy(
-                            message = "$ingredient has been changed to ${found.name}.",
-                            showSnackbar = true
+            is IngredientsTabEvent.DeleteIngredient -> {
+                var mf = state.value.ingredientFocus
+                mf = mf.map { item ->
+                    if(item.fullIngredient.ingredientId == event.ingredient.fullIngredient.ingredientId) {
+                        item.copy(
+                            focused = true
                         )
-                    } else {
-                        //  or insert new ingredient and get the id
-                        val id = addNewIngredient(ingredient)
-                        //  add the ingredientId to newFull
-                        if(id > 0) {
-                            newFull.ingredientId = id
-                            newFull.ingredient = ingredient
-                            saveNeeded = true
-                            // TODO: display new measure added on snackbar
-                            _state.value = state.value.copy(
-                                message = "A new Ingredient - $ingredient has been added.",
-                                showSnackbar = true
-                            )
-                        }
+                    }
+                    else {
+                        item.copy(focused = false)
                     }
                 }
 
-                //  if amount, measure or ingredient has changed then save the recipe
-                if(saveNeeded) {
-                    viewModelScope.launch {
-                        recipeIngredientUseCases.addRecipeIngredient(newFull.toRecipeIngredient())
-                    }
+                _state.value = state.value.copy(
+                    showDeleteIngredientDialog = true,
+                    ingredientToDelete = event.ingredient.fullIngredient
+                )
+            }
+            is IngredientsTabEvent.CancelConfirmDeleteIngredient -> {
+                _state.value = state.value.copy(
+                    showDeleteIngredientDialog = false
+                )
+            }
+            is IngredientsTabEvent.ConfirmDeleteIngredient -> {
+                _state.value = state.value.copy(
+                    showDeleteIngredientDialog = false
+                )
+                viewModelScope.launch {
+                    recipeIngredientUseCases.deleteRecipeIngredient(state.value.ingredientToDelete.toRecipeIngredient())
                 }
             }
-            is IngredientsTabEvent.DeleteIngredient -> {
-                viewModelScope.launch {
-                    recipeIngredientUseCases.deleteRecipeIngredient(event.ingredient.toRecipeIngredient())
+            is IngredientsTabEvent.EditIngredient -> {
+                var mf = state.value.ingredientFocus
+                mf = mf.map { item ->
+                    if(item.fullIngredient.ingredientId == event.ingredient.fullIngredient.ingredientId) {
+                        item.copy(
+                            focused = true
+                        )
+                    }
+                    else {
+                        item.copy(focused = false)
+                    }
                 }
+                _state.value = state.value.copy(
+                    showEditIngredientDialog = true,
+                    ingredientFocus = mf,
+                    editedIngredient = event.ingredient.fullIngredient,
+                    editIngredientText = event.ingredient.fullIngredient.ingredient,
+                    editAmountText = event.ingredient.fullIngredient.amount,
+                    editMeasureText = event.ingredient.fullIngredient.measure
+                )
+            }
+            is IngredientsTabEvent.EditAmountTextChanged -> {
+                _state.value = state.value.copy(
+                    editAmountText = event.amountText
+                )
+            }
+            is IngredientsTabEvent.EditMeasureTextChanged -> {
+                _state.value = state.value.copy(
+                    editMeasureText = event.measureText
+                )
+            }
+            is IngredientsTabEvent.EditIngredientTextChanged -> {
+                _state.value = state.value.copy(
+                    editIngredientText = event.ingredientText
+                )
+            }
+            is IngredientsTabEvent.SaveEditIngredient -> {
+                var saveNeeded = false
+                var newFull = event.toString()  //TODO: Replace no event parm passed
+
+                // TODO: Parse the edited fields and fill in ids
+                //CheckForChanges()
+
+                // TODO: update the ingredient with edited text
+
+                // TODO: save the ingredient
+
+                // hide the edit dialog and clear
+                _state.value = _state.value.copy(
+                    showEditIngredientDialog =  false,
+                    editAmountText = "",
+                    editMeasureText = "",
+                    editIngredientText = ""
+                )
+            }
+            is IngredientsTabEvent.CancelEditIngredient -> {
+                _state.value = state.value.copy(
+                    showEditIngredientDialog = false,
+                    editAmountText = "",
+                    editMeasureText = "",
+                    editIngredientText = ""
+                )
+            }
+            is IngredientsTabEvent.ToggleNewIngredientDialog -> {
+                _state.value = state.value.copy(
+                    showNewIngredientDialog = !state.value.showNewIngredientDialog,
+                    newAmountText = "",
+                    newMeasureText = "",
+                    newIngredientText = ""
+                )
+            }
+            is IngredientsTabEvent.NewAmountTextChanged -> {
+                _state.value = state.value.copy(
+                    newAmountText = event.amountText
+                )
+            }
+            is IngredientsTabEvent.NewMeasureTextChanged -> {
+                _state.value = state.value.copy(
+                    newMeasureText = event.measureText
+                )
+            }
+            is IngredientsTabEvent.NewIngredientTextChanged -> {
+                _state.value = state.value.copy(
+                    newIngredientText = event.ingredientText
+                )
+            }
+            is IngredientsTabEvent.SaveNewIngredient -> {
+                // TODO: split amount and measure
+                // TODO: update amount with new text
+                // TODO: update measure with new text
+                // TODO: update ingredient with new text
+                _newFullRecipeIngredient.value = newFullRecipeIngredient.value.copy(
+                    // TODO change this to use the tables in the relation
+                )
+                // TODO: save the new ingredient
+                viewModelScope.launch {
+                    //ingredientUseCases.insertIngredientReturnId
+                }
+                // TODO: update for the next newIngredient
+                _newFullRecipeIngredient.value = newFullRecipeIngredient.value.copy(
+                    // TODO change this to use the tables in the relation
+                )
+                // close the dialog and clear state
+                _state.value = state.value.copy(
+                    showNewIngredientDialog = !state.value.showNewIngredientDialog,
+                    newAmountText = "",
+                    newMeasureText = "",
+                    newIngredientText = ""
+                )
             }
         }
     }
+
+/*
+    private fun CheckForChanges() {
+        // if something in amountAndMeasure it has changed
+        // split and save both parts
+        if (event.ingredient.amountAndMeasure != "") {
+            var (amount, measure) = splitAmountAndMeasure(event.ingredient.amountAndMeasure.toString())
+            // Capitalize each word in measure
+            measure = measure.split(" ")
+                .joinToString(" ") { it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() } }
+            if(amount.lowercase() != event.ingredient.fullIngredient.amount.lowercase()) {
+                newFull.amount = amount
+                saveNeeded = true
+            }
+            if(measure.lowercase() != event.ingredient.fullIngredient.measure.lowercase()) {
+                // TODO: check for measure in data and get id
+                var found = findMeasureInMeasures(measure)
+                if(found != null) {
+                    newFull.measureId = found.measureId!!
+                    newFull.measure = found.name
+                    saveNeeded = true
+                } else {
+                    //  or insert new measure and get the id
+                    val id = addNewMeasure(measure)
+                    //  add the measureId to newFull
+                    if(id > 0) {
+                        newFull.measureId = id
+                        newFull.measure = measure
+                        saveNeeded = true
+                        // TODO: display new measure added on snackbar
+                        _state.value = state.value.copy(
+                            message = "A new Measure - $measure has been added.",
+                            showSnackbar = true
+                        )
+                    }
+                }
+            }
+        }
+        if(event.ingredient.fullIngredient.ingredient != event.ingredient.ingredient) {
+            var ingredient = event.ingredient.ingredient!!.split(" ")
+                .joinToString(" ") { it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() } }
+            // TODO: check for ingredient in data and get id
+            var found = findIngredientInIngredients(ingredient)
+            if(found != null) {
+                newFull.ingredientId = found.ingredientId!!
+                newFull.ingredient = found.name
+                saveNeeded = true
+                // TODO: display modified ingredient on snackbar
+                _state.value = state.value.copy(
+                    message = "$ingredient has been changed to ${found.name}.",
+                    showSnackbar = true
+                )
+            } else {
+                //  or insert new ingredient and get the id
+                val id = addNewIngredient(ingredient)
+                //  add the ingredientId to newFull
+                if(id > 0) {
+                    newFull.ingredientId = id
+                    newFull.ingredient = ingredient
+                    saveNeeded = true
+                    // TODO: display new measure added on snackbar
+                    _state.value = state.value.copy(
+                        message = "A new Ingredient - $ingredient has been added.",
+                        showSnackbar = true
+                    )
+                }
+            }
+        }
+        //  if amount, measure or ingredient has changed then save the recipe
+        if(saveNeeded) {
+            viewModelScope.launch {
+                recipeIngredientUseCases.addRecipeIngredient(newFull.toRecipeIngredient())
+            }
+        }
+    }
+    */
 
     private fun splitAmountAndMeasure(amountAndMeasure: String) : Pair<String, String> {
         var amount: String = ""
@@ -201,12 +335,12 @@ class IngredientsTabViewModel @Inject constructor(
                     ingredientFocus = ifList
                 )
 
-                _newIngredient.value = newIngredient.value.copy(
-                    recipeId = recipeId
+                _newFullRecipeIngredient.value = newFullRecipeIngredient.value.copy(
+                    recipeId = recipeId,
                 )
 
                 _newFullIngredient.value = newFullIngredient.value.copy(
-                    fullIngredient = newIngredient.value,
+                    fullIngredient = newFullRecipeIngredient.value,
                     amountAndMeasure = "",
                     ingredient = "",
                     focused = false

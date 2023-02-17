@@ -13,7 +13,7 @@ data class Tip(
                 tipId = null,
                 recipeId = -1L,
                 tipNumber = -1,
-                imagePath = "",
+                imagePath = null,
                 text = ""
             )
         }
