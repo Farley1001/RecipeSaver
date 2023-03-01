@@ -7,7 +7,7 @@ import com.farware.recipesaver.feature_recipe.domain.model.recipe.Conversion
 @Entity(tableName = "conversion_table")
 data class ConversionEntity(
     @PrimaryKey(autoGenerate = true)
-    val conversionId: Int,
+    val conversionId: Long,
     val name: String,
     val shortName: String,
     val size: Float,

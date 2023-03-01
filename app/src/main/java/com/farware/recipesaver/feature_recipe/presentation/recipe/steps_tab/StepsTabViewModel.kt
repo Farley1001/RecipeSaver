@@ -34,6 +34,11 @@ class StepsTabViewModel @Inject constructor(
                 getSteps(recipeId)
             }
         }
+        savedStateHandle.get<Long>("newId")?.let { newId ->
+            if (newId != -1L) {
+
+            }
+        }
 
     }
 

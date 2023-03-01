@@ -114,32 +114,19 @@ fun TipTextWithIcon(
             )
             if(showConfirmDeleteTipDialog) {
                 AlertDialog(
-                    onDismissRequest = {
-                        // Dismiss the dialog when the user clicks outside the dialog or on the back
-                        // button. If you want to disable that functionality, simply use an empty
-                        // onDismissRequest.
-                        onCancelConfirmDelete()
-                    },
-                    title = {
-                        Text(text = "Confirm Delete Tip")
-                    },
-                    text = {
-                        Text(text = "Are you sure you want to delete this tip?")
-                    },
+                    onDismissRequest = { onCancelConfirmDelete() },
+                    title = { Text(text = "Confirm Delete Tip") },
+                    text = { Text(text = "Are you sure you want to delete this tip?") },
                     confirmButton = {
                         TextButton(
-                            onClick = {
-                                onConfirmDeleteTipClicked()
-                            }
+                            onClick = { onConfirmDeleteTipClicked() }
                         ) {
                             Text("Delete")
                         }
                     },
                     dismissButton = {
                         TextButton(
-                            onClick = {
-                                onCancelConfirmDelete()
-                            }
+                            onClick = { onCancelConfirmDelete() }
                         ) {
                             Text("Cancel")
                         }

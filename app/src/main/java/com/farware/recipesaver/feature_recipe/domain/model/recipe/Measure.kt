@@ -1,16 +1,14 @@
 package com.farware.recipesaver.feature_recipe.domain.model.recipe
 
 data class Measure(
-    val measureId: Int? = null,
-    val name: String,
-    val shortName: String
+    val measureId: Long? = null,
+    val name: String
 ){
     companion object {
         fun new(): Measure {
             return Measure(
                 measureId = null,
-                name = "",
-                shortName = ""
+                name = ""
             )
         }
     }

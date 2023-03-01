@@ -89,39 +89,29 @@ class RecipeViewModel @Inject constructor(
                 recipeId ->
             if(recipeId != -1L) {
                 getRecipe(recipeId)
-                /*viewModelScope.launch {
-                    recipeUseCases.getRecipe(recipeId)?.also { recipe ->
-                        currentRecipeId = recipe.recipe.recipeId
-
-                        _recipe.value = recipe
-
-                        _name.value = recipe.recipe.name
-
-                        _categoryName.value = recipe.category.category.name
-
-                        _prepTime.value = recipe.recipe.prepTime!!
-
-                        _cookTime.value = recipe.recipe.cookTime!!
-
-                        _favorite.value = recipe.recipe.favorite!!
-
-                        // set the initial selected value
-                        _state.value = state.value.copy(
-                            selectedCategoryIndex = state.value.categories.indexOfFirst{
-                                it.category.categoryId == recipe.recipe.categoryId
-                            }
-                        )
-
-                    }
-                }*/
             } else {
-
-                // TODO"  open dialog to enter recipe name and category
+                // TODO"  open dialog to enter recipe name, description and category
                 currentRecipeId = recipeId
 
                 _recipe.value = newRecipe
+                _recipe.value = recipe.value?.copy(
+                    name = "New Recipe",
+                    description = "This is a new recipe to test adding a new recipe."
+                    )
+                _name.value = recipe.value?.name ?: ""
+
+                _state.value = state.value.copy(
+                    isNewRecipe = false
+                )
             }
         }
+        savedStateHandle[" newId"] = 100L
+        savedStateHandle.get<Long>("newId")?.let {
+            _state.value = state.value.copy(
+                newRecipeId = it
+            )
+        }
+        val lng = state.value.newRecipeId
     }
 
     fun onEvent(event: RecipeEvent) {
@@ -175,7 +165,8 @@ class RecipeViewModel @Inject constructor(
                     saveRecipe(saveRecipe.toRecipe())
                 }
             }
-            is RecipeEvent.SaveCookTime -> {
+            is RecipeEvent.SaveCookTime
+            -> {
                 // update the cook time field
                 _cookTime.value = event.cookTime
 

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "24ef29146f6bd5273db3ffa34a70637e",
+    "identityHash": "d235bd3a31e867a0cbd36bf796a154a9",
     "entities": [
       {
         "tableName": "recipe_table",
@@ -64,10 +64,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "recipeId"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [
           {
@@ -133,10 +133,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "categoryId"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [
           {
@@ -211,10 +211,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "categoryColorId"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -279,10 +279,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "conversionId"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -311,10 +311,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "ingredientId"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [
           {
@@ -331,7 +331,7 @@
       },
       {
         "tableName": "measure_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`measureId` INTEGER, `name` TEXT NOT NULL, `shortName` TEXT NOT NULL, PRIMARY KEY(`measureId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`measureId` INTEGER, `name` TEXT NOT NULL, PRIMARY KEY(`measureId`))",
         "fields": [
           {
             "fieldPath": "measureId",
@@ -344,19 +344,13 @@
             "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
-          },
-          {
-            "fieldPath": "shortName",
-            "columnName": "shortName",
-            "affinity": "TEXT",
-            "notNull": true
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "measureId"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [
           {
@@ -419,10 +413,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "recipeIngredientId"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [
           {
@@ -525,10 +519,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "stepId"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [
           {
@@ -591,10 +585,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
             "tipId"
-          ],
-          "autoGenerate": true
+          ]
         },
         "indices": [
           {
@@ -625,7 +619,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '24ef29146f6bd5273db3ffa34a70637e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd235bd3a31e867a0cbd36bf796a154a9')"
     ]
   }
 }

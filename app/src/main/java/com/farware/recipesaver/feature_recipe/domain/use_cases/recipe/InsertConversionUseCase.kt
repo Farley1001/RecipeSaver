@@ -16,7 +16,7 @@ class InsertConversionUseCase @Inject constructor(
         if(conversion.shortName.isBlank()) {
             throw InvalidConversionException("The short Name of the measure can't be empty.")
         }
-        if(conversion.conversionId == -1) {
+        if(conversion.conversionId == -1L) {
             throw InvalidConversionException("The conversionId has not been set.")
         }
         if(conversion.sizeText.isBlank()) {

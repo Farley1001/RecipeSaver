@@ -17,16 +17,14 @@ import com.farware.recipesaver.feature_recipe.domain.model.recipe.Measure
 )
 data class MeasureEntity(
     @PrimaryKey(autoGenerate = false)
-    val measureId: Int? = null,
-    val name: String,
-    val shortName: String
+    val measureId: Long? = null,
+    val name: String
 ){
     companion object {
         fun from(measure: Measure): MeasureEntity {
             return MeasureEntity(
                 measure.measureId,
-                measure.name,
-                measure.shortName
+                measure.name
             )
         }
     }
@@ -36,8 +34,7 @@ data class MeasureEntity(
     fun toMeasure(): Measure {
         return Measure(
             measureId,
-            name,
-            shortName
+            name
         )
     }
     /**

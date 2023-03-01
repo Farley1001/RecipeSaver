@@ -14,11 +14,12 @@ import com.farware.recipesaver.feature_recipe.domain.use_cases.IngredientUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.MeasureUseCases
 import com.farware.recipesaver.feature_recipe.domain.use_cases.RecipeIngredientUseCases
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.IngredientFocus
+import com.farware.recipesaver.feature_recipe.presentation.recipe.components.MatchTo
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
+import java.util.Locale.filter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,7 +32,7 @@ class IngredientsTabViewModel @Inject constructor(
     private var _state =  mutableStateOf(IngredientsTabState())
     val state: State<IngredientsTabState> = _state
 
-    private var _measure = mutableStateOf(Measure(null, "", ""))
+    private var _measure = mutableStateOf(Measure(-1, ""))
     val measure: State<Measure> = _measure
 
     private var _ingredient = mutableStateOf(Ingredient(-1, "", ""))
@@ -64,6 +65,8 @@ class IngredientsTabViewModel @Inject constructor(
         getMeasures()
         // get all ingredients to match for any changes and adds
         getIngredients()
+
+
     }
 
     fun onEvent(event: IngredientsTabEvent) {
@@ -142,24 +145,104 @@ class IngredientsTabViewModel @Inject constructor(
                 _state.value = state.value.copy(
                     editMeasureText = event.measureText
                 )
+
+                var dropdownOptions: List<MatchTo> = emptyList()
+
+                if(event.measureText != "") {
+
+                    dropdownOptions = state.value.measures.filter {
+                        (it.name.lowercase().startsWith(event.measureText, true) || it.name.contains(event.measureText, true)) && it.name.lowercase() != event.measureText.lowercase()
+                    }.take(8).map { MatchTo(it.measureId?.toLong(), "Measure", it.name) }
+                }
+
+                _state.value = state.value.copy(
+                    showMeasureDropdown = dropdownOptions.isNotEmpty(),
+                    measureDropdownList = dropdownOptions
+                )
             }
             is IngredientsTabEvent.EditIngredientTextChanged -> {
                 _state.value = state.value.copy(
                     editIngredientText = event.ingredientText
                 )
+
+                val dropdownOptions: List<MatchTo> = if(event.ingredientText == "") {
+                    emptyList()
+                } else {
+                    state.value.allIngredients.filter {
+                        (it.name.lowercase().startsWith(event.ingredientText, true) || it.name.contains(event.ingredientText, true)) && it.name.lowercase() != event.ingredientText.lowercase()
+                    }.take(8).map { MatchTo(it.ingredientId?.toLong(), "Ingredient", it.name) }
+                }
+
+                _state.value = state.value.copy(
+                    showIngredientDropdown = dropdownOptions.isNotEmpty(),
+                    ingredientDropdownList = dropdownOptions
+                )
             }
             is IngredientsTabEvent.SaveEditIngredient -> {
-                var saveNeeded = false
-                var newFull = event.toString()  //TODO: Replace no event parm passed
+                // save the edit amount
+                _state.value = state.value.copy(
+                    editedIngredient = _state.value.editedIngredient.copy(
+                        amount = state.value.editAmountText
+                    )
+                )
 
-                // TODO: Parse the edited fields and fill in ids
-                //CheckForChanges()
+                // save the edit measure
+                if(state.value.measures.filter { it.name.startsWith(state.value.editMeasureText, true) }.isNotEmpty()) {
+                    val editMeasure = state.value.measures.first {
+                        it.name.startsWith(
+                            state.value.editMeasureText,
+                            true
+                        )
+                    }
+                    if(state.value.editedIngredient.measureId != editMeasure.measureId) {
+                        // save if different from measure for consistency
+                        _state.value = state.value.copy(
+                            editedIngredient = _state.value.editedIngredient.copy(
+                                measureId = editMeasure.measureId!!,
+                                measure = editMeasure.name
+                            )
+                        )
+                    }
+                } else if(state.value.editMeasureText != "") {
+                    viewModelScope.launch {
+                        // if new measure insert the new measure
+                        addNewMeasure(state.value.editMeasureText.lowercase().split(" ").joinToString(" ") { it.replaceFirstChar(Char::uppercaseChar) }, "Edit")
+                    }
+                }
 
-                // TODO: update the ingredient with edited text
+                // save the edit ingredient
+                if(state.value.allIngredients.filter { it.name.startsWith(state.value.editIngredientText, true) }.isNotEmpty()) {
+                    val editIngredient = state.value.allIngredients.first {
+                        it.name.startsWith(
+                            state.value.editIngredientText,
+                            true
+                        )
+                    }
+                    if(state.value.editedIngredient.ingredientId != editIngredient.ingredientId) {
+                        // save from Ingredient for consistency
+                        _state.value = state.value.copy(
+                            editedIngredient = _state.value.editedIngredient.copy(
+                                ingredientId = editIngredient.ingredientId!!,
+                                ingredient = editIngredient.name
+                            )
+                        )
+                    }
+                } else {
+                    viewModelScope.launch {
+                        // if new ingredient insert the new ingredient
+                        addNewIngredient(state.value.editIngredientText.lowercase().split(" ").joinToString(" ") { it.replaceFirstChar(Char::uppercaseChar) }, "Edit")
+                    }
+                }
 
-                // TODO: save the ingredient
+                // save the edited recipe ingredient
+                if(state.value.editedIngredient.ingredientId > 0) {
+                    viewModelScope.launch {
+                        // save the new recipe
+                        recipeIngredientUseCases.addRecipeIngredient(state.value.editedIngredient.toRecipeIngredient())
+                    }
+                }
 
-                // hide the edit dialog and clear
+                // close the dialog and clear the state
                 _state.value = _state.value.copy(
                     showEditIngredientDialog =  false,
                     editAmountText = "",
@@ -192,28 +275,105 @@ class IngredientsTabViewModel @Inject constructor(
                 _state.value = state.value.copy(
                     newMeasureText = event.measureText
                 )
+
+                var dropdownOptions: List<MatchTo> = emptyList()
+
+                if(event.measureText != "") {
+
+                    dropdownOptions = state.value.measures.filter {
+                        (it.name.lowercase().startsWith(event.measureText, true) || it.name.contains(event.measureText, true)) && it.name.lowercase() != event.measureText.lowercase()
+                    }.take(8).map { MatchTo(it.measureId?.toLong(), "Measure", it.name) }
+                }
+
+                _state.value = state.value.copy(
+                    showMeasureDropdown = dropdownOptions.isNotEmpty(),
+                    measureDropdownList = dropdownOptions
+                )
             }
             is IngredientsTabEvent.NewIngredientTextChanged -> {
                 _state.value = state.value.copy(
                     newIngredientText = event.ingredientText
                 )
+
+                val dropdownOptions: List<MatchTo> = if(event.ingredientText == "") {
+                    emptyList()
+                } else {
+                    state.value.allIngredients.filter {
+                        (it.name.lowercase().startsWith(event.ingredientText, true) || it.name.contains(event.ingredientText, true)) && it.name.lowercase() != event.ingredientText.lowercase()
+                    }.take(8).map { MatchTo(it.ingredientId?.toLong(), "Ingredient", it.name) }
+                }
+
+                _state.value = state.value.copy(
+                    showIngredientDropdown = dropdownOptions.isNotEmpty(),
+                    ingredientDropdownList = dropdownOptions
+                )
             }
             is IngredientsTabEvent.SaveNewIngredient -> {
-                // TODO: split amount and measure
-                // TODO: update amount with new text
-                // TODO: update measure with new text
-                // TODO: update ingredient with new text
+
+                // save the new amount
                 _newFullRecipeIngredient.value = newFullRecipeIngredient.value.copy(
-                    // TODO change this to use the tables in the relation
+                    amount = state.value.newAmountText
                 )
-                // TODO: save the new ingredient
-                viewModelScope.launch {
-                    //ingredientUseCases.insertIngredientReturnId
+
+                // save the new measure
+                if(state.value.newMeasureText != "") {
+                    if (state.value.measures.filter {
+                            it.name.startsWith(
+                                state.value.newMeasureText,
+                                true
+                            )
+                        }.isNotEmpty()) {
+                        val newMeasure = state.value.measures.first {
+                            it.name.startsWith(
+                                state.value.newMeasureText,
+                                true
+                            )
+                        }
+                        // save from measure for consistency
+                        _newFullRecipeIngredient.value = newFullRecipeIngredient.value.copy(
+                            measureId = newMeasure.measureId!!,
+                            measure = newMeasure.name
+                        )
+                    } else {
+                        viewModelScope.launch {
+                            // if new measure insert the new measure
+                            addNewMeasure(
+                                state.value.newMeasureText.lowercase().split(" ")
+                                    .joinToString(" ") { it.replaceFirstChar(Char::uppercaseChar) },
+                                "New"
+                            )
+                        }
+
+                    }
                 }
-                // TODO: update for the next newIngredient
-                _newFullRecipeIngredient.value = newFullRecipeIngredient.value.copy(
-                    // TODO change this to use the tables in the relation
-                )
+                // save the new ingredient
+                if(state.value.allIngredients.filter { it.name.startsWith(state.value.newIngredientText, true) }.isNotEmpty()) {
+                    val newIngredient = state.value.allIngredients.first {
+                        it.name.startsWith(
+                            state.value.newIngredientText,
+                            true
+                        )
+                    }
+                    // save from Ingredient for consistency
+                    _newFullRecipeIngredient.value = newFullRecipeIngredient.value.copy(
+                        ingredientId = newIngredient.ingredientId!!,
+                        ingredient = newIngredient.name
+                    )
+                } else {
+                    viewModelScope.launch {
+                        // if new ingredient insert the new ingredient
+                        addNewIngredient(state.value.newIngredientText.lowercase().split(" ").joinToString(" ") { it.replaceFirstChar(Char::uppercaseChar) }, "New")
+                    }
+                }
+
+                // save the new recipe ingredient
+                if(newFullRecipeIngredient.value.ingredientId > 0) {
+                    viewModelScope.launch {
+                        // save the new recipe
+                        recipeIngredientUseCases.addRecipeIngredient(newFullRecipeIngredient.value.toRecipeIngredient())
+                    }
+                }
+
                 // close the dialog and clear state
                 _state.value = state.value.copy(
                     showNewIngredientDialog = !state.value.showNewIngredientDialog,
@@ -222,99 +382,41 @@ class IngredientsTabViewModel @Inject constructor(
                     newIngredientText = ""
                 )
             }
-        }
-    }
-
-/*
-    private fun CheckForChanges() {
-        // if something in amountAndMeasure it has changed
-        // split and save both parts
-        if (event.ingredient.amountAndMeasure != "") {
-            var (amount, measure) = splitAmountAndMeasure(event.ingredient.amountAndMeasure.toString())
-            // Capitalize each word in measure
-            measure = measure.split(" ")
-                .joinToString(" ") { it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() } }
-            if(amount.lowercase() != event.ingredient.fullIngredient.amount.lowercase()) {
-                newFull.amount = amount
-                saveNeeded = true
-            }
-            if(measure.lowercase() != event.ingredient.fullIngredient.measure.lowercase()) {
-                // TODO: check for measure in data and get id
-                var found = findMeasureInMeasures(measure)
-                if(found != null) {
-                    newFull.measureId = found.measureId!!
-                    newFull.measure = found.name
-                    saveNeeded = true
-                } else {
-                    //  or insert new measure and get the id
-                    val id = addNewMeasure(measure)
-                    //  add the measureId to newFull
-                    if(id > 0) {
-                        newFull.measureId = id
-                        newFull.measure = measure
-                        saveNeeded = true
-                        // TODO: display new measure added on snackbar
-                        _state.value = state.value.copy(
-                            message = "A new Measure - $measure has been added.",
-                            showSnackbar = true
-                        )
-                    }
-                }
-            }
-        }
-        if(event.ingredient.fullIngredient.ingredient != event.ingredient.ingredient) {
-            var ingredient = event.ingredient.ingredient!!.split(" ")
-                .joinToString(" ") { it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() } }
-            // TODO: check for ingredient in data and get id
-            var found = findIngredientInIngredients(ingredient)
-            if(found != null) {
-                newFull.ingredientId = found.ingredientId!!
-                newFull.ingredient = found.name
-                saveNeeded = true
-                // TODO: display modified ingredient on snackbar
-                _state.value = state.value.copy(
-                    message = "$ingredient has been changed to ${found.name}.",
-                    showSnackbar = true
-                )
-            } else {
-                //  or insert new ingredient and get the id
-                val id = addNewIngredient(ingredient)
-                //  add the ingredientId to newFull
-                if(id > 0) {
-                    newFull.ingredientId = id
-                    newFull.ingredient = ingredient
-                    saveNeeded = true
-                    // TODO: display new measure added on snackbar
+            is IngredientsTabEvent.SetMeasureTextFromDropdown -> {
+                if(state.value.showEditIngredientDialog) {
                     _state.value = state.value.copy(
-                        message = "A new Ingredient - $ingredient has been added.",
-                        showSnackbar = true
+                        editMeasureText = event.measureText,
+                        showMeasureDropdown = false
+                    )
+                }
+                if(state.value.showNewIngredientDialog) {
+                    _state.value = state.value.copy(
+                        newMeasureText = event.measureText,
+                        showMeasureDropdown = false
                     )
                 }
             }
-        }
-        //  if amount, measure or ingredient has changed then save the recipe
-        if(saveNeeded) {
-            viewModelScope.launch {
-                recipeIngredientUseCases.addRecipeIngredient(newFull.toRecipeIngredient())
+            is IngredientsTabEvent.SetIngredientTextFromDropdown -> {
+                if(state.value.showEditIngredientDialog) {
+                    _state.value = state.value.copy(
+                        editIngredientText = event.ingredientText,
+                        showIngredientDropdown = false
+                    )
+                }
+                if(state.value.showNewIngredientDialog) {
+                    _state.value = state.value.copy(
+                        newIngredientText = event.ingredientText,
+                        showIngredientDropdown = false
+                    )
+                }
+            }
+            is IngredientsTabEvent.DismissAllDropdowns -> {
+                _state.value = state.value.copy(
+                    showMeasureDropdown = false,
+                    showIngredientDropdown = false
+                )
             }
         }
-    }
-    */
-
-    private fun splitAmountAndMeasure(amountAndMeasure: String) : Pair<String, String> {
-        var amount: String = ""
-        var measure: String = ""
-
-        // using simple for-loop
-        for (i in amountAndMeasure.length - 1 downTo 0) {
-            if(amountAndMeasure[i] == ' ') {
-                amount = amountAndMeasure.substring(0, i)
-                measure = amountAndMeasure.substring(i+1)
-                break
-            }
-        }
-
-        return Pair(amount, measure)
     }
 
     private fun getRecipeIngredients(recipeId: Long) {
@@ -360,33 +462,20 @@ class IngredientsTabViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
     }
-
+/*
     private fun findMeasureInMeasures(newMeasure:String): Measure? {
         // search measure name for match
         var x = state.value.measures.filter { it.name.lowercase().startsWith(newMeasure.trimEnd('s').lowercase()) }
         if(x.isEmpty()) {
             // search short name for match
-            x = state.value.measures.filter { it.shortName.lowercase().startsWith(newMeasure.trimEnd('s').lowercase()) }
+            x = state.value.measures.filter { it.name.lowercase().startsWith(newMeasure.trimEnd('s').lowercase()) }
         }
         if(x.isNotEmpty()) {
             // return the first found
             return x[0]
         }
         return null
-    }
-
-    private fun addNewMeasure(measure: String): Int {
-        val newMeasure = Measure(
-            measureId = null,
-            name = measure,
-            shortName = measure
-        )
-        var id = -1
-        viewModelScope.launch {
-            id = measureUseCases.insertMeasureReturnId(newMeasure).toInt()
-        }
-        return id
-    }
+    }*/
 
     private fun getIngredients() {
         getIngredientsJob?.cancel()
@@ -398,27 +487,86 @@ class IngredientsTabViewModel @Inject constructor(
             }
             .launchIn(viewModelScope)
     }
+/*
 
     private fun findIngredientInIngredients(newIngredient: String): Ingredient? {
         // search ingredient name for match
-        var x = state.value.allIngredients.filter { it.name.lowercase().startsWith(newIngredient.lowercase()) }
+        val x = state.value.allIngredients.filter { it.name.lowercase().startsWith(newIngredient.lowercase()) }
         if(x.isNotEmpty()) {
             // return the first found
             return x[0]
         }
         return null
     }
+*/
 
-    private fun addNewIngredient(ingredient: String): Long {
-        val newIngredient = Ingredient(
-            ingredientId = null,
-            name = ingredient,
-            type = "Added Ingredient"
-        )
+    private fun addNewMeasure(measureText: String, type: String) {
         var id = -1L
-        viewModelScope.launch {
-            id = ingredientUseCases.insertIngredientReturnId(newIngredient)
+        CoroutineScope(Dispatchers.IO).launch {
+            val newMeasure = Measure(
+                measureId = null,
+                name = measureText
+            )
+            id = measureUseCases.insertMeasureReturnId(newMeasure)
+            if (id > 0 && type == "New") {
+                _newFullRecipeIngredient.value = newFullRecipeIngredient.value.copy(
+                    measureId = id,
+                    measure =  measureText
+                )
+                // ok to check for measureId here as a new measure was just added
+                if (newFullRecipeIngredient.value.measureId > 0 && newFullRecipeIngredient.value.ingredientId > 0) {
+                    // save the new recipe ingredient
+                    recipeIngredientUseCases.addRecipeIngredient(newFullRecipeIngredient.value.toRecipeIngredient())
+                }
+            }
+            if(id > 0 && type == "Edit") {
+                _state.value = state.value.copy(
+                    editedIngredient = _state.value.editedIngredient.copy(
+                        measureId = id,
+                        measure = newMeasure.name
+                    )
+                )
+                // ok to check for measureId here as a new measure was just added
+                if (state.value.editedIngredient.measureId > 0 && state.value.editedIngredient.ingredientId > 0) {
+                    // save the edited recipe ingredient
+                    recipeIngredientUseCases.addRecipeIngredient(state.value.editedIngredient.toRecipeIngredient())
+                }
+            }
         }
-        return id
+    }
+
+    private fun addNewIngredient(ingredientText: String, type: String) {
+        var id = -1L
+        CoroutineScope(Dispatchers.IO).launch {
+            val newIngredient = Ingredient(
+                ingredientId = null,
+                name = ingredientText,
+                type = "Added Ingredient"
+            )
+
+            id = ingredientUseCases.insertIngredientReturnId(newIngredient)
+            if(id > 0 && type == "New") {
+                _newFullRecipeIngredient.value = newFullRecipeIngredient.value.copy(
+                    ingredientId = id,
+                    ingredient =  ingredientText
+                )
+                if (newFullRecipeIngredient.value.ingredientId > 0) {
+                    // save the new recipe ingredient
+                    recipeIngredientUseCases.addRecipeIngredient(newFullRecipeIngredient.value.toRecipeIngredient())
+                }
+            }
+            if(id > 0 && type == "Edit") {
+                _state.value = state.value.copy(
+                    editedIngredient = _state.value.editedIngredient.copy(
+                        ingredientId = id,
+                        ingredient = newIngredient.name
+                    )
+                )
+                if (state.value.editedIngredient.ingredientId > 0) {
+                    // save the edited recipe ingredient
+                    recipeIngredientUseCases.addRecipeIngredient(state.value.editedIngredient.toRecipeIngredient())
+                }
+            }
+        }
     }
 }

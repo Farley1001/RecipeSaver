@@ -1,7 +1,7 @@
 package com.farware.recipesaver.feature_recipe.domain.model.recipe
 
 data class Conversion(
-    val conversionId: Int,
+    val conversionId: Long,
     val name: String,
     val shortName: String,
     val size: Float,

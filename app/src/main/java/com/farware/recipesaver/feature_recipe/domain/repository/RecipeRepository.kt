@@ -1,5 +1,6 @@
 package com.farware.recipesaver.feature_recipe.domain.repository
 
+import androidx.lifecycle.LiveData
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.*
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.CategoryWithColor
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.FullRecipeIngredient
@@ -79,7 +80,6 @@ interface RecipeRepository {
     suspend fun getIngredientByName(name: String): Ingredient?
 
     suspend fun insertIngredient(ingredient: Ingredient)
-
     suspend fun insertIngredientReturnId(ingredient: Ingredient): Long
 
     suspend fun deleteIngredient(ingredient: Ingredient)

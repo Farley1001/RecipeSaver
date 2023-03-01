@@ -10,6 +10,8 @@ val Shapes = Shapes(
     large = RoundedCornerShape(0.dp),
 )
 
+val chipShape = RoundedCornerShape(24.dp)
+
 val fabShape = RoundedCornerShape(24.dp)
 
-val chipShape = RoundedCornerShape(24.dp)
+val outlinedTextFieldShape = RoundedCornerShape(12.dp)

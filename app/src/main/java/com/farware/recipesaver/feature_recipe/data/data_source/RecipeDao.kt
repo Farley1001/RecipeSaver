@@ -1,5 +1,6 @@
 package com.farware.recipesaver.feature_recipe.data.data_source
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.farware.recipesaver.feature_recipe.data.entities.*
 import com.farware.recipesaver.feature_recipe.data.entities.relations.CategoryWithColorRelation
@@ -137,7 +138,7 @@ interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertIngredient(ingredient: IngredientEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertIngredientReturnId(ingredient: IngredientEntity): Long
 
     @Delete
@@ -173,10 +174,13 @@ interface RecipeDao {
     @Query("Select * from measure_table where measureId = :id")
     suspend fun getMeasureById(id: Int): MeasureEntity?
 
+    @Query("Select measureId from measure_table where name = :name")
+    suspend fun getMeasureIdByName(name: String): Long
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMeasure(measure: MeasureEntity)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertMeasureReturnId(measure: MeasureEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

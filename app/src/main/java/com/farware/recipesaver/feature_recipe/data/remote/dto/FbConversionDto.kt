@@ -17,7 +17,7 @@ data class FbConversionDto(
 
 fun FbConversionDto.toConversion(): Conversion {
     return Conversion(
-        conversionId = Id,
+        conversionId = Id.toLong(),
         name = Name,
         shortName = ShortName,
         size = Size,

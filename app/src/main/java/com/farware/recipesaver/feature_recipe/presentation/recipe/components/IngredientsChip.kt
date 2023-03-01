@@ -41,7 +41,14 @@ fun IngredientsChip(
     onEditIngredientClicked: (IngredientFocus) -> Unit,
     onDeleteIngredientClicked: (IngredientFocus) -> Unit,
     onConfirmDeleteIngredientClicked: () -> Unit,
-    onCancelConfirmDelete: () -> Unit
+    onCancelConfirmDelete: () -> Unit,
+    measureDropdownList: List<MatchTo>,
+    ingredientDropdownList: List<MatchTo>,
+    showMeasureDropdown: Boolean,
+    showIngredientDropdown: Boolean,
+    setMeasureTextFromDropdown: (String) -> Unit,
+    setIngredientTextFromDropdown: (String) -> Unit,
+    dismissAllDropdowns: () -> Unit
 ) {
     Column(
         Modifier
@@ -76,22 +83,24 @@ fun IngredientsChip(
                             }
                         )
                         Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
-                        OutlinedTextFieldWithError(
-                            text = editMeasureText,
-                            onTextChanged = { onEditMeasureTextChanged(it)},
+                        OutlinedTextFieldWithDropdown(
+                            dropdownList = measureDropdownList,
                             label = "Measure",
-                            onFocusChanged = {
-                                // TODO: Add focus change if needed
-                            }
+                            text = editMeasureText,
+                            dropDownExpanded = showMeasureDropdown,
+                            textChanged = { onEditMeasureTextChanged(it) },
+                            setTextFromDropdown = { setMeasureTextFromDropdown(it) },
+                            onDismissRequest = { dismissAllDropdowns() }
                         )
                         Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
-                        OutlinedTextFieldWithError(
-                            text = editIngredientText,
-                            onTextChanged = { onEditIngredientTextChanged(it) },
+                        OutlinedTextFieldWithDropdown(
+                            dropdownList = ingredientDropdownList,
                             label = "Ingredient",
-                            onFocusChanged = {
-                                // TODO: Add focus change if needed
-                            }
+                            text = editIngredientText,
+                            dropDownExpanded = showIngredientDropdown,
+                            textChanged = { onEditIngredientTextChanged(it) },
+                            setTextFromDropdown = { setIngredientTextFromDropdown(it) },
+                            onDismissRequest = { dismissAllDropdowns() }
                         )
                     }
                 },
@@ -119,7 +128,7 @@ fun IngredientsChip(
                 onClick = { onIngredientFocusChanged(ingredient) },
                 label = {
                     Text(
-                        text = "${ingredient.fullIngredient.amount}.${ingredient.fullIngredient.measure} ${ingredient.fullIngredient.ingredient}"
+                        text = "${ingredient.fullIngredient.amount} ${ingredient.fullIngredient.measure} ${ingredient.fullIngredient.ingredient}"
                     )
                 },
                 shape = chipShape,

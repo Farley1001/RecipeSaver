@@ -1,5 +1,6 @@
 package com.farware.recipesaver.feature_recipe.data.repository
 
+import androidx.lifecycle.LiveData
 import com.farware.recipesaver.feature_recipe.data.data_source.RecipeDao
 import com.farware.recipesaver.feature_recipe.data.entities.*
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.*
@@ -8,7 +9,9 @@ import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.Full
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategoryAndColor
 import com.farware.recipesaver.feature_recipe.domain.repository.RecipeRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.single
 
 class RecipeRepositoryImpl(
     private val dao: RecipeDao

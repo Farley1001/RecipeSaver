@@ -18,5 +18,7 @@ sealed class IngredientsTabEvent{
     data class NewMeasureTextChanged(val measureText: String): IngredientsTabEvent()
     data class NewIngredientTextChanged(val ingredientText: String): IngredientsTabEvent()
     object SaveNewIngredient: IngredientsTabEvent()
-
+    data class SetMeasureTextFromDropdown(val measureText: String): IngredientsTabEvent()
+    data class SetIngredientTextFromDropdown(val ingredientText: String): IngredientsTabEvent()
+    object DismissAllDropdowns: IngredientsTabEvent()
 }

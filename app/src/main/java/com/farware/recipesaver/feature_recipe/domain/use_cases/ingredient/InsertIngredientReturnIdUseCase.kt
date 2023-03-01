@@ -13,6 +13,7 @@ class InsertIngredientReturnIdUseCase @Inject constructor(
         if (ingredient.name.isEmpty()) {
             throw InvalidIngredientException("The ingredient must have a name.")
         }
-        return repository.insertIngredientReturnId(ingredient)
+        var id = repository.insertIngredientReturnId(ingredient)
+        return id
     }
 }

@@ -25,9 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Ingredient
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.FullRecipeIngredient
 import com.farware.recipesaver.feature_recipe.presentation.components.OutlinedTextFieldWithError
-import com.farware.recipesaver.feature_recipe.presentation.recipe.components.IngredientFocus
-import com.farware.recipesaver.feature_recipe.presentation.recipe.components.IngredientsChip
-import com.farware.recipesaver.feature_recipe.presentation.recipe.components.StepFocus
+import com.farware.recipesaver.feature_recipe.presentation.recipe.components.*
 import com.farware.recipesaver.feature_recipe.presentation.recipe.steps_tab.StepsTabEvent
 import com.farware.recipesaver.feature_recipe.presentation.recipe.tips_tab.TipsTabEvent
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.Spacing
@@ -78,7 +76,14 @@ fun IngredientsTabScreen(
         onDeleteIngredientClicked = { viewModel.onEvent(IngredientsTabEvent.DeleteIngredient(it)) },
         onConfirmDeleteIngredientClicked = { viewModel.onEvent(IngredientsTabEvent.ConfirmDeleteIngredient) },
         onCancelConfirmDelete = { viewModel.onEvent(IngredientsTabEvent.CancelConfirmDeleteIngredient) },
-        onToggleNewIngredientDialog = { viewModel.onEvent(IngredientsTabEvent.ToggleNewIngredientDialog) }
+        onToggleNewIngredientDialog = { viewModel.onEvent(IngredientsTabEvent.ToggleNewIngredientDialog) },
+        measureDropdownList = viewModel.state.value.measureDropdownList,
+        ingredientDropdownList = viewModel.state.value.ingredientDropdownList,
+        showMeasureDropdown = viewModel.state.value.showMeasureDropdown,
+        showIngredientDropdown = viewModel.state.value.showIngredientDropdown,
+        setMeasureTextFromDropdown = { viewModel.onEvent(IngredientsTabEvent.SetMeasureTextFromDropdown(it)) },
+        setIngredientTextFromDropdown = { viewModel.onEvent(IngredientsTabEvent.SetIngredientTextFromDropdown(it)) },
+        dismissAllDropdowns = { viewModel.onEvent(IngredientsTabEvent.DismissAllDropdowns) }
     )
 }
 
@@ -110,7 +115,14 @@ fun IngredientsTabContent(
     onDeleteIngredientClicked: (IngredientFocus) -> Unit,
     onConfirmDeleteIngredientClicked: () -> Unit,
     onCancelConfirmDelete: () -> Unit,
-    onToggleNewIngredientDialog: () -> Unit
+    onToggleNewIngredientDialog: () -> Unit,
+    measureDropdownList: List<MatchTo>,
+    ingredientDropdownList: List<MatchTo>,
+    showMeasureDropdown: Boolean,
+    showIngredientDropdown: Boolean,
+    setMeasureTextFromDropdown: (String) -> Unit,
+    setIngredientTextFromDropdown: (String) -> Unit,
+    dismissAllDropdowns: () -> Unit
 ) {
     if(showNewIngredientDialog) {
         AlertDialog(
@@ -140,6 +152,26 @@ fun IngredientsTabContent(
                         }
                     )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
+                    OutlinedTextFieldWithDropdown(
+                        dropdownList = measureDropdownList,
+                        label = "Measure",
+                        text = newMeasureText,
+                        dropDownExpanded = showMeasureDropdown,
+                        textChanged = { onNewMeasureTextChanged(it) },
+                        setTextFromDropdown = { setMeasureTextFromDropdown(it) },
+                        onDismissRequest = { dismissAllDropdowns() }
+                    )
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
+                    OutlinedTextFieldWithDropdown(
+                        dropdownList = ingredientDropdownList,
+                        label = "Ingredient",
+                        text = newIngredientText,
+                        dropDownExpanded = showIngredientDropdown,
+                        textChanged = { onNewIngredientTextChanged(it) },
+                        setTextFromDropdown = { setIngredientTextFromDropdown(it) },
+                        onDismissRequest = { dismissAllDropdowns() }
+                    )
+/*
                     OutlinedTextFieldWithError(
                         text = newMeasureText,
                         onTextChanged = { onNewMeasureTextChanged(it) },
@@ -159,7 +191,7 @@ fun IngredientsTabContent(
                             // onNewIngredientFocusChanged
 
                         }
-                    )
+                    )*/
                 }
             },
             confirmButton = {
@@ -215,7 +247,14 @@ fun IngredientsTabContent(
                         onEditIngredientClicked = { onEditIngredientClicked(it) },
                         onDeleteIngredientClicked = { onDeleteIngredientClicked(it) },
                         onConfirmDeleteIngredientClicked = { onConfirmDeleteIngredientClicked() },
-                        onCancelConfirmDelete = { onCancelConfirmDelete() }
+                        onCancelConfirmDelete = { onCancelConfirmDelete() },
+                        measureDropdownList = measureDropdownList,
+                        ingredientDropdownList = ingredientDropdownList,
+                        showMeasureDropdown = showMeasureDropdown,
+                        showIngredientDropdown = showIngredientDropdown,
+                        setMeasureTextFromDropdown = { setMeasureTextFromDropdown(it) },
+                        setIngredientTextFromDropdown = { setIngredientTextFromDropdown(it) },
+                        dismissAllDropdowns = { dismissAllDropdowns() }
                     )
                 }
             }

@@ -15,6 +15,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.farware.recipesaver.feature_recipe.presentation.ui.theme.outlinedTextFieldShape
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,7 +88,7 @@ fun OutlinedTextFieldWithError(
                     //    focusedIndicatorColor = MaterialTheme.extraColors.atfFocusIndicatorColor, //hide the indicator
                     //    unfocusedIndicatorColor = MaterialTheme.extraColors.atfUnFocusIndicatorColor
                     //),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = outlinedTextFieldShape,
                     keyboardOptions = keyboardOptions,
                     keyboardActions = keyboardActions
                 )

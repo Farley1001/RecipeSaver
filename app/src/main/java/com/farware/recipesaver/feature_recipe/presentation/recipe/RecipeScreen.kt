@@ -1,13 +1,9 @@
 package com.farware.recipesaver.feature_recipe.presentation.recipe
 
 import android.app.TimePickerDialog
-import android.provider.CalendarContract
 import android.widget.Toast
 import androidx.compose.animation.*
-import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Down
-import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Left
 import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Right
-import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Up
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.tween
@@ -41,8 +37,6 @@ import com.farware.recipesaver.feature_recipe.presentation.recipe.components.Tex
 import com.farware.recipesaver.feature_recipe.presentation.recipe.ingredients_tab.IngredientsTabScreen
 import com.farware.recipesaver.feature_recipe.presentation.recipe.steps_tab.StepsTabScreen
 import com.farware.recipesaver.feature_recipe.presentation.recipe.tips_tab.TipsTabScreen
-import com.farware.recipesaver.feature_recipe.presentation.recipes.RecipesEvent
-import com.farware.recipesaver.feature_recipe.presentation.ui.theme.fabShape
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.mainTitle
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 import com.farware.recipesaver.feature_recipe.presentation.util.TabOrder
@@ -111,7 +105,7 @@ fun RecipeScreen(
                 if(h != prepTime.toInt() / 60 || m != prepTime.toInt() % 60) {
                     prepTimeChanged.value = true
                     newPrepTime.value = (h*60) + m
-                    viewModel.onEvent(RecipeEvent.SavePrepTime(newPrepTime.value.toLong()))
+                    viewModel.onEvent(com.farware.recipesaver.feature_recipe.presentation.recipe.RecipeEvent.SavePrepTime(newPrepTime.value.toLong()))
                 }
             },
             prepTime.toInt() / 60,
@@ -127,7 +121,7 @@ fun RecipeScreen(
                 if(h != cookTime.toInt() / 60 || m != cookTime.toInt() % 60) {
                     cookTimeChanged.value = true
                     newCookTime.value = (h*60) + m
-                    viewModel.onEvent(RecipeEvent.SaveCookTime(newCookTime.value.toLong()))
+                    viewModel.onEvent(com.farware.recipesaver.feature_recipe.presentation.recipe.RecipeEvent.SaveCookTime(newCookTime.value.toLong()))
                 }
             },
             cookTime.toInt() / 60,
@@ -139,7 +133,7 @@ fun RecipeScreen(
 
     //
     fun onSelectedTabChange(index: Int) {
-        viewModel.onEvent(RecipeEvent.SelectedTabChanged(index))
+        viewModel.onEvent(com.farware.recipesaver.feature_recipe.presentation.recipe.RecipeEvent.SelectedTabChanged(index))
     }
 
     fun onNavBackButtonClick() {
@@ -148,6 +142,8 @@ fun RecipeScreen(
     }
 
     RecipeContent(
+        recipeId = viewModel.state.value.newRecipeId,
+        isNewRecipe = viewModel.state.value.isNewRecipe,
         snackbarHostState = snackbarHostState,
         categories = viewModel.state.value.categories,
         selectedCategoryIndex = viewModel.state.value.selectedCategoryIndex,
@@ -179,6 +175,8 @@ fun RecipeScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun RecipeContent(
+    recipeId: Long,
+    isNewRecipe: Boolean,
     snackbarHostState: SnackbarHostState,
     categories: List<CategoryWithColor>,
     selectedCategoryIndex: Int,
@@ -205,6 +203,41 @@ fun RecipeContent(
     onSaveCookTime: (Long) -> Unit,
     onToggleFavorite: () -> Unit
 ) {
+    if(isNewRecipe) {
+        AlertDialog(
+            onDismissRequest = {
+                // Dismiss the dialog when the user clicks outside the dialog or on the back
+                // button. If you want to disable that functionality, simply use an empty
+                // onDismissRequest.
+                // TODO: dismiss new recipe dialog
+            },
+            title = {
+                Text(text = "Title")
+            },
+            text = {
+                // TODO show recipe name and description textFields
+                Text(text = "Turned on by default")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        // TODO save the new recipe
+                    }
+                ) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        // TODO: dismiss new recipe dialog
+                    }
+                ) {
+                    Text("Dismiss")
+                }
+            }
+        )
+    }
     if(isCategoryDialogOpen){
         ChangeCategoryDialog(
             categories = categories,
@@ -337,7 +370,9 @@ fun RecipeContent(
                         }
                     ) {targetState ->
                         when(targetState){
-                            TabOrder.STEP.ordinal -> { StepsTabScreen() }
+                            TabOrder.STEP.ordinal -> { StepsTabScreen(
+                                recipeId = recipeId
+                            ) }
                             TabOrder.INGREDIENT.ordinal -> { IngredientsTabScreen(snackbarHostState = snackbarHostState) }
                             TabOrder.TIP.ordinal -> { TipsTabScreen() }
                         }

@@ -11,9 +11,8 @@ data class FbMeasureDto(
 
 fun FbMeasureDto.toMeasure(): Measure {
     return Measure(
-        measureId = Id,
-        name = Name,
-        shortName = ShortName
+        measureId = Id.toLong(),
+        name = Name
     )
 }
 

@@ -14,10 +14,7 @@ class InsertMeasureUseCase @Inject constructor(
         if(measure.name.isBlank()) {
             throw InvalidMeasureException("The name of the measure can't be empty.")
         }
-        if(measure.shortName.isBlank()) {
-            throw InvalidMeasureException("The short Name of the measure can't be empty.")
-        }
-        if(measure.measureId == -1) {
+        if(measure.measureId == -1L) {
             throw InvalidConversionException("The measureId has not been set.")
         }
         repository.insertMeasure(measure)

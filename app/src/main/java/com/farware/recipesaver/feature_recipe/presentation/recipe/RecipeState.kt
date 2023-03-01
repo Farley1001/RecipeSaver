@@ -6,6 +6,8 @@ import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.Cate
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategoryAndColor
 
 data class RecipeState(
+    val newRecipeId: Long = -1,
+    val isNewRecipe: Boolean = false,
     val categories: List<CategoryWithColor> = emptyList(),
     val selectedCategoryIndex: Int = 0,
     val newCategoryId: Long = -1,
