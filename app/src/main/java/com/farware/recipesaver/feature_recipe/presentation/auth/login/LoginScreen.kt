@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -38,10 +37,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.farware.recipesaver.BuildConfig
 import com.farware.recipesaver.R
-import com.farware.recipesaver.feature_recipe.presentation.Screen
 import com.farware.recipesaver.feature_recipe.presentation.components.OutlinedTextFieldWithError
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 import com.farware.recipesaver.feature_recipe.presentation.util.LoadingState
@@ -51,7 +48,6 @@ import com.google.android.gms.common.api.ApiException
 
 @Composable
 fun LoginScreen(
-    navController: NavController,
     viewModel: LoginViewModel = hiltViewModel()
 ){
     // for sign-in with google
@@ -93,8 +89,6 @@ fun LoginScreen(
             displayEmail = viewModel.state.value.currentUser!!.email.toString(),
             displayName = viewModel.state.value.currentUser!!.displayName ?: ""
         ))
-        // navigate to recipes screen
-        navController.navigate(Screen.RecipesScreen.route)
     }
 
     when (status.status) {
@@ -108,10 +102,6 @@ fun LoginScreen(
     }
 
     fun launchSignInWithGoogle() { launcher.launch(googleSignInClient.signInIntent) }
-
-    fun registerLinkClicked() {
-        navController.navigate(Screen.RegisterScreen.route)
-    }
 
     LoginContent(
         facebookSignInLauncher = {},
@@ -130,7 +120,7 @@ fun LoginScreen(
         onPasswordFocusChange = { viewModel.onEvent(LoginEvent.PasswordFocusChange(it)) },
         onClearPassword = { viewModel.onEvent(LoginEvent.ClearPassword) },
         onLoginButtonClick = { viewModel.onEvent(LoginEvent.SignInWithEmailAndPassword(email = inputEmail.text, password = inputPassword.text )) },
-        onRegisterLinkClicked = { registerLinkClicked() }
+        onRegisterLinkClicked = { viewModel.onEvent(LoginEvent.Register) }
     )
 }
 

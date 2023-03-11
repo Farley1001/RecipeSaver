@@ -15,7 +15,7 @@ class InsertMeasureReturnIdUseCase @Inject constructor(
         if (measure.name.isBlank()) {
             throw InvalidMeasureException("The measure must have a name.")
         }
-        var id = repository.insertMeasureReturnId(measure)
-        return id
+
+        return repository.insertMeasureReturnId(measure)
     }
 }

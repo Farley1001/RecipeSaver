@@ -12,9 +12,9 @@ class AddRecipeIngredientUseCase(
         if(recipeIngredient.ingredientId < 1) {
             throw InvalidRecipeIngredientException("The ingredientId was not supplied.")
         }
-        if(recipeIngredient.measureId < 1) {
-            throw InvalidRecipeIngredientException("The measureId was not supplied.")
-        }
+        //if(recipeIngredient.measureId < 1) {
+        //    throw InvalidRecipeIngredientException("The measureId was not supplied.")
+        //}
         if(recipeIngredient.recipeId < 1) {
             throw InvalidRecipeIngredientException("The recipeId was not supplied.")
         }

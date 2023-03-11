@@ -1,7 +1,8 @@
-package com.farware.recipesaver.feature_recipe.presentation.recipe.components
+package com.farware.recipesaver.feature_recipe.presentation.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -19,9 +20,11 @@ import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.CategoryWithColor
+import com.farware.recipesaver.feature_recipe.presentation.recipe.components.TextWithAppendedContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,35 +37,30 @@ fun DropdownWithLabel(
     var showMenu by remember { mutableStateOf(false) }
     var menuIndex by remember { mutableStateOf(initialIndex) }
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = labelText,
-            // TODO: Font Size and color
-            //fontSize = 12.sp,
-            //color = Color.Black,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 32.dp)
-        )
-        Row(
-            modifier = Modifier
-                .height(30.dp)
-                .fillMaxWidth()
-                .clickable(
-                    onClick = { showMenu = true }
-                )
-        ) {
-            /*Text(
-                // TODO: selected category in text
-                text = items[menuIndex].category.name,
+    Column(
+        horizontalAlignment = Alignment.Start
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = labelText,
                 // TODO: Font Size and color
-                //fontSize = 20.sp,
+                //fontSize = 12.sp,
                 //color = Color.Black,
                 modifier = Modifier
-                    .wrapContentSize()
-                    // TODO: Color
-                    //.background(Color.White)       //.background(Color(items[menuIndex].color))
-            )*/
+                    .fillMaxWidth()
+                    .padding(top = 32.dp)
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Start)
+                .height(30.dp)
+                .clickable(
+                    onClick = { showMenu = true }
+                ),
+            horizontalArrangement = Arrangement.Start
+        ) {
             TextWithAppendedContent(
                 text = items[menuIndex].name,
                 onTextClicked = { showMenu = true },
@@ -84,6 +82,7 @@ fun DropdownWithLabel(
                 // TODO: Color
                 //tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
+                    .padding(start = 100.dp)
                     .size(48.dp)
                     .rotate(
                         animateFloatAsState(
@@ -92,7 +91,6 @@ fun DropdownWithLabel(
                     )
                     .align(Alignment.Top)
             )
-
             DropdownMenu(
                 expanded = showMenu,
                 onDismissRequest = { showMenu = false },

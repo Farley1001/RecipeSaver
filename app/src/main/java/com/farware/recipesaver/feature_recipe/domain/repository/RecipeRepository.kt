@@ -18,6 +18,8 @@ interface RecipeRepository {
 
     suspend fun insertRecipe(recipe: Recipe)
 
+    suspend fun insertRecipeReturnId(recipe: Recipe): Long
+
     suspend fun deleteRecipe(recipe: Recipe)
 
     fun searchRecipesOnName(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColor>>
@@ -80,6 +82,7 @@ interface RecipeRepository {
     suspend fun getIngredientByName(name: String): Ingredient?
 
     suspend fun insertIngredient(ingredient: Ingredient)
+
     suspend fun insertIngredientReturnId(ingredient: Ingredient): Long
 
     suspend fun deleteIngredient(ingredient: Ingredient)

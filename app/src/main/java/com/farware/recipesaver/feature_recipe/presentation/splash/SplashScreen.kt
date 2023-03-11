@@ -16,28 +16,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.farware.recipesaver.R
-import com.farware.recipesaver.feature_recipe.presentation.Screen
-import kotlinx.coroutines.delay
-
 @Composable
 fun SplashScreen (
-    navController: NavController,
-    splashViewModel: SplashViewModel = viewModel()
+    splashViewModel: SplashViewModel = hiltViewModel()
 ) {
     Log.d(TAG, "SplashScreen: Start")
-    LaunchedEffect(key1 = true) {
-        delay(1000L)                        // changed from 1000L
-        if(splashViewModel.currentUser != null) {
-            // navigate to recipes screen
-            navController.navigate(Screen.RecipesScreen.route)
-            splashViewModel.currentUser = null
-        } else {
-            navController.navigate(Screen.LoginScreen.route)
-        }
-    }
 
     SplashContent()
 }

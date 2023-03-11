@@ -31,6 +31,8 @@ import com.farware.recipesaver.feature_recipe.domain.use_cases.step.GetStepsByRe
 import com.farware.recipesaver.feature_recipe.domain.use_cases.tip.AddTipUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.tip.DeleteTipUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.tip.GetTipsByRecipeIdUseCase
+import com.farware.recipesaver.feature_recipe.presentation.navigation.AppNavigator
+import com.farware.recipesaver.feature_recipe.presentation.navigation.AppNavigatorImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,6 +50,12 @@ object AppModule {
     @Provides
     fun provideApplication(@ApplicationContext app: Context): RecipeApp {
         return app as RecipeApp
+    }
+
+    @Singleton
+    @Provides
+    fun bindAppNavigator(appNavigatorImpl: AppNavigatorImpl): AppNavigator {
+        return appNavigatorImpl as AppNavigator
     }
 
     @Singleton
@@ -113,7 +121,8 @@ object AppModule {
             insertConversion = InsertConversionUseCase(repository),
             insertAllConversions = InsertAllConversionsUseCase(repository),
             insertMeasure = InsertMeasureUseCase(repository),
-            insertAllMeasures = InsertAllMeasuresUseCase(repository)
+            insertAllMeasures = InsertAllMeasuresUseCase(repository),
+            insertRecipeReturnId =  InsertRecipeReturnIdUseCase(repository),
         )
     }
 

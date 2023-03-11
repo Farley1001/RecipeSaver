@@ -1,0 +1,25 @@
+package com.farware.recipesaver.feature_recipe.domain.use_cases.recipe
+
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.InvalidRecipeException
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.Recipe
+import com.farware.recipesaver.feature_recipe.domain.repository.RecipeRepository
+import javax.inject.Inject
+
+class InsertRecipeReturnIdUseCase @Inject constructor(
+    private val repository: RecipeRepository
+) {
+    @Throws(InvalidRecipeException::class)
+    suspend operator fun invoke(recipe: Recipe): Long {
+        if (recipe.name.isEmpty()) {
+            throw InvalidRecipeException("The recipe must have a name.")
+        }
+        if (recipe.categoryId < 1) {
+            throw InvalidRecipeException("The recipe must have a category.")
+        }
+        if (recipe.description.isEmpty()) {
+            throw InvalidRecipeException("The recipe must have a description.")
+        }
+
+        return repository.insertRecipeReturnId(recipe)
+    }
+}

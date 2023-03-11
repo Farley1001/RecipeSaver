@@ -11,6 +11,9 @@ import com.farware.recipesaver.feature_recipe.domain.model.data_store.MeasureTyp
 import com.farware.recipesaver.feature_recipe.domain.model.data_store.MeasureUnit
 import com.farware.recipesaver.feature_recipe.domain.use_cases.DataStoreUseCases
 import com.farware.recipesaver.feature_recipe.domain.use_cases.FirebaseUseCases
+import com.farware.recipesaver.feature_recipe.presentation.navigation.AppNavigator
+import com.farware.recipesaver.feature_recipe.presentation.navigation.Destination
+import com.farware.recipesaver.feature_recipe.presentation.recipes.RecipesEvent
 import com.farware.recipesaver.feature_recipe.presentation.util.LoadingState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,6 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel@Inject constructor(
+    private val appNavigator: AppNavigator,
     private val dataStoreUseCases: DataStoreUseCases,
     private val firebaseUseCases: FirebaseUseCases,
     @ApplicationContext context: Context,
@@ -103,6 +107,18 @@ class SettingsViewModel@Inject constructor(
                 )
 
                 updateUseDynamicColor(event.context, state.value.useDynamicColor)
+            }
+            is SettingsEvent.NavMenuNavigate -> {
+                var route = event.route
+                when (route) {
+                    "sign_out" -> {
+                        signOut()
+                        route = Destination.LoginScreen()
+                    }
+                    else -> {
+                    }
+                }
+                appNavigator.tryNavigateTo(route)
             }
         }
     }

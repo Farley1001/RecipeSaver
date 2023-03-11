@@ -32,6 +32,10 @@ class RecipeRepositoryImpl(
         dao.insertRecipe(RecipeEntity.from(recipe) )
     }
 
+    override suspend fun insertRecipeReturnId(recipe: Recipe): Long {
+        return dao.insertRecipeReturnId(RecipeEntity.from(recipe))
+    }
+
     override suspend fun deleteRecipe(recipe: Recipe) {
         dao.deleteRecipe(RecipeEntity.from(recipe))
     }

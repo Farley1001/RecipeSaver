@@ -3,7 +3,6 @@ package com.farware.recipesaver.feature_recipe.presentation.recipes
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -20,12 +19,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Recipe
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategoryAndColor
 import com.farware.recipesaver.feature_recipe.domain.util.RecipeOrder
 import com.farware.recipesaver.feature_recipe.domain.util.RecipeSearch
-import com.farware.recipesaver.feature_recipe.presentation.Screen
 import com.farware.recipesaver.feature_recipe.presentation.appbar.*
 import com.farware.recipesaver.feature_recipe.presentation.recipes.components.OrderSection
 import com.farware.recipesaver.feature_recipe.presentation.recipes.components.RecipeItem
@@ -35,12 +32,11 @@ import com.farware.recipesaver.feature_recipe.presentation.ui.theme.mainTitle
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @Composable
 fun RecipesScreen(
-    navController: NavController,
     navDrawerState: DrawerState,
     viewModel: RecipesViewModel = hiltViewModel()
 ) {
@@ -72,58 +68,12 @@ fun RecipesScreen(
         scope.launch { navDrawerState.open() }
     }
 
-    fun navButtonCloseClicked(arg: String) {
-        var route = arg
-        when (arg) {
-            "sign_out" -> {
-                viewModel.signOut()
-                route = Screen.LoginScreen.route
-            }
-            else -> {
-            }
-        }
+    fun navButtonCloseClicked(route: String) {
+        viewModel.onEvent(RecipesEvent.NavMenuNavigate(route = route))
         scope.launch {
-            navController.navigate(route)
             navDrawerState.close()
         }
     }
-
-    fun addEditRecipeButtonClicked() {
-        navController.navigate(Screen.RecipeScreen.withArgs(
-            "-1"
-        ))
-        //navController.navigate(Screen.AddEditRecipeScreen.route)
-        //Toast.makeText(context, "Add/Edit Recipe Click", Toast.LENGTH_LONG).show()
-    }
-
-    fun recipeItemClicked(recipe: RecipeWithCategoryAndColor) {
-        navController.navigate(Screen.RecipeScreen.withArgs(
-            recipe.recipeId.toString()
-        ))
-        //Toast.makeText(context, "RecipeItem Click", Toast.LENGTH_LONG).show()
-    }
-
-    fun recipeItemLongClicked(recipe: RecipeWithCategoryAndColor) {
-        navController.navigate(Screen.AddEditRecipeScreen.withArgs(
-            recipe.recipeId.toString()
-        ))
-        Toast.makeText(context, "RecipeItem Long Click", Toast.LENGTH_LONG).show()
-    }
-
-    /*fun recipeItemDeleteClicked(recipe: Recipe) {
-        viewModel.onEvent(RecipesEvent.DeleteRecipe(recipe))
-        // TODO: make this a dialog
-
-        scope.launch {
-            val result = scaffoldState.snackbarHostState.showSnackbar(
-                message = "Recipe Deleted",
-                actionLabel = "Undo"
-            )
-            if (result == SnackbarResult.ActionPerformed) {
-                viewModel.onEvent(RecipesEvent.RestoreRecipe)
-            }
-        }
-    }*/
 
     RecipesContent(
         navDrawerState = navDrawerState,
@@ -147,9 +97,9 @@ fun RecipesScreen(
         onOrderChange = { viewModel.onEvent(it) },
         onNavButtonOpenClick = { navButtonOpenClicked() },
         onNavButtonCloseClick = { navButtonCloseClicked(it) },
-        onAddEditRecipeButtonClick = { addEditRecipeButtonClicked() },
-        onRecipeItemClick = { recipeItemClicked(it) },
-        onRecipeItemLongClick = { recipeItemLongClicked(it) },
+        onNewRecipeButtonClick = { viewModel.onEvent(RecipesEvent.NewRecipe) },
+        onRecipeItemClick = { viewModel.onEvent(RecipesEvent.NavigateToRecipe(it)) },
+        onRecipeItemLongClick = { viewModel.onEvent(RecipesEvent.NavigateToRecipeAddEdit(it)) },
         onRecipeItemDeleteClick = { viewModel.onEvent(RecipesEvent.DeleteRecipe(it)) },
         onConfirmDeleteRecipeClick = { viewModel.onEvent(RecipesEvent.DeleteConfirmed) },
         onCancelDeleteRecipeClick = { viewModel.onEvent(RecipesEvent.DeleteCanceled) }
@@ -182,15 +132,14 @@ fun RecipesContent(
     onOrderChange: (RecipesEvent.Order) -> Unit,
     onNavButtonOpenClick: () -> Unit,
     onNavButtonCloseClick: (String) -> Unit,
-    onAddEditRecipeButtonClick: () -> Unit,
+    onNewRecipeButtonClick: () -> Unit,
     onRecipeItemClick: (RecipeWithCategoryAndColor) -> Unit,
-    onRecipeItemLongClick: (RecipeWithCategoryAndColor) -> Unit,
+    onRecipeItemLongClick: (Long) -> Unit,
     onRecipeItemDeleteClick: (Recipe) -> Unit,
     onConfirmDeleteRecipeClick: () -> Unit,
     onCancelDeleteRecipeClick: () -> Unit
 
 ) {
-
     ModalNavigationDrawer(
         drawerContent = { NavDrawerMenu(selectedMenuItem = "recipes_screen", onNavButtonCloseClick =  onNavButtonCloseClick) },
         drawerState = navDrawerState,
@@ -238,7 +187,7 @@ fun RecipesContent(
                 ExtendedFloatingActionButton(
                     modifier = Modifier.padding(1.dp),
                     onClick = {
-                        onAddEditRecipeButtonClick()
+                        onNewRecipeButtonClick()
                     },
                     //TODO: Color
                     //backgroundColor = MaterialTheme.colorScheme.primary,
@@ -321,7 +270,7 @@ fun RecipesContent(
                                         onRecipeItemClick(recipe)
                                     },
                                     onLongClick = {
-                                        onRecipeItemLongClick(recipe)
+                                        onRecipeItemLongClick(recipe.recipeId!!)
                                     }
                                 ),
                             onDeleteClick = {

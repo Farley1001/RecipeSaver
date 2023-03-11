@@ -21,10 +21,8 @@ import com.farware.recipesaver.feature_recipe.presentation.util.customDialogPosi
 
 @Composable
 fun StepsTabScreen(
-    recipeId: Long = -1,
     viewModel: StepsTabViewModel = hiltViewModel(),
 ) {
-    val recipeid = recipeId
     StepsTabContent(
         steps = viewModel.state.value.stepsFocus,
         newStepText = viewModel.state.value.newStepText,

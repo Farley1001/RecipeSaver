@@ -316,36 +316,35 @@ class IngredientsTabViewModel @Inject constructor(
                 )
 
                 // save the new measure
-                if(state.value.newMeasureText != "") {
-                    if (state.value.measures.filter {
-                            it.name.startsWith(
-                                state.value.newMeasureText,
-                                true
-                            )
-                        }.isNotEmpty()) {
-                        val newMeasure = state.value.measures.first {
-                            it.name.startsWith(
-                                state.value.newMeasureText,
-                                true
-                            )
-                        }
-                        // save from measure for consistency
-                        _newFullRecipeIngredient.value = newFullRecipeIngredient.value.copy(
-                            measureId = newMeasure.measureId!!,
-                            measure = newMeasure.name
+                if (state.value.measures.filter {
+                        it.name.startsWith(
+                            state.value.newMeasureText,
+                            true
                         )
-                    } else {
-                        viewModelScope.launch {
-                            // if new measure insert the new measure
-                            addNewMeasure(
-                                state.value.newMeasureText.lowercase().split(" ")
-                                    .joinToString(" ") { it.replaceFirstChar(Char::uppercaseChar) },
-                                "New"
-                            )
-                        }
-
+                    }.isNotEmpty()) {
+                    val newMeasure = state.value.measures.first {
+                        it.name.startsWith(
+                            state.value.newMeasureText,
+                            true
+                        )
                     }
+                    // save from measure for consistency
+                    _newFullRecipeIngredient.value = newFullRecipeIngredient.value.copy(
+                        measureId = newMeasure.measureId!!,
+                        measure = newMeasure.name
+                    )
+                } else {
+                    viewModelScope.launch {
+                        // if new measure insert the new measure
+                        addNewMeasure(
+                            state.value.newMeasureText.lowercase().split(" ")
+                                .joinToString(" ") { it.replaceFirstChar(Char::uppercaseChar) },
+                            "New"
+                        )
+                    }
+
                 }
+
                 // save the new ingredient
                 if(state.value.allIngredients.filter { it.name.startsWith(state.value.newIngredientText, true) }.isNotEmpty()) {
                     val newIngredient = state.value.allIngredients.first {

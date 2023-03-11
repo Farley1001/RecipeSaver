@@ -1,7 +1,6 @@
 package com.farware.recipesaver.feature_recipe.presentation.auth.register
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -21,10 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusState
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -34,16 +31,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import com.farware.recipesaver.R
-import com.farware.recipesaver.feature_recipe.presentation.Screen
 import com.farware.recipesaver.feature_recipe.presentation.components.OutlinedTextFieldWithError
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 import com.farware.recipesaver.feature_recipe.presentation.util.LoadingState
 
 @Composable
 fun RegisterScreen(
-    navController: NavController,
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
     val status by viewModel.loadingState.collectAsState()
@@ -61,8 +54,6 @@ fun RegisterScreen(
             displayEmail = viewModel.state.value.currentUser!!.email.toString(),
             displayName = viewModel.state.value.currentUser!!.displayName ?: ""
         ))
-        // navigate to recipes screen
-        navController.navigate(Screen.RecipesScreen.route)
     }
 
     when (status.status) {
@@ -74,10 +65,6 @@ fun RegisterScreen(
             Toast.makeText(context, status.msg ?: "Error", Toast.LENGTH_LONG).show()
         }
         else -> {}
-    }
-
-    fun loginLinkClicked() {
-        navController.navigate(Screen.LoginScreen.route)
     }
 
     RegisterContent(
@@ -100,7 +87,7 @@ fun RegisterScreen(
         onConfirmPasswordFocusChange = { viewModel.onEvent(RegisterEvent.ConfirmPasswordFocusChange(it)) },
         onClearConfirmPassword = { viewModel.onEvent(RegisterEvent.ClearConfirmPassword) },
         onRegisterButtonClick = { viewModel.onEvent(RegisterEvent.SignUpWithEmailAndPassword(email = inputEmail.text, password = inputPassword.text)) },
-        onLoginLinkClicked = {loginLinkClicked()}
+        onLoginLinkClicked = { viewModel.onEvent(RegisterEvent.Login) }
     )
 }
 

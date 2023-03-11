@@ -7,6 +7,7 @@ import com.farware.recipesaver.feature_recipe.presentation.recipes.RecipesEvent
 sealed class CategoriesEvent {
     data class Order(val categoryOrder: CategoryOrder): CategoriesEvent()
     data class DeleteCategory(val category: Category): CategoriesEvent()
+    data class NavMenuNavigate(val route: String): CategoriesEvent()
     object DeleteConfirmed: CategoriesEvent()
     object DeleteCanceled: CategoriesEvent()
     object ToggleOrderSection: CategoriesEvent()

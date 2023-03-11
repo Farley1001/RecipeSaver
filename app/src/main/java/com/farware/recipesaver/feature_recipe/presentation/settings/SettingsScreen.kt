@@ -2,25 +2,25 @@ package com.farware.recipesaver.feature_recipe.presentation.settings
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.farware.recipesaver.feature_recipe.domain.model.data_store.MeasureType
 import com.farware.recipesaver.feature_recipe.domain.model.data_store.MeasureUnit
-import com.farware.recipesaver.feature_recipe.presentation.Screen
 import com.farware.recipesaver.feature_recipe.presentation.appbar.NavDrawerMenu
+import com.farware.recipesaver.feature_recipe.presentation.navigation.Destination
+import com.farware.recipesaver.feature_recipe.presentation.recipes.RecipesEvent
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.mainTitle
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 import com.farware.recipesaver.feature_recipe.presentation.util.LoadingState
@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterial3Api
 @Composable
 fun SettingsScreen(
-    navController: NavController,
     navDrawerState: DrawerState,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -54,18 +53,9 @@ fun SettingsScreen(
         scope.launch { navDrawerState.open() }
     }
 
-    fun navButtonCloseClicked(arg: String) {
-        var route = arg
-        when (arg) {
-            "sign_out" -> {
-                viewModel.signOut()
-                route = Screen.LoginScreen.route
-            }
-            else -> {
-            }
-        }
+    fun navButtonCloseClicked(route: String) {
+        viewModel.onEvent(SettingsEvent.NavMenuNavigate(route = route))
         scope.launch {
-            navController.navigate(route)
             navDrawerState.close()
         }
     }

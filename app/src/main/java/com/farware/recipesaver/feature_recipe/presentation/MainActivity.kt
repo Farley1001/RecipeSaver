@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.farware.recipesaver.RecipeApp
+import com.farware.recipesaver.feature_recipe.presentation.main.MainScreen
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.RecipeSaverTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -33,40 +34,30 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             var useDynamicColor = viewModel.state.value.useDynamicColor
-            RecipeSaverTheme(dynamicColor = useDynamicColor) {
 
+            val lifecycleOwner = LocalLifecycleOwner.current
 
-                val lifecycleOwner = LocalLifecycleOwner.current
-
-                DisposableEffect(key1 = lifecycleOwner) {
-                    val observer = LifecycleEventObserver{ _, event ->
-                        if(event == Lifecycle.Event.ON_PAUSE) {
-                            println("on pause called.")
-                        }
-                        if(event == Lifecycle.Event.ON_RESUME) {
-                            println("on resume called.")
-                        }
+            DisposableEffect(key1 = lifecycleOwner) {
+                val observer = LifecycleEventObserver{ _, event ->
+                    if(event == Lifecycle.Event.ON_PAUSE) {
+                        println("on pause called.")
                     }
-                    lifecycleOwner.lifecycle.addObserver(observer)
-
-                    onDispose {
-                        lifecycleOwner.lifecycle.removeObserver(observer)
+                    if(event == Lifecycle.Event.ON_RESUME) {
+                        println("on resume called.")
                     }
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
 
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
                 }
 
-                println("onCreate: the app context: $app")
-                println("onCreate: $randomString")
-
-
-
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    color = MaterialTheme.colorScheme.background,
-                ) {
-                    Navigation()
-                }
             }
+
+            println("onCreate: the app context: $app")
+            println("onCreate: $randomString")
+
+            MainScreen()
         }
     }
 }

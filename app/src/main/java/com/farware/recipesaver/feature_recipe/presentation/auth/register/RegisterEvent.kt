@@ -15,4 +15,5 @@ sealed class RegisterEvent {
     object ClearEmail: RegisterEvent()
     object ClearPassword: RegisterEvent()
     object ClearConfirmPassword: RegisterEvent()
+    object Login: RegisterEvent()
 }

@@ -11,6 +11,8 @@ import com.farware.recipesaver.feature_recipe.domain.use_cases.FirebaseUseCases
 import com.farware.recipesaver.feature_recipe.domain.use_cases.RecipeUseCases
 import com.farware.recipesaver.feature_recipe.domain.util.CategoryOrder
 import com.farware.recipesaver.feature_recipe.domain.util.OrderType
+import com.farware.recipesaver.feature_recipe.presentation.navigation.AppNavigator
+import com.farware.recipesaver.feature_recipe.presentation.navigation.Destination
 import com.farware.recipesaver.feature_recipe.presentation.recipes.RecipesEvent
 import com.farware.recipesaver.feature_recipe.presentation.util.LoadingState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CategoriesViewModel @Inject constructor(
+    private val appNavigator: AppNavigator,
     private val recipeUseCases: RecipeUseCases,
     private val firebaseUseCases: FirebaseUseCases,
     private val savedStateHandle: SavedStateHandle,
@@ -89,10 +92,22 @@ class CategoriesViewModel @Inject constructor(
                     isOrderSectionVisible = !state.value.isOrderSectionVisible
                 )
             }
+            is CategoriesEvent.NavMenuNavigate -> {
+                var route = event.route
+                when (route) {
+                    "sign_out" -> {
+                        signOut()
+                        route = Destination.LoginScreen()
+                    }
+                    else -> {
+                    }
+                }
+                appNavigator.tryNavigateTo(route)
+            }
         }
     }
 
-    fun signOut() {
+    private fun signOut() {
         firebaseUseCases.signOut()
             .onEach { result ->
                 when(result) {

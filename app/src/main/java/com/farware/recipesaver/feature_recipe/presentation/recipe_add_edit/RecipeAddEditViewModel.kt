@@ -1,4 +1,4 @@
-package com.farware.recipesaver.feature_recipe.presentation.recipe
+package com.farware.recipesaver.feature_recipe.presentation.recipe_add_edit
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -24,19 +24,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RecipeViewModel @Inject constructor(
+class RecipeAddEditViewModel @Inject constructor(
     private val appNavigator: AppNavigator,
     private val recipeUseCases: RecipeUseCases,
     savedStateHandle: SavedStateHandle
-): ViewModel()  {
+): ViewModel() {
 
-    private var _state =  mutableStateOf(RecipeState())
-    val state: State<RecipeState> = _state
+    private var _state = mutableStateOf(RecipeAddEditState())
+    val state: State<RecipeAddEditState> = _state
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
-
-    private var currentRecipeId: Long? = null
 
     private var getCategoriesJob: Job? = null
 
@@ -65,29 +63,14 @@ class RecipeViewModel @Inject constructor(
     init {
         getCategories()
         savedStateHandle.get<Long>("recipeId")?.let { recipeId ->
-            if (recipeId != -1L) {
-                getRecipe(recipeId)
-            } else {
-                _state.value = state.value.copy(
-                    showAddEditRecipeDialog = true
-                )
-            }
+            getRecipe(recipeId)
         }
     }
 
-    fun onEvent(event: RecipeEvent) {
-        when(event) {
-            is RecipeEvent.SelectedTabChanged -> {
-                _state.value = state.value.copy(
-                    selectedTabIndex = event.selectedIndex
-                )
-            }
-            is RecipeEvent.ToggleCategoryDialog -> {
-                _state.value = state.value.copy(
-                    isCategoryDialogOpen = !state.value.isCategoryDialogOpen
-                )
-            }
-            is RecipeEvent.NewCategorySelected -> {
+    fun onEvent(event: RecipeAddEditEvent) {
+        when(event){
+            is RecipeAddEditEvent.NewCategorySelected -> {
+
                 // set the initial selected value
                 _state.value = state.value.copy(
                     selectedCategoryIndex = state.value.categories.indexOfFirst{
@@ -107,81 +90,24 @@ class RecipeViewModel @Inject constructor(
                     timeStamp = state.value.categories[state.value.selectedCategoryIndex].timeStamp,
                 )
             }
-            is RecipeEvent.SaveNewCategory -> {
-                _state.value = state.value.copy(
-                    isCategoryDialogOpen = false
-                )
-
-                // update the recipe with new categoryId
+            is RecipeAddEditEvent.RecipeNameTextChange -> {
                 _recipe.value = recipe.value?.copy(
-                    categoryId = state.value.newCategoryId
-                )
-
-                // save the recipe
-                if(recipe.value?.name != "" && recipe.value?.description != "" && recipe.value?.categoryId!! > 0) {
-                    saveRecipe(recipe.value!!.toRecipe())
-                }
-                
-            }
-            is RecipeEvent.SavePrepTime -> {
-                // update the recipe with new prep time
-                _recipe.value = recipe.value?.copy(
-                    prepTime = event.prepTime
-                )
-
-                // save the recipe
-                if(recipe.value?.name != "" && recipe.value?.description != "" && recipe.value?.categoryId!! > 0) {
-                    saveRecipe(recipe.value!!.toRecipe())
-                }
-            }
-            is RecipeEvent.SaveCookTime -> {
-                // update the recipe with new cook time
-                _recipe.value = recipe.value?.copy(
-                    cookTime = event.cookTime
-                )
-
-                // save the recipe
-                if(recipe.value?.name != "" && recipe.value?.description != "" && recipe.value?.categoryId!! > 0) {
-                    saveRecipe(recipe.value!!.toRecipe())
-                }
-            }
-            is RecipeEvent.ToggleFavorite -> {
-                // update the recipe with new favorite
-                _recipe.value = recipe.value?.copy(
-                    favorite = recipe.value?.favorite != true   /// ??????
-                )
-
-                // save the recipe
-                if(recipe.value?.name != "" && recipe.value?.description != "" && recipe.value?.categoryId!! > 0) {
-                    saveRecipe(recipe.value!!.toRecipe())
-                }
-            }
-            is RecipeEvent.ToggleAddEditDialog -> {
-                _state.value = state.value.copy(
-                    showAddEditRecipeDialog = !state.value.showAddEditRecipeDialog
-                )
-                if(!state.value.showAddEditRecipeDialog && recipe.value?.recipeId == null) {
-                    // its a new recipe and cancel clicked navigate back
-                    appNavigator.tryNavigateBack()
-                }
-            }
-            is RecipeEvent.NavigateBack -> {
-                appNavigator.tryNavigateTo(Destination.RecipesScreen())
-            }
-            is RecipeEvent.RecipeNameTextChange -> {
-                _recipe.value = recipe.value!!.copy(
                     name = event.name
                 )
             }
-            is RecipeEvent.RecipeDescriptionTextChange -> {
-                _recipe.value = recipe.value!!.copy(
+            is RecipeAddEditEvent.RecipeDescriptionTextChange -> {
+                _recipe.value = recipe.value?.copy(
                     description = event.description
                 )
             }
-            is RecipeEvent.SaveRecipe -> {
+            is RecipeAddEditEvent.SaveRecipe -> {
                 if(recipe.value?.name != "" && recipe.value?.description != "" && recipe.value?.categoryId!! > 0) {
                     saveRecipe(recipe.value!!.toRecipe())
                 }
+            }
+            is RecipeAddEditEvent.CancelRecipe -> {
+                //  cancel recipe go back
+                appNavigator.tryNavigateBack()
             }
         }
     }
@@ -189,8 +115,6 @@ class RecipeViewModel @Inject constructor(
     private fun getRecipe(recipeId: Long) {
         viewModelScope.launch {
             recipeUseCases.getRecipe(recipeId)?.also { recipe ->
-                currentRecipeId = recipe.recipeId
-
                 _recipe.value = recipe
 
                 // set the initial selected value
@@ -199,7 +123,6 @@ class RecipeViewModel @Inject constructor(
                         it.categoryId == recipe.categoryId
                     }
                 )
-
             }
         }
     }
@@ -213,6 +136,7 @@ class RecipeViewModel @Inject constructor(
                 } else {
                     recipeUseCases.addRecipe(recipe)
                 }
+                // TODO navigate to recipe screen with new id
                 _eventFlow.emit(UiEvent.SaveRecipe)
             } catch (e: InvalidRecipeException) {
                 _eventFlow.emit(
@@ -234,8 +158,8 @@ class RecipeViewModel @Inject constructor(
                 _state.value = state.value.copy(
                     categories = categories
                 )
-            }
-            .launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
+
     }
 
 }

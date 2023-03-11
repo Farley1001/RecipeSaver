@@ -10,6 +10,8 @@ import com.farware.recipesaver.feature_recipe.domain.use_cases.DataStoreUseCases
 import com.farware.recipesaver.feature_recipe.domain.use_cases.FirebaseUseCases
 import com.farware.recipesaver.feature_recipe.domain.use_cases.RecipeUseCases
 import com.farware.recipesaver.feature_recipe.presentation.components.OutlinedTextFieldState
+import com.farware.recipesaver.feature_recipe.presentation.navigation.AppNavigator
+import com.farware.recipesaver.feature_recipe.presentation.navigation.Destination
 import com.farware.recipesaver.feature_recipe.presentation.util.LoadingState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
+    private val appNavigator: AppNavigator,
     private val firebaseUseCases: FirebaseUseCases,
     private val dataStoreUseCases: DataStoreUseCases,
     private val recipesUseCases: RecipeUseCases
@@ -206,6 +209,12 @@ class RegisterViewModel @Inject constructor(
                 _state.value = state.value.copy(
                     currentUser = null
                 )
+
+                // navigate to recipes screen
+                appNavigator.tryNavigateTo(Destination.RecipesScreen())
+            }
+            is RegisterEvent.Login -> {
+                appNavigator.tryNavigateTo(Destination.RegisterScreen())
             }
         }
     }

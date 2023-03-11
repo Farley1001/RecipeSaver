@@ -5,6 +5,7 @@ plugins {
     kotlin("android")
     //
     id("kotlin-kapt")
+    id("kotlin-parcelize")
     id("dagger.hilt.android.plugin")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
@@ -91,7 +92,7 @@ android {
     }
     composeOptions {
         //kotlinCompilerExtensionVersion compose_version
-        kotlinCompilerExtensionVersion = "1.2.0-rc02"
+        kotlinCompilerExtensionVersion = "1.2.0"
     }
     packagingOptions {
         resources {
@@ -103,7 +104,7 @@ android {
 dependencies {
 
     implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.6.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.compose.ui:ui:1.4.0-alpha04")
     implementation("androidx.compose.material3:material3:1.1.0-alpha04")
     implementation("androidx.compose.ui:ui-tooling-preview:1.4.0-alpha04")
@@ -128,14 +129,13 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
     // google play services dependency
-    implementation("com.google.android.gms:play-services-auth:20.4.0")
-
+    implementation("com.google.android.gms:play-services-auth:20.4.1")
 
     // Compose dependencies
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
     implementation("androidx.navigation:navigation-compose:2.5.3")
+    //implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")    // removed when adding navigation to viewModels
     implementation("androidx.compose.material:material-icons-extended:1.4.0-alpha04")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
@@ -143,10 +143,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
 
     //Dagger - Hilt
-    implementation("com.google.dagger:hilt-android:2.40.5")
-    kapt("com.google.dagger:hilt-android-compiler:2.40.5")
-    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    implementation("com.google.dagger:hilt-android:2.42")
+    kapt("com.google.dagger:hilt-android-compiler:2.42")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     // Room
     implementation("androidx.room:room-runtime:2.5.0")

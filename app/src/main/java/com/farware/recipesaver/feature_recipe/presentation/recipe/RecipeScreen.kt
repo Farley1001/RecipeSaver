@@ -14,10 +14,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,10 +24,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.CategoryWithColor
 import com.farware.recipesaver.feature_recipe.presentation.appbar.ActionItem
 import com.farware.recipesaver.feature_recipe.presentation.appbar.OverflowMode
+import com.farware.recipesaver.feature_recipe.presentation.components.DropdownWithLabel
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.ChangeCategoryDialog
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.TabItem
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.TextWithAppendedContent
@@ -39,15 +36,18 @@ import com.farware.recipesaver.feature_recipe.presentation.recipe.steps_tab.Step
 import com.farware.recipesaver.feature_recipe.presentation.recipe.tips_tab.TipsTabScreen
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.mainTitle
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
+import com.farware.recipesaver.feature_recipe.presentation.util.CustomDialogPosition
 import com.farware.recipesaver.feature_recipe.presentation.util.TabOrder
+import com.farware.recipesaver.feature_recipe.presentation.util.UiEvent
+import com.farware.recipesaver.feature_recipe.presentation.util.customDialogPosition
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RecipeScreen(
-    navController: NavController,
     snackbarHostState: SnackbarHostState,
     viewModel: RecipeViewModel = hiltViewModel()
 ) {
-    val scope = rememberCoroutineScope()
+    //val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
 
     // following is used to show snackbars
@@ -61,17 +61,13 @@ fun RecipeScreen(
     val actionItems = listOf(
         ActionItem("Change Recipe Name", Icons.Default.EditNote, OverflowMode.NEVER_OVERFLOW) {
             viewModel.onEvent(
-                RecipeEvent.ChangeRecipeName
+                RecipeEvent.ToggleAddEditDialog
             )
         }
     )
 
+    val showAddEditDialog = viewModel.state.value.showAddEditRecipeDialog
     val recipe = viewModel.recipe.value
-    val name = viewModel.name.value
-    val categoryName = viewModel.categoryName.value
-    val prepTime = viewModel.prepTime.value
-    val cookTime = viewModel.cookTime.value
-    val favorite = viewModel.favorite.value
 
     val tabList = listOf(TabItem.Steps, TabItem.Ingredients, TabItem.Tips)
 
@@ -95,21 +91,21 @@ fun RecipeScreen(
         categoryColor = Color(viewModel.recipe.value!!.background(isSystemInDarkTheme()))
         onCategoryColor = Color(viewModel.recipe.value!!.onBackground(isSystemInDarkTheme()))
         // TODO Color
-        if(favorite) { favoriteColor = Color.Red }
+        if(viewModel.recipe.value!!.favorite!!) { favoriteColor = Color.Red }
 
         // prep-time time picker
         prepTimePickerDialog = TimePickerDialog(
             context,
             android.app.AlertDialog.THEME_DEVICE_DEFAULT_DARK,
             { _, h: Int, m: Int ->
-                if(h != prepTime.toInt() / 60 || m != prepTime.toInt() % 60) {
+                if(h != viewModel.recipe.value!!.prepTime!!.toInt() / 60 || m != viewModel.recipe.value!!.prepTime!!.toInt() % 60) {
                     prepTimeChanged.value = true
                     newPrepTime.value = (h*60) + m
-                    viewModel.onEvent(com.farware.recipesaver.feature_recipe.presentation.recipe.RecipeEvent.SavePrepTime(newPrepTime.value.toLong()))
+                    viewModel.onEvent(RecipeEvent.SavePrepTime(newPrepTime.value.toLong()))
                 }
             },
-            prepTime.toInt() / 60,
-            prepTime.toInt() % 60,
+            viewModel.recipe.value!!.prepTime!!.toInt() / 60,
+            viewModel.recipe.value!!.prepTime!!.toInt() % 60,
             true
         )
 
@@ -118,65 +114,71 @@ fun RecipeScreen(
             context,
             android.app.AlertDialog.THEME_DEVICE_DEFAULT_LIGHT,
             { _, h: Int, m: Int ->
-                if(h != cookTime.toInt() / 60 || m != cookTime.toInt() % 60) {
+                if(h != viewModel.recipe.value!!.cookTime!!.toInt() / 60 || m != viewModel.recipe.value!!.cookTime!!.toInt() % 60) {
                     cookTimeChanged.value = true
                     newCookTime.value = (h*60) + m
-                    viewModel.onEvent(com.farware.recipesaver.feature_recipe.presentation.recipe.RecipeEvent.SaveCookTime(newCookTime.value.toLong()))
+                    viewModel.onEvent(RecipeEvent.SaveCookTime(newCookTime.value.toLong()))
                 }
             },
-            cookTime.toInt() / 60,
-            cookTime.toInt() % 60,
+            viewModel.recipe.value!!.cookTime!!.toInt() / 60,
+            viewModel.recipe.value!!.cookTime!!.toInt() % 60,
             true
         )
 
     }
 
-    //
-    fun onSelectedTabChange(index: Int) {
-        viewModel.onEvent(com.farware.recipesaver.feature_recipe.presentation.recipe.RecipeEvent.SelectedTabChanged(index))
-    }
-
-    fun onNavBackButtonClick() {
-        navController.navigateUp()
-        //Toast.makeText(context, "Add/Edit Recipe Click", Toast.LENGTH_LONG).show()
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when(event) {
+                is UiEvent.ShowSnackBar -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.message
+                    )
+                }
+                is UiEvent.SaveRecipe -> {
+                    snackbarHostState.showSnackbar(
+                        message = "Recipe Saved"
+                    )
+                }
+            }
+        }
     }
 
     RecipeContent(
-        recipeId = viewModel.state.value.newRecipeId,
-        isNewRecipe = viewModel.state.value.isNewRecipe,
         snackbarHostState = snackbarHostState,
         categories = viewModel.state.value.categories,
         selectedCategoryIndex = viewModel.state.value.selectedCategoryIndex,
-        newCategorySelected = { viewModel.onEvent(RecipeEvent.NewSelectedCategory(it)) },
+        newCategorySelected = { viewModel.onEvent(RecipeEvent.NewCategorySelected(it)) },
         categoryColor = categoryColor,
         onCategoryColor = onCategoryColor,
         favoriteColor = favoriteColor,
-        name = name,
-        categoryName = categoryName,
-        prepTime = prepTime,
-        cookTime = cookTime,
-        favorite = favorite,
+        name = recipe!!.name,
+        description = recipe!!.description,
+        onRecipeNameTextChange = { viewModel.onEvent(RecipeEvent.RecipeNameTextChange(it)) },
+        onRecipeDescriptionTextChange = { viewModel.onEvent(RecipeEvent.RecipeDescriptionTextChange(it)) },
+        categoryName = recipe!!.category,
+        prepTime = viewModel.recipe.value!!.prepTime!!,
+        cookTime = viewModel.recipe.value!!.cookTime!!,
+        showAddEditDialog = showAddEditDialog,
+        onToggleAddEditDialog = { viewModel.onEvent(RecipeEvent.ToggleAddEditDialog) },
         selectedTabIndex = viewModel.state.value.selectedTabIndex,
         tabs = tabList,
-        onSelectedTabChange = { onSelectedTabChange(it) },
-        onNavBackButtonClick = { onNavBackButtonClick() },
+        onSelectedTabChange = { viewModel.onEvent(RecipeEvent.SelectedTabChanged(it)) },               //onSelectedTabChange(it)
+        onNavBackButtonClick = { viewModel.onEvent(RecipeEvent.NavigateBack) },                         //onNavBackButtonClick()
         isCategoryDialogOpen = viewModel.state.value.isCategoryDialogOpen,
-        toggleCategoryDialog = { viewModel.onEvent(RecipeEvent.ToggleCategoryDialog) },
+        onToggleCategoryDialog = { viewModel.onEvent(RecipeEvent.ToggleCategoryDialog) },
         onSaveCategoryClick = { viewModel.onEvent(RecipeEvent.SaveNewCategory) },
         onCancelCategoryClick = { viewModel.onEvent(RecipeEvent.ToggleCategoryDialog) },
         prepTimePicker = prepTimePickerDialog,
-        onSavePrepTime = { viewModel.onEvent(RecipeEvent.SavePrepTime(it)) },
         cookTimePicker = cookTimePickerDialog,
-        onSaveCookTime = { viewModel.onEvent(RecipeEvent.SaveCookTime(it)) },
-        onToggleFavorite = { viewModel.onEvent(RecipeEvent.ToggleFavorite) }
+        onToggleFavorite = { viewModel.onEvent(RecipeEvent.ToggleFavorite) },
+        onSaveRecipe = { viewModel.onEvent(RecipeEvent.SaveRecipe) }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun RecipeContent(
-    recipeId: Long,
-    isNewRecipe: Boolean,
     snackbarHostState: SnackbarHostState,
     categories: List<CategoryWithColor>,
     selectedCategoryIndex: Int,
@@ -185,55 +187,88 @@ fun RecipeContent(
     onCategoryColor: Color,
     favoriteColor: Color,
     name: String,
+    description: String,
     categoryName: String = "",
+    onRecipeNameTextChange: (String) -> Unit,
+    onRecipeDescriptionTextChange: (String) -> Unit,
     prepTime: Long,
     cookTime: Long,
-    favorite: Boolean,
+    showAddEditDialog: Boolean,
+    onToggleAddEditDialog: () -> Unit,
     selectedTabIndex: Int,
     tabs: List<TabItem>,
     onSelectedTabChange: (Int) -> Unit,
     onNavBackButtonClick: () -> Unit,
     isCategoryDialogOpen: Boolean,
-    toggleCategoryDialog: () -> Unit,
+    onToggleCategoryDialog: () -> Unit,
     onSaveCategoryClick: () -> Unit,
     onCancelCategoryClick: () -> Unit,
     prepTimePicker: TimePickerDialog,
-    onSavePrepTime: (Long) -> Unit,
     cookTimePicker: TimePickerDialog,
-    onSaveCookTime: (Long) -> Unit,
-    onToggleFavorite: () -> Unit
+    onToggleFavorite: () -> Unit,
+    onSaveRecipe: () -> Unit
 ) {
-    if(isNewRecipe) {
+    if(showAddEditDialog){
         AlertDialog(
-            onDismissRequest = {
-                // Dismiss the dialog when the user clicks outside the dialog or on the back
-                // button. If you want to disable that functionality, simply use an empty
-                // onDismissRequest.
-                // TODO: dismiss new recipe dialog
-            },
+            modifier = Modifier
+                .customDialogPosition(CustomDialogPosition.TOP)
+                .padding(8.dp),
+            onDismissRequest = { onToggleAddEditDialog() },
             title = {
-                Text(text = "Title")
+                Text(text = "Add / Edit Recipe")
             },
             text = {
-                // TODO show recipe name and description textFields
-                Text(text = "Turned on by default")
+                Column() {//modifier = Modifier.fillMaxSize()
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 50.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        if (categories.isNotEmpty() && selectedCategoryIndex != -1) {
+                            DropdownWithLabel(
+                                labelText = "Category",
+                                initialIndex = selectedCategoryIndex,
+                                items = categories,
+                                onDropdownItemSelected = { newCategorySelected(it) }
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+                    OutlinedTextField(
+                        value = name,
+                        label = { Text(text = "Recipe Name") },
+                        onValueChange = {
+                            onRecipeNameTextChange(it)
+                        }
+
+                    )
+                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+                    OutlinedTextField(
+                        value = description,
+                        label = { Text(text = "Recipe Description") },
+                        onValueChange = {
+                            onRecipeDescriptionTextChange(it)
+                        }
+                    )
+                }
             },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        // TODO save the new recipe
+                        onSaveRecipe()
                     }
                 ) {
-                    Text("Confirm")
+                    Text("Save")
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = {
-                        // TODO: dismiss new recipe dialog
+                        onToggleAddEditDialog()
                     }
                 ) {
-                    Text("Dismiss")
+                    Text("Cancel")
                 }
             }
         )
@@ -271,8 +306,18 @@ fun RecipeContent(
                         }
                     },
                     actions = {
-                        // TODO: Add any actions to the appbar
-                    })
+                        IconButton(
+                            onClick = {
+                                onToggleAddEditDialog()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.EditNote,
+                                contentDescription = "Localized description"
+                            )
+                        }
+                    }
+                )
             }
         ) { paddingValue ->
             Column(
@@ -309,7 +354,7 @@ fun RecipeContent(
                     ) {
                         TextWithAppendedContent(
                             text = categoryName,
-                            onTextClicked = { toggleCategoryDialog() },
+                            onTextClicked = { onToggleCategoryDialog() },
                             placeholderWidth = 24.sp,
                             placeholderHeight = 24.sp,
                             placeholderVertAlign = PlaceholderVerticalAlign.TextTop,
@@ -323,13 +368,13 @@ fun RecipeContent(
                             }
                         )
                         Text(
-                            text = "Prep: ${prepTime.toInt()}",
+                            text = if(prepTime > 0){"Prep: ${prepTime.toInt()}"}else{"Prep:"},
                             modifier = Modifier
                                 .clickable { prepTimePicker.show() }
                                 .padding(start = 4.dp),
                         )
                         Text(
-                            text = "Cook: ${cookTime!!.toInt() / 60}:${cookTime!!.toInt() % 60}",
+                            text = if(cookTime > 0){"Cook: ${cookTime!!.toInt() / 60}:${cookTime!!.toInt() % 60}"}else{"Cook:"},
                             modifier = Modifier
                                 .clickable { cookTimePicker.show() }
                                 .padding(start = 4.dp),
@@ -370,9 +415,7 @@ fun RecipeContent(
                         }
                     ) {targetState ->
                         when(targetState){
-                            TabOrder.STEP.ordinal -> { StepsTabScreen(
-                                recipeId = recipeId
-                            ) }
+                            TabOrder.STEP.ordinal -> { StepsTabScreen() }
                             TabOrder.INGREDIENT.ordinal -> { IngredientsTabScreen(snackbarHostState = snackbarHostState) }
                             TabOrder.TIP.ordinal -> { TipsTabScreen() }
                         }

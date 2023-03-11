@@ -1,5 +1,6 @@
 package com.farware.recipesaver.feature_recipe.domain.use_cases
 
+import com.farware.recipesaver.feature_recipe.domain.use_cases.ingredient.InsertIngredientReturnIdUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.recipe.*
 
 data class RecipeUseCases(
@@ -19,5 +20,6 @@ data class RecipeUseCases(
     val insertConversion: InsertConversionUseCase,
     val insertAllConversions: InsertAllConversionsUseCase,
     val insertMeasure: InsertMeasureUseCase,
-    val insertAllMeasures: InsertAllMeasuresUseCase
+    val insertAllMeasures: InsertAllMeasuresUseCase,
+    val insertRecipeReturnId: InsertRecipeReturnIdUseCase,
 )

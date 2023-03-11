@@ -9,6 +9,9 @@ import com.farware.recipesaver.feature_recipe.domain.util.RecipeSearch
 data class RecipesState(
     var recipeOrder: RecipeOrder = RecipeOrder.Date(OrderType.Descending),
     val recipeSearch: RecipeSearch = RecipeSearch.Category(),
+    val newRecipeName: String = "",
+    val newRecipeDescription: String = "",
+    val newRecipeCategoryId: Long = -1L,
     val isOrderSectionVisible: Boolean = false,
     val isSearchSectionVisible: Boolean = false,
     val isSelectFavoritesOnly: Boolean = false,

@@ -12,6 +12,8 @@ import com.farware.recipesaver.feature_recipe.domain.use_cases.RecipeUseCases
 import com.farware.recipesaver.feature_recipe.domain.util.OrderType
 import com.farware.recipesaver.feature_recipe.domain.util.RecipeOrder
 import com.farware.recipesaver.feature_recipe.domain.util.RecipeSearch
+import com.farware.recipesaver.feature_recipe.presentation.navigation.AppNavigator
+import com.farware.recipesaver.feature_recipe.presentation.navigation.Destination
 import com.farware.recipesaver.feature_recipe.presentation.util.LoadingState
 import com.farware.recipesaver.feature_recipe.presentation.util.QueryTypes
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RecipesViewModel @Inject constructor(
+    private val appNavigator: AppNavigator,
     private val recipeUseCases: RecipeUseCases,
     private val firebaseUseCases: FirebaseUseCases,
     private val savedStateHandle: SavedStateHandle,
@@ -164,6 +167,28 @@ class RecipesViewModel @Inject constructor(
                     isOrderSectionVisible = false,
                     isSearchSectionVisible = !state.value.isSearchSectionVisible
                 )
+            }
+            is RecipesEvent.NewRecipe -> {
+                // navigate to recipeAddEditScreen
+                appNavigator.tryNavigateTo(Destination.RecipeScreen(-1L))
+            }
+            is RecipesEvent.NavigateToRecipe -> {
+                appNavigator.tryNavigateTo(Destination.RecipeScreen(event.recipe.recipeId!!))
+            }
+            is RecipesEvent.NavigateToRecipeAddEdit -> {
+                appNavigator.tryNavigateTo(Destination.RecipeAddEditScreen(event.recipeId))
+            }
+            is RecipesEvent.NavMenuNavigate -> {
+                var route = event.route
+                when (route) {
+                    "sign_out" -> {
+                        signOut()
+                        route = Destination.LoginScreen()
+                    }
+                    else -> {
+                    }
+                }
+                appNavigator.tryNavigateTo(route)
             }
         }
     }

@@ -13,4 +13,5 @@ sealed class LoginEvent {
     data class PasswordFocusChange(val focusState: FocusState): LoginEvent()
     object ClearEmail: LoginEvent()
     object ClearPassword: LoginEvent()
+    object Register: LoginEvent()
 }
