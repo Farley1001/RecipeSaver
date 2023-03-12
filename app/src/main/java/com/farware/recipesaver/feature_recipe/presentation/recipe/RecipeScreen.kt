@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.CategoryWithColor
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.Category
 import com.farware.recipesaver.feature_recipe.presentation.appbar.ActionItem
 import com.farware.recipesaver.feature_recipe.presentation.appbar.OverflowMode
 import com.farware.recipesaver.feature_recipe.presentation.components.DropdownWithLabel
@@ -180,7 +180,7 @@ fun RecipeScreen(
 @Composable
 fun RecipeContent(
     snackbarHostState: SnackbarHostState,
-    categories: List<CategoryWithColor>,
+    categories: List<Category>,
     selectedCategoryIndex: Int,
     newCategorySelected: (Long) -> Unit,
     categoryColor: Color,

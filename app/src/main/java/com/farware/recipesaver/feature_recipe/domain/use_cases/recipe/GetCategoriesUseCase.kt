@@ -1,6 +1,6 @@
 package com.farware.recipesaver.feature_recipe.domain.use_cases.recipe
 
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.CategoryWithColor
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.Category
 import com.farware.recipesaver.feature_recipe.domain.repository.RecipeRepository
 import com.farware.recipesaver.feature_recipe.domain.util.CategoryOrder
 import com.farware.recipesaver.feature_recipe.domain.util.OrderType
@@ -12,7 +12,7 @@ class GetCategoriesUseCase(
 ) {
     operator fun invoke(
         categoryOrder: CategoryOrder = CategoryOrder.Name(OrderType.Descending)
-    ): Flow<List<CategoryWithColor>> {
+    ): Flow<List<Category>> {
         return repository.getCategories().map { categories ->
             when (categoryOrder.orderType) {
                 is OrderType.Ascending -> {

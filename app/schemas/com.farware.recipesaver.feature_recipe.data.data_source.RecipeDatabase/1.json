@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "d235bd3a31e867a0cbd36bf796a154a9",
+    "identityHash": "c42c3da917916cc4e601ded025ede566",
     "entities": [
       {
         "tableName": "recipe_table",
@@ -105,71 +105,11 @@
       },
       {
         "tableName": "category_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`categoryId` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `colorId` INTEGER NOT NULL, `timeStamp` INTEGER NOT NULL, FOREIGN KEY(`colorId`) REFERENCES `category_color_table`(`categoryColorId`) ON UPDATE NO ACTION ON DELETE SET DEFAULT )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`categoryId` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `lightThemeColor` INTEGER NOT NULL, `onLightThemeColor` INTEGER NOT NULL, `darkThemeColor` INTEGER NOT NULL, `onDarkThemeColor` INTEGER NOT NULL, `timeStamp` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "categoryId",
             "columnName": "categoryId",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "colorId",
-            "columnName": "colorId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "timeStamp",
-            "columnName": "timeStamp",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "categoryId"
-          ]
-        },
-        "indices": [
-          {
-            "name": "index_category_table_colorId",
-            "unique": false,
-            "columnNames": [
-              "colorId"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_category_table_colorId` ON `${TABLE_NAME}` (`colorId`)"
-          }
-        ],
-        "foreignKeys": [
-          {
-            "table": "category_color_table",
-            "onDelete": "SET DEFAULT",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "colorId"
-            ],
-            "referencedColumns": [
-              "categoryColorId"
-            ]
-          }
-        ]
-      },
-      {
-        "tableName": "category_color_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`categoryColorId` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `lightThemeColor` INTEGER NOT NULL, `onLightThemeColor` INTEGER NOT NULL, `darkThemeColor` INTEGER NOT NULL, `onDarkThemeColor` INTEGER NOT NULL, `timeStamp` INTEGER NOT NULL)",
-        "fields": [
-          {
-            "fieldPath": "categoryColorId",
-            "columnName": "categoryColorId",
             "affinity": "INTEGER",
             "notNull": false
           },
@@ -213,10 +153,20 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "categoryColorId"
+            "categoryId"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_category_table_name",
+            "unique": true,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_category_table_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -619,7 +569,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd235bd3a31e867a0cbd36bf796a154a9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c42c3da917916cc4e601ded025ede566')"
     ]
   }
 }

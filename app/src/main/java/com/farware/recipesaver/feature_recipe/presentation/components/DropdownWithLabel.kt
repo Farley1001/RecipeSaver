@@ -2,28 +2,22 @@ package com.farware.recipesaver.feature_recipe.presentation.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.PlaceholderVerticalAlign
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.CategoryWithColor
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.Category
 import com.farware.recipesaver.feature_recipe.presentation.recipe.components.TextWithAppendedContent
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,7 +25,7 @@ import com.farware.recipesaver.feature_recipe.presentation.recipe.components.Tex
 fun DropdownWithLabel(
     labelText: String,
     initialIndex: Int,
-    items: List<CategoryWithColor>,
+    items: List<Category>,
     onDropdownItemSelected: (Long) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }

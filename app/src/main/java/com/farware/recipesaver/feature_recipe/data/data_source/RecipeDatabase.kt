@@ -11,7 +11,6 @@ import com.farware.recipesaver.feature_recipe.domain.model.recipe.*
     entities = [
         RecipeEntity::class,
         CategoryEntity::class,
-        CategoryColorEntity::class,
         ConversionEntity::class,
         IngredientEntity::class,
         MeasureEntity::class,

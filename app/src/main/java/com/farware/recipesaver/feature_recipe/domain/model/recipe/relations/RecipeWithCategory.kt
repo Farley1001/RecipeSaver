@@ -3,7 +3,7 @@ package com.farware.recipesaver.feature_recipe.domain.model.recipe.relations
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Recipe
 
 
-data class RecipeWithCategoryAndColor(
+data class RecipeWithCategory(
     val recipeId: Long? = null,
     val categoryId: Long,
     val name: String,

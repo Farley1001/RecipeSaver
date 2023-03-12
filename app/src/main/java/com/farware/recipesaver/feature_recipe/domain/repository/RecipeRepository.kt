@@ -1,10 +1,8 @@
 package com.farware.recipesaver.feature_recipe.domain.repository
 
-import androidx.lifecycle.LiveData
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.*
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.CategoryWithColor
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.FullRecipeIngredient
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategoryAndColor
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategory
 import kotlinx.coroutines.flow.Flow
 
 interface RecipeRepository {
@@ -12,9 +10,9 @@ interface RecipeRepository {
     /*
             recipes
     */
-    fun getRecipes(onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColor>>
+    fun getRecipes(onlyFavorites: Boolean): Flow<List<RecipeWithCategory>>
 
-    suspend fun getRecipeById(id: Long): RecipeWithCategoryAndColor?
+    suspend fun getRecipeById(id: Long): RecipeWithCategory?
 
     suspend fun insertRecipe(recipe: Recipe)
 
@@ -22,20 +20,20 @@ interface RecipeRepository {
 
     suspend fun deleteRecipe(recipe: Recipe)
 
-    fun searchRecipesOnName(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColor>>
+    fun searchRecipesOnName(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategory>>
 
-    fun searchRecipesOnCategory(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColor>>
+    fun searchRecipesOnCategory(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategory>>
 
-    fun searchRecipesOnIngredients(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColor>>
+    fun searchRecipesOnIngredients(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategory>>
 
-    fun searchRecipesOnDirections(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColor>>
+    fun searchRecipesOnDirections(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategory>>
 
     /*
             categories
     */
-    fun getCategories(): Flow<List<CategoryWithColor>>
+    fun getCategories(): Flow<List<Category>>
 
-    suspend fun getCategoryById(id: Int): CategoryWithColor?
+    suspend fun getCategoryById(id: Int): Category?
 
     suspend fun insertCategory(category: Category)
 

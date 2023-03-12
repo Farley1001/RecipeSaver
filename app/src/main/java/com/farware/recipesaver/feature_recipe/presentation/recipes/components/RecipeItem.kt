@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,12 +24,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategoryAndColor
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategory
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 
 @Composable
 fun RecipeItem(
-    recipe: RecipeWithCategoryAndColor,
+    recipe: RecipeWithCategory,
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 10.dp,
     cutCornerSize: Dp = 30.dp,
@@ -53,7 +52,7 @@ fun RecipeItem(
 @Composable
 fun RecipeItemContent(
     modifier: Modifier,
-    recipe: RecipeWithCategoryAndColor,
+    recipe: RecipeWithCategory,
     cornerRadius: Dp,
     cutCornerSize: Dp,
     categoryColor: Color,

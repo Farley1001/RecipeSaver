@@ -1,23 +1,24 @@
 package com.farware.recipesaver.feature_recipe.data.entities
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Category
 
 @Entity(
     tableName = "category_table",
-    foreignKeys = [
-        ForeignKey(entity = CategoryColorEntity::class, parentColumns = ["categoryColorId"], childColumns = ["colorId"], onDelete = ForeignKey.SET_DEFAULT)   //
-    ],
-    indices = [Index("colorId")]
+    indices = [
+        Index(value = ["name"], unique = true)
+    ]
 )
 data class CategoryEntity(
     @PrimaryKey(autoGenerate = true)
     val categoryId: Long? = null,
     val name: String,
-    val colorId: Long,
+    val lightThemeColor: Int,
+    val onLightThemeColor: Int,
+    val darkThemeColor: Int,
+    val onDarkThemeColor: Int,
     val timeStamp: Long,
 ) {
     companion object {
@@ -25,7 +26,10 @@ data class CategoryEntity(
             return CategoryEntity(
                 category.categoryId,
                 category.name,
-                category.colorId,
+                category.lightThemeColor,
+                category.onLightThemeColor,
+                category.darkThemeColor,
+                category.onDarkThemeColor,
                 category.timeStamp
             )
         }
@@ -38,7 +42,10 @@ data class CategoryEntity(
         return Category(
             categoryId,
             name,
-            colorId,
+            lightThemeColor,
+            onLightThemeColor,
+            darkThemeColor,
+            onDarkThemeColor,
             timeStamp
         )
     }

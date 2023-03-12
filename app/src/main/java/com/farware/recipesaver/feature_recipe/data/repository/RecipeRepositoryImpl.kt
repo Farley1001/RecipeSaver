@@ -1,17 +1,13 @@
 package com.farware.recipesaver.feature_recipe.data.repository
 
-import androidx.lifecycle.LiveData
 import com.farware.recipesaver.feature_recipe.data.data_source.RecipeDao
 import com.farware.recipesaver.feature_recipe.data.entities.*
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.*
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.CategoryWithColor
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.FullRecipeIngredient
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategoryAndColor
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategory
 import com.farware.recipesaver.feature_recipe.domain.repository.RecipeRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.single
 
 class RecipeRepositoryImpl(
     private val dao: RecipeDao
@@ -20,12 +16,12 @@ class RecipeRepositoryImpl(
     /*
             recipes
     */
-    override fun getRecipes(onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColor>> {
-        return dao.getRecipes(onlyFavorites).map { recipes -> recipes.map { it.toRecipeWithCategoryAndColor() } }
+    override fun getRecipes(onlyFavorites: Boolean): Flow<List<RecipeWithCategory>> {
+        return dao.getRecipes(onlyFavorites).map { recipes -> recipes.map { it.toRecipeWithCategory() } }
     }
 
-    override suspend fun getRecipeById(id: Long): RecipeWithCategoryAndColor? {
-        return dao.getRecipeById(id)?.toRecipeWithCategoryAndColor()
+    override suspend fun getRecipeById(id: Long): RecipeWithCategory? {
+        return dao.getRecipeById(id)?.toRecipeWithCategory()
     }
 
     override suspend fun insertRecipe(recipe: Recipe) {
@@ -40,31 +36,31 @@ class RecipeRepositoryImpl(
         dao.deleteRecipe(RecipeEntity.from(recipe))
     }
 
-    override fun searchRecipesOnName(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColor>> {
-        return dao.searchRecipesOnName(search, onlyFavorites)!!.map { recipes -> recipes.map { it.toRecipeWithCategoryAndColor() } }
+    override fun searchRecipesOnName(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategory>> {
+        return dao.searchRecipesOnName(search, onlyFavorites)!!.map { recipes -> recipes.map { it.toRecipeWithCategory() } }
     }
 
-    override fun searchRecipesOnCategory(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColor>> {
-        return dao.searchRecipesOnCategory(search, onlyFavorites)!!.map { recipes -> recipes.map { it.toRecipeWithCategoryAndColor() } }
+    override fun searchRecipesOnCategory(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategory>> {
+        return dao.searchRecipesOnCategory(search, onlyFavorites)!!.map { recipes -> recipes.map { it.toRecipeWithCategory() } }
     }
 
-    override fun searchRecipesOnIngredients(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColor>> {
-        return dao.searchRecipesOnIngredients(search, onlyFavorites)!!.map { recipes -> recipes.map { it.toRecipeWithCategoryAndColor() } }
+    override fun searchRecipesOnIngredients(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategory>> {
+        return dao.searchRecipesOnIngredients(search, onlyFavorites)!!.map { recipes -> recipes.map { it.toRecipeWithCategory() } }
     }
 
-    override fun searchRecipesOnDirections(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColor>> {
-        return dao.searchRecipesOnDirections(search, onlyFavorites)!!.map { recipes -> recipes.map { it.toRecipeWithCategoryAndColor() } }
+    override fun searchRecipesOnDirections(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategory>> {
+        return dao.searchRecipesOnDirections(search, onlyFavorites)!!.map { recipes -> recipes.map { it.toRecipeWithCategory() } }
     }
 
     /*
             categories
     */
-    override fun getCategories(): Flow<List<CategoryWithColor>> {
-        return dao.getCategories().map { categories -> categories.map { it.toCategoryWithColor() } }
+    override fun getCategories(): Flow<List<Category>> {
+        return dao.getCategories().map { categories -> categories.map { it.toCategory() } }
     }
 
-    override suspend fun getCategoryById(id: Int): CategoryWithColor? {
-        return dao.getCategoryById(id)?.toCategoryWithColor()
+    override suspend fun getCategoryById(id: Int): Category? {
+        return dao.getCategoryById(id)?.toCategory()
     }
 
     override suspend fun insertCategory(category: Category) {

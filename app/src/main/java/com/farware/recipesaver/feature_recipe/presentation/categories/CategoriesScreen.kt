@@ -14,14 +14,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Category
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.CategoryWithColor
 import com.farware.recipesaver.feature_recipe.domain.util.CategoryOrder
 import com.farware.recipesaver.feature_recipe.presentation.appbar.ActionItem
 import com.farware.recipesaver.feature_recipe.presentation.appbar.ActionMenu
@@ -29,7 +26,6 @@ import com.farware.recipesaver.feature_recipe.presentation.appbar.NavDrawerMenu
 import com.farware.recipesaver.feature_recipe.presentation.appbar.OverflowMode
 import com.farware.recipesaver.feature_recipe.presentation.categories.components.CategoryItem
 import com.farware.recipesaver.feature_recipe.presentation.categories.components.OrderSection
-import com.farware.recipesaver.feature_recipe.presentation.navigation.Destination
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.fabShape
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.mainTitle
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
@@ -72,7 +68,7 @@ fun CategoriesScreen(
         //Toast.makeText(context, "Add/Edit Recipe Click", Toast.LENGTH_LONG).show()
     }
 
-    fun categoryItemClicked(category: CategoryWithColor) {
+    fun categoryItemClicked(category: Category) {
         /*navController.navigate(Screen.AddEditCategoriesScreen.withArgs(
             category.category.categoryId.toString()
         ))*/
@@ -118,7 +114,7 @@ fun CategoriesScreen(
 @Composable
 fun CategoriesContent(
     navDrawerState: DrawerState,
-    categoryItems: List<CategoryWithColor>,
+    categoryItems: List<Category>,
     actionItems: List<ActionItem>,
     context: Context,
     hasSearchString: Boolean,
@@ -131,7 +127,7 @@ fun CategoriesContent(
     onNavButtonOpenClick: () -> Unit,
     onNavButtonCloseClick: (String) -> Unit,
     onAddEditCategoryButtonClick: () -> Unit,
-    onCategoryItemClick: (CategoryWithColor) -> Unit,
+    onCategoryItemClick: (Category) -> Unit,
     onCategoryItemDeleteClick: (Category) -> Unit,
     onConfirmDeleteCategoryClick: () -> Unit,
     onCancelDeleteCategoryClick: () -> Unit
@@ -236,7 +232,7 @@ fun CategoriesContent(
                                     onCategoryItemClick(category)
                                 },
                             onDeleteClick = {
-                                onCategoryItemDeleteClick(category.toCategory())
+                                onCategoryItemDeleteClick(category)
                             }
                         )
                         Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))

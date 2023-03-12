@@ -7,7 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.CategoryWithColor
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.Category
 import com.farware.recipesaver.feature_recipe.presentation.components.DropdownWithLabel
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 import com.farware.recipesaver.feature_recipe.presentation.util.CustomDialogPosition
@@ -57,7 +57,7 @@ fun RecipeAddEditScreen(
 @Composable
 fun RecipeAddEditContent(
     snackbarHostState: SnackbarHostState,
-    categories: List<CategoryWithColor>,
+    categories: List<Category>,
     recipeName: String,
     recipeDescription: String,
     selectedCategoryIndex: Int,

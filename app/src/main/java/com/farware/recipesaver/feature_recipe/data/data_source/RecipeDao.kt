@@ -1,11 +1,9 @@
 package com.farware.recipesaver.feature_recipe.data.data_source
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.farware.recipesaver.feature_recipe.data.entities.*
-import com.farware.recipesaver.feature_recipe.data.entities.relations.CategoryWithColorRelation
 import com.farware.recipesaver.feature_recipe.data.entities.relations.FullRecipeIngredientRelation
-import com.farware.recipesaver.feature_recipe.data.entities.relations.RecipeWithCategoryAndColorRelation
+import com.farware.recipesaver.feature_recipe.data.entities.relations.RecipeWithCategoryRelation
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,21 +14,21 @@ interface RecipeDao {
     */
     @Transaction
     @Query("SELECT * FROM recipe_table where favorite = :onlyFavorites or favorite = 1")
-    fun getRecipes(onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColorRelation>>
+    fun getRecipes(onlyFavorites: Boolean): Flow<List<RecipeWithCategoryRelation>>
 
     @Transaction
     @Query("Select * from recipe_table where recipeId = :id")
-    suspend fun getRecipeById(id: Long): RecipeWithCategoryAndColorRelation?
+    suspend fun getRecipeById(id: Long): RecipeWithCategoryRelation?
 
     @Transaction
     @Query("Select * from recipe_table where name LIKE '%' || :search || '%' and (favorite = :onlyFavorites or favorite = 1)")
-    fun searchRecipesOnName(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColorRelation>>?
+    fun searchRecipesOnName(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryRelation>>?
 
     @Transaction
     @Query("Select recipe.* From recipe_table as recipe " +
             "Inner Join category_table as category on recipe.categoryId = category.categoryId " +
             "Where category.name Like '%' || :search || '%' and (favorite = :onlyFavorites or favorite = 1)")
-    fun searchRecipesOnCategory(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColorRelation>>?
+    fun searchRecipesOnCategory(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryRelation>>?
 
     @Transaction
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)   // suppress the warning not all columns used
@@ -39,7 +37,7 @@ interface RecipeDao {
             "Inner Join recipe_ingredient_table as recipeIngredient on recipeIngredient.recipeId = recipe.recipeId " +
             "Inner Join ingredient_table as ingredient on ingredient.ingredientId = recipeIngredient.ingredientId " +
             " where ingredient.name Like '%' || :search || '%' and (favorite = :onlyFavorites or favorite = 1)")
-    fun searchRecipesOnIngredients(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColorRelation>>?
+    fun searchRecipesOnIngredients(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryRelation>>?
 
     @Transaction
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)   // suppress the warning not all columns used
@@ -47,7 +45,7 @@ interface RecipeDao {
     @Query("Select * from recipe_table as recipe " +
             "Inner Join step_table as step on step.recipeId = recipe.recipeId " +
             "where text LIKE '%' || :search || '%' and (favorite = :onlyFavorites or favorite = 1)")
-    fun searchRecipesOnDirections(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryAndColorRelation>>?
+    fun searchRecipesOnDirections(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategoryRelation>>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecipe(recipe: RecipeEntity)
@@ -64,11 +62,11 @@ interface RecipeDao {
     */
     @Transaction
     @Query("Select * from category_table")
-    fun getCategories(): Flow<List<CategoryWithColorRelation>>
+    fun getCategories(): Flow<List<CategoryEntity>>
 
     @Transaction
     @Query("Select * from category_table where categoryId = :id")
-    suspend fun getCategoryById(id: Int): CategoryWithColorRelation?
+    suspend fun getCategoryById(id: Int): CategoryEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategory(category: CategoryEntity)
@@ -78,7 +76,7 @@ interface RecipeDao {
 
     /*
             category_color entity
-    */
+    *//*
     @Query("Select * from category_color_table")
     fun getCategoryColors(): Flow<List<CategoryColorEntity>>
 
@@ -89,7 +87,7 @@ interface RecipeDao {
     suspend fun insertCategoryColor(categoryColor: CategoryColorEntity)
 
     @Delete
-    suspend fun deleteCategoryColor(categoryColor: CategoryColorEntity)
+    suspend fun deleteCategoryColor(categoryColor: CategoryColorEntity)*/
 
     /*
             step entity

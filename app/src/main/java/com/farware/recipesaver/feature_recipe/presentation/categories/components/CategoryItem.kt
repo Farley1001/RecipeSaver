@@ -23,12 +23,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.CategoryWithColor
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.Category
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 
 @Composable
 fun CategoryItem(
-    category: CategoryWithColor,
+    category: Category,
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 10.dp,
     cutCornerSize: Dp = 30.dp,

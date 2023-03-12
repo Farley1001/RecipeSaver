@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Recipe
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategoryAndColor
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategory
 import com.farware.recipesaver.feature_recipe.domain.util.RecipeOrder
 import com.farware.recipesaver.feature_recipe.domain.util.RecipeSearch
 import com.farware.recipesaver.feature_recipe.presentation.appbar.*
@@ -112,7 +112,7 @@ fun RecipesScreen(
 @Composable
 fun RecipesContent(
     navDrawerState: DrawerState,
-    recipeItems: List<RecipeWithCategoryAndColor>,
+    recipeItems: List<RecipeWithCategory>,
     actionItems: List<ActionItem>,
     context: Context,
     searchStringText: String,
@@ -133,7 +133,7 @@ fun RecipesContent(
     onNavButtonOpenClick: () -> Unit,
     onNavButtonCloseClick: (String) -> Unit,
     onNewRecipeButtonClick: () -> Unit,
-    onRecipeItemClick: (RecipeWithCategoryAndColor) -> Unit,
+    onRecipeItemClick: (RecipeWithCategory) -> Unit,
     onRecipeItemLongClick: (Long) -> Unit,
     onRecipeItemDeleteClick: (Recipe) -> Unit,
     onConfirmDeleteRecipeClick: () -> Unit,

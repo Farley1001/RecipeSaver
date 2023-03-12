@@ -1,6 +1,6 @@
 package com.farware.recipesaver.feature_recipe.domain.use_cases.recipe
 
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategoryAndColor
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategory
 import com.farware.recipesaver.feature_recipe.domain.repository.RecipeRepository
 import com.farware.recipesaver.feature_recipe.domain.util.OrderType
 import com.farware.recipesaver.feature_recipe.domain.util.RecipeOrder
@@ -14,7 +14,7 @@ class SearchRecipesOnIngredientsUseCase(
         searchString: String,
         onlyFavorites: Boolean = false,
         recipeOrder: RecipeOrder = RecipeOrder.Category(OrderType.Ascending)
-    ): Flow<List<RecipeWithCategoryAndColor>> {
+    ): Flow<List<RecipeWithCategory>> {
         return repository.searchRecipesOnIngredients(searchString, onlyFavorites).map { recipes ->
             when (recipeOrder.orderType) {
                 is OrderType.Ascending -> {

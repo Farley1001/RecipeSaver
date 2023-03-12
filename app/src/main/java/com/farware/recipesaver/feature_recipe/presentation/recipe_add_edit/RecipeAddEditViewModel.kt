@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.InvalidRecipeException
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Recipe
-import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategoryAndColor
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.RecipeWithCategory
 import com.farware.recipesaver.feature_recipe.domain.use_cases.RecipeUseCases
 import com.farware.recipesaver.feature_recipe.presentation.navigation.AppNavigator
 import com.farware.recipesaver.feature_recipe.presentation.navigation.Destination
@@ -38,7 +38,7 @@ class RecipeAddEditViewModel @Inject constructor(
 
     private var getCategoriesJob: Job? = null
 
-    private val newRecipe = RecipeWithCategoryAndColor(
+    private val newRecipe = RecipeWithCategory(
         recipeId = null,
         categoryId = -1,
         name = "",
@@ -57,8 +57,8 @@ class RecipeAddEditViewModel @Inject constructor(
         timeStamp = System.currentTimeMillis()
     )
 
-    private val _recipe = mutableStateOf<RecipeWithCategoryAndColor?>(newRecipe)
-    val recipe: State<RecipeWithCategoryAndColor?> = _recipe
+    private val _recipe = mutableStateOf<RecipeWithCategory?>(newRecipe)
+    val recipe: State<RecipeWithCategory?> = _recipe
 
     init {
         getCategories()
@@ -81,8 +81,6 @@ class RecipeAddEditViewModel @Inject constructor(
                 _recipe.value = recipe.value?.copy(
                     categoryId = state.value.categories[state.value.selectedCategoryIndex].categoryId!!,
                     category = state.value.categories[state.value.selectedCategoryIndex].name,
-                    color = state.value.categories[state.value.selectedCategoryIndex].color,
-                    colorId = state.value.categories[state.value.selectedCategoryIndex].colorId,
                     lightThemeColor = state.value.categories[state.value.selectedCategoryIndex].lightThemeColor,
                     onLightThemeColor = state.value.categories[state.value.selectedCategoryIndex].onLightThemeColor,
                     darkThemeColor = state.value.categories[state.value.selectedCategoryIndex].darkThemeColor,
