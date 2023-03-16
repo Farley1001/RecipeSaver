@@ -133,7 +133,7 @@ fun RecipesContent(
     onNavButtonOpenClick: () -> Unit,
     onNavButtonCloseClick: (String) -> Unit,
     onNewRecipeButtonClick: () -> Unit,
-    onRecipeItemClick: (RecipeWithCategory) -> Unit,
+    onRecipeItemClick: (Long) -> Unit,
     onRecipeItemLongClick: (Long) -> Unit,
     onRecipeItemDeleteClick: (Recipe) -> Unit,
     onConfirmDeleteRecipeClick: () -> Unit,
@@ -267,7 +267,7 @@ fun RecipesContent(
                                 .fillMaxWidth()
                                 .combinedClickable(
                                     onClick = {
-                                        onRecipeItemClick(recipe)
+                                        onRecipeItemClick(recipe.recipeId!!)
                                     },
                                     onLongClick = {
                                         onRecipeItemLongClick(recipe.recipeId!!)

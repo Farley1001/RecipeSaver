@@ -135,7 +135,7 @@ class RecipeAddEditViewModel @Inject constructor(
                     recipeUseCases.addRecipe(recipe)
                 }
                 // TODO navigate to recipe screen with new id
-                _eventFlow.emit(UiEvent.SaveRecipe)
+                _eventFlow.emit(UiEvent.Success)
             } catch (e: InvalidRecipeException) {
                 _eventFlow.emit(
                     UiEvent.ShowSnackBar(

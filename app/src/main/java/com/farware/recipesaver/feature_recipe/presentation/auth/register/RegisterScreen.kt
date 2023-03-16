@@ -17,11 +17,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -35,10 +39,12 @@ import com.farware.recipesaver.feature_recipe.presentation.components.OutlinedTe
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 import com.farware.recipesaver.feature_recipe.presentation.util.LoadingState
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel()
 ) {
+    val focusManager = LocalFocusManager.current
     val status by viewModel.loadingState.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -68,6 +74,7 @@ fun RegisterScreen(
     }
 
     RegisterContent(
+        focusManager = focusManager,
         email = inputEmail.text,
         emailError = inputEmail.hasError,
         emailErrorMsg = inputEmail.errorMsg,
@@ -92,8 +99,10 @@ fun RegisterScreen(
 }
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RegisterContent(
+    focusManager: FocusManager,
     email: String,
     emailError: Boolean,
     emailErrorMsg: String,
@@ -115,8 +124,6 @@ fun RegisterContent(
     onRegisterButtonClick: () -> Unit,
     onLoginLinkClicked: () -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
-
     Column(
         modifier = Modifier
             .fillMaxSize()

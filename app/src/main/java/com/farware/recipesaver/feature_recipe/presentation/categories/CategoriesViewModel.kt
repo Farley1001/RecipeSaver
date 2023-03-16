@@ -57,6 +57,9 @@ class CategoriesViewModel @Inject constructor(
                 getCategories(state.value.categoryOrder)
 
             }
+            is CategoriesEvent.NewCategory -> {
+                appNavigator.tryNavigateTo(Destination.CategoryScreen(-1))
+            }
             is CategoriesEvent.DeleteCategory -> {
                 viewModelScope.launch {
                     _state.value = state.value.copy(
@@ -91,6 +94,9 @@ class CategoriesViewModel @Inject constructor(
                     isSearchSectionVisible = false,
                     isOrderSectionVisible = !state.value.isOrderSectionVisible
                 )
+            }
+            is CategoriesEvent.NavigateToCategory -> {
+                appNavigator.tryNavigateTo(Destination.CategoryScreen(event.categoryId))
             }
             is CategoriesEvent.NavMenuNavigate -> {
                 var route = event.route

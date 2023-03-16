@@ -173,7 +173,7 @@ class RecipesViewModel @Inject constructor(
                 appNavigator.tryNavigateTo(Destination.RecipeScreen(-1L))
             }
             is RecipesEvent.NavigateToRecipe -> {
-                appNavigator.tryNavigateTo(Destination.RecipeScreen(event.recipe.recipeId!!))
+                appNavigator.tryNavigateTo(Destination.RecipeScreen(event.recipeId))
             }
             is RecipesEvent.NavigateToRecipeAddEdit -> {
                 appNavigator.tryNavigateTo(Destination.RecipeAddEditScreen(event.recipeId))

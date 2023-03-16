@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -17,8 +18,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,6 +47,8 @@ fun IngredientsTabScreen(
     snackbarHostState: SnackbarHostState,
     viewModel: IngredientsTabViewModel = hiltViewModel()
 ) {
+    val focusManager = LocalFocusManager.current
+
     if(viewModel.state.value.showSnackbar) {
         viewModel.state.value.copy(
             showSnackbar = false
@@ -52,6 +59,7 @@ fun IngredientsTabScreen(
     }
 
     IngredientsTabContent(
+        focusManager = focusManager,
         ingredients = viewModel.state.value.ingredientFocus,
         newAmountText = viewModel.state.value.newAmountText,
         newMeasureText = viewModel.state.value.newMeasureText,
@@ -91,6 +99,7 @@ fun IngredientsTabScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IngredientsTabContent(
+    focusManager: FocusManager,
     ingredients: List<IngredientFocus>,
     newAmountText: String,
     newMeasureText: String,
@@ -149,7 +158,11 @@ fun IngredientsTabContent(
                         label = "Amount",
                         onFocusChanged = {
                             // TODO: Add if necessary do the amount and measure parse
-                        }
+                        },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(onNext = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        })
                     )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
                     OutlinedTextFieldWithDropdown(
@@ -159,7 +172,11 @@ fun IngredientsTabContent(
                         dropDownExpanded = showMeasureDropdown,
                         textChanged = { onNewMeasureTextChanged(it) },
                         setTextFromDropdown = { setMeasureTextFromDropdown(it) },
-                        onDismissRequest = { dismissAllDropdowns() }
+                        onDismissRequest = { dismissAllDropdowns() },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(onNext = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        })
                     )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
                     OutlinedTextFieldWithDropdown(
@@ -169,29 +186,12 @@ fun IngredientsTabContent(
                         dropDownExpanded = showIngredientDropdown,
                         textChanged = { onNewIngredientTextChanged(it) },
                         setTextFromDropdown = { setIngredientTextFromDropdown(it) },
-                        onDismissRequest = { dismissAllDropdowns() }
+                        onDismissRequest = { dismissAllDropdowns() },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onNext = {
+                            focusManager.clearFocus()
+                        })
                     )
-/*
-                    OutlinedTextFieldWithError(
-                        text = newMeasureText,
-                        onTextChanged = { onNewMeasureTextChanged(it) },
-                        label = "Measure",
-                        onFocusChanged = {
-                            // TODO: Add if necessary do the amount and measure parse
-                            // onNewAmountAndMeasureFocusChanged
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
-                    OutlinedTextFieldWithError(
-                        text = newIngredientText,
-                        onTextChanged = { onNewIngredientTextChanged(it) },
-                        label = "Ingredient",
-                        onFocusChanged = {
-                            // TODO: Add if necessary do the ingredient parse
-                            // onNewIngredientFocusChanged
-
-                        }
-                    )*/
                 }
             },
             confirmButton = {

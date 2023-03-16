@@ -1,10 +1,16 @@
 package com.farware.recipesaver.feature_recipe.presentation.recipe_add_edit
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Category
@@ -20,7 +26,7 @@ fun RecipeAddEditScreen(
     snackbarHostState: SnackbarHostState,
     viewModel: RecipeAddEditViewModel = hiltViewModel()
 ) {
-    //val snackbarHostState = remember { SnackbarHostState() }
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -30,9 +36,9 @@ fun RecipeAddEditScreen(
                         message = event.message
                     )
                 }
-                is UiEvent.SaveRecipe -> {
+                is UiEvent.Success -> {
                     snackbarHostState.showSnackbar(
-                        message = "Recipe Saved"
+                        message = "Save Succeeded"
                     )
                 }
             }
@@ -40,6 +46,7 @@ fun RecipeAddEditScreen(
     }
 
     RecipeAddEditContent(
+        focusManager = focusManager,
         snackbarHostState = snackbarHostState,
         categories = viewModel.state.value.categories,
         recipeName = viewModel.recipe.value!!.name,
@@ -56,6 +63,7 @@ fun RecipeAddEditScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeAddEditContent(
+    focusManager: FocusManager,
     snackbarHostState: SnackbarHostState,
     categories: List<Category>,
     recipeName: String,
@@ -99,13 +107,21 @@ fun RecipeAddEditContent(
                     OutlinedTextField(
                         value = recipeName,
                         label = { Text(text = "Recipe Name") },
-                        onValueChange = { onRecipeNameTextChange(it) }
+                        onValueChange = { onRecipeNameTextChange(it) },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(onNext = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        })
                     )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
                     OutlinedTextField(
                         value = recipeDescription,
                         label = { Text(text = "Recipe Description") },
-                        onValueChange = { onRecipeDescriptionTextChange(it) }
+                        onValueChange = { onRecipeDescriptionTextChange(it) },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onNext = {
+                            focusManager.clearFocus()
+                        })
                     )
                 }
             },

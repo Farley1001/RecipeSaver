@@ -18,6 +18,7 @@ import androidx.navigation.navArgument
 import com.farware.recipesaver.feature_recipe.presentation.auth.login.LoginScreen
 import com.farware.recipesaver.feature_recipe.presentation.auth.register.RegisterScreen
 import com.farware.recipesaver.feature_recipe.presentation.categories.CategoriesScreen
+import com.farware.recipesaver.feature_recipe.presentation.category.CategoryScreen
 import com.farware.recipesaver.feature_recipe.presentation.navigation.Destination
 import com.farware.recipesaver.feature_recipe.presentation.navigation.NavHost
 import com.farware.recipesaver.feature_recipe.presentation.navigation.NavigationIntent
@@ -103,6 +104,20 @@ fun MainScreen(
                 }
                 composable(destination = Destination.CategoriesScreen) {
                     CategoriesScreen(navDrawerState = navDrawerState)
+                }
+                composable(
+                    destination = Destination.CategoryScreen,
+                    arguments = listOf(
+                        navArgument(
+                            name = "categoryId"
+                        ) {
+                            type = NavType.LongType
+                            defaultValue = -1
+                            nullable = false
+                        }
+                    )
+                ) {
+                    CategoryScreen(snackbarHostState = snackbarHostState)
                 }
             }
         }

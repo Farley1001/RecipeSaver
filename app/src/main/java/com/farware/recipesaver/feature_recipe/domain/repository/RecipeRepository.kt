@@ -33,7 +33,7 @@ interface RecipeRepository {
     */
     fun getCategories(): Flow<List<Category>>
 
-    suspend fun getCategoryById(id: Int): Category?
+    suspend fun getCategoryById(id: Long): Category?
 
     suspend fun insertCategory(category: Category)
 

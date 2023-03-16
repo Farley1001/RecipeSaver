@@ -66,7 +66,7 @@ interface RecipeDao {
 
     @Transaction
     @Query("Select * from category_table where categoryId = :id")
-    suspend fun getCategoryById(id: Int): CategoryEntity?
+    suspend fun getCategoryById(id: Long): CategoryEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategory(category: CategoryEntity)

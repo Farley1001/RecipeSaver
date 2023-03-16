@@ -1,8 +1,11 @@
 package com.farware.recipesaver.feature_recipe.presentation.categories.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
@@ -12,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -19,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -28,22 +33,17 @@ import com.farware.recipesaver.feature_recipe.presentation.ui.theme.spacing
 
 @Composable
 fun CategoryItem(
-    category: Category,
     modifier: Modifier = Modifier,
-    cornerRadius: Dp = 10.dp,
-    cutCornerSize: Dp = 30.dp,
+    category: Category,
+    //recipesWithCategory: Int,
+    onCategoryClick: (Category) -> Unit,
     onDeleteClick: () -> Unit
 ) {
-    val categoryColor = Color(category.background(isSystemInDarkTheme()))
-    val onCategoryColor = Color(category.onBackground(isSystemInDarkTheme()))
-
     CategoryItemContent(
         modifier = modifier,
-        categoryName = category.name,
-        cornerRadius = cornerRadius,
-        cutCornerSize = cutCornerSize,
-        categoryColor = categoryColor,
-        categoryTextColor = onCategoryColor,
+        category = category,
+        //recipesWithCategory = recipesWithCategory,
+        onCategoryClick = { onCategoryClick(it) },
         onDeleteClick = onDeleteClick
     )
 
@@ -51,67 +51,86 @@ fun CategoryItem(
 
 @Composable fun CategoryItemContent(
     modifier: Modifier,
-    categoryName: String,
-    cornerRadius: Dp,
-    cutCornerSize: Dp,
-    categoryColor: Color,
-    categoryTextColor: Color,
+    category: Category,
+    //recipesWithCategory: Int,
+    onCategoryClick: (Category) -> Unit,
     onDeleteClick: () -> Unit
 ){
-    Box(
-        modifier = modifier
-    ) {
-        Canvas(modifier = Modifier.matchParentSize()) {
-            val clipPath = Path().apply {
-                lineTo(size.width - cutCornerSize.toPx(), 0f)
-                lineTo(size.width, cutCornerSize.toPx())
-                lineTo(size.width, size.height)
-                lineTo(0f, size.height)
-                close()
-            }
-
-            clipPath(clipPath) {
-                drawRoundRect(
-                    color = categoryColor,
-                    size = size,
-                    cornerRadius = CornerRadius(cornerRadius.toPx())
+    Column(modifier = Modifier.clickable { onCategoryClick(category) }) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(start = 6.dp, top = 6.dp, end = 6.dp)
+                .clip(
+                    RoundedCornerShape(
+                        topStart = 10.dp,
+                        topEnd = 10.dp
+                    )
+                )     //, bottomEnd = 10.dp
+                .background(Color(category.background(isSystemInDarkTheme())))
+                .width(90.dp),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    modifier = Modifier.padding(4.dp),
+                    text = category.name,
+                    color = Color(category.onBackground(isSystemInDarkTheme())),
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
                 )
-            }
-            clipPath(clipPath) {
-                drawRoundRect(
-                    color = Color(
-                        ColorUtils.blendARGB(categoryColor.toArgb(), 0x000000, 0.2f)),
-                    topLeft = Offset(size.width - cutCornerSize.toPx(), -100f),
-                    size = Size(cutCornerSize.toPx() + 100f, cutCornerSize.toPx() + 100f),
-                    cornerRadius = CornerRadius(cornerRadius.toPx())
-                )
+                /*Text(
+                    modifier = Modifier.padding(4.dp),
+                    text = recipesWithCategory.toString(),
+                    color = Color(category.onBackground(isSystemInDarkTheme())),
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.End
+                )*/
             }
         }
-        Column(
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .padding(end = 32.dp)
+                .fillMaxWidth()
+                .padding(start = 6.dp, bottom = 6.dp, end = 6.dp)
+                .width(90.dp)
+            ,
+            //horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Text(
-                text = categoryName,
-                //TODO: Fix font size
-                //style = MaterialTheme.typography.h6,
-                color = categoryTextColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
-        }
-        IconButton(
-            modifier = Modifier.align(Alignment.BottomEnd),
-            onClick = onDeleteClick
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Delete category",
-                tint = categoryTextColor
-            )
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    //.padding(start = 6.dp)
+                    .clip(RoundedCornerShape(bottomStart = 10.dp))
+                    .background(Color(category.darkThemeColor))
+                    .width(84.dp)
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(4.dp),
+                    text = "Dark",
+                    color = Color(category.onDarkThemeColor),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    //.padding(end =6.dp)
+                    .clip(RoundedCornerShape(bottomEnd = 10.dp))
+                    .background(Color(category.lightThemeColor))
+                    .width(84.dp)
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(4.dp),
+                    text = "Light",
+                    color = Color(category.onLightThemeColor),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }

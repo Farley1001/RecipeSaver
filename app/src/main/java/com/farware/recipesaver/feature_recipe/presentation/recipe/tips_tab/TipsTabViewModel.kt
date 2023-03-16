@@ -26,6 +26,9 @@ class TipsTabViewModel @Inject constructor(
     private var _newTip = mutableStateOf(Tip.new())
     private val newTip: State<Tip> = _newTip
 
+    private var _tip = mutableStateOf(newTip.value)
+    private val tip: State<Tip> = _tip
+
     private var getTipsJob: Job? = null
 
     init {
@@ -142,6 +145,7 @@ class TipsTabViewModel @Inject constructor(
                 _newTip.value = newTip.value.copy(
                     text = state.value.newTipText
                 )
+
                 // save the new tip
                 viewModelScope.launch {
                     tipsUseCases.addTip(newTip.value)

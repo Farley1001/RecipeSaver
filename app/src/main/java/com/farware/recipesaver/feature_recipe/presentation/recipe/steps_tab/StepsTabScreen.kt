@@ -3,12 +3,17 @@ package com.farware.recipesaver.feature_recipe.presentation.recipe.steps_tab
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Step
@@ -23,7 +28,10 @@ import com.farware.recipesaver.feature_recipe.presentation.util.customDialogPosi
 fun StepsTabScreen(
     viewModel: StepsTabViewModel = hiltViewModel(),
 ) {
+    val focusManager = LocalFocusManager.current
+
     StepsTabContent(
+        focusManager = focusManager,
         steps = viewModel.state.value.stepsFocus,
         newStepText = viewModel.state.value.newStepText,
         editStepText = viewModel.state.value.editStepText,
@@ -47,6 +55,7 @@ fun StepsTabScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StepsTabContent(
+    focusManager: FocusManager,
     steps: List<StepFocus?>,
     newStepText: String,
     editStepText: String,
@@ -85,7 +94,11 @@ fun StepsTabContent(
                     value = newStepText,
                     onValueChange = {
                         onNewStepTextChanged(it)
-                    }
+                    },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onNext = {
+                        focusManager.clearFocus()
+                    })
                 )
             },
             confirmButton = {

@@ -11,15 +11,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +53,7 @@ fun RecipeScreen(
     snackbarHostState: SnackbarHostState,
     viewModel: RecipeViewModel = hiltViewModel()
 ) {
-    //val snackbarHostState = remember { SnackbarHostState() }
+    val focusManager = LocalFocusManager.current
     val context = LocalContext.current
 
     // following is used to show snackbars
@@ -135,9 +141,9 @@ fun RecipeScreen(
                         message = event.message
                     )
                 }
-                is UiEvent.SaveRecipe -> {
+                is UiEvent.Success -> {
                     snackbarHostState.showSnackbar(
-                        message = "Recipe Saved"
+                        message = "Save Succeeded"
                     )
                 }
             }
@@ -145,6 +151,7 @@ fun RecipeScreen(
     }
 
     RecipeContent(
+        focusManager = focusManager,
         snackbarHostState = snackbarHostState,
         categories = viewModel.state.value.categories,
         selectedCategoryIndex = viewModel.state.value.selectedCategoryIndex,
@@ -179,6 +186,7 @@ fun RecipeScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun RecipeContent(
+    focusManager: FocusManager,
     snackbarHostState: SnackbarHostState,
     categories: List<Category>,
     selectedCategoryIndex: Int,
@@ -240,7 +248,11 @@ fun RecipeContent(
                         label = { Text(text = "Recipe Name") },
                         onValueChange = {
                             onRecipeNameTextChange(it)
-                        }
+                        },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(onNext = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        })
 
                     )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
@@ -249,7 +261,11 @@ fun RecipeContent(
                         label = { Text(text = "Recipe Description") },
                         onValueChange = {
                             onRecipeDescriptionTextChange(it)
-                        }
+                        },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onNext = {
+                            focusManager.clearFocus()
+                        })
                     )
                 }
             },

@@ -211,7 +211,7 @@ class RecipeViewModel @Inject constructor(
                 } else {
                     recipeUseCases.addRecipe(recipe)
                 }
-                _eventFlow.emit(UiEvent.SaveRecipe)
+                _eventFlow.emit(UiEvent.Success)
             } catch (e: InvalidRecipeException) {
                 _eventFlow.emit(
                     UiEvent.ShowSnackBar(

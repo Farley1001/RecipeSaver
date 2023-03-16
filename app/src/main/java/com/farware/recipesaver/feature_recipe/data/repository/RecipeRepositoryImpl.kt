@@ -59,7 +59,7 @@ class RecipeRepositoryImpl(
         return dao.getCategories().map { categories -> categories.map { it.toCategory() } }
     }
 
-    override suspend fun getCategoryById(id: Int): Category? {
+    override suspend fun getCategoryById(id: Long): Category? {
         return dao.getCategoryById(id)?.toCategory()
     }
 

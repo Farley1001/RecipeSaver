@@ -58,6 +58,7 @@ android {
 
     buildTypes {
         getByName("debug") {
+            isMinifyEnabled = false
             // put into local.properties on 5/2021
             //buildConfigField("String", "SERVER_CLIENT_ID", "\"361106271665-fcoutlca3gsiri8qmmo92kpglh237rn7.apps.googleusercontent.com\"")
             //buildConfigField("String", "FIREBASE_RTD_ROOT", "\"FARWARE0923\"")
@@ -170,6 +171,9 @@ dependencies {
     // splash screen
     implementation("androidx.core:core-splashscreen:1.0.0")
     implementation("androidx.compose.animation:animation-graphics:1.4.0-alpha04")
+
+    // color picker
+    implementation("com.raedapps:alwan:1.0.1")
 
     // memory leak detector
     //debugImplementation("com.squareup.leakcanary:leakcanary-android:2.8.1")

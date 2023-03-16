@@ -6,7 +6,7 @@ import com.farware.recipesaver.feature_recipe.domain.repository.RecipeRepository
 class GetCategoryUseCase(
     private val repository: RecipeRepository
 ) {
-    suspend operator fun invoke(id:Int): Category? {
+    suspend operator fun invoke(id:Long): Category? {
         return repository.getCategoryById(id)
     }
 }

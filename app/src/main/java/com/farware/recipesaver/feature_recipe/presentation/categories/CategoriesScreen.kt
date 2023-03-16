@@ -2,10 +2,14 @@ package com.farware.recipesaver.feature_recipe.presentation.categories
 
 import android.content.Context
 import androidx.compose.animation.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
@@ -39,8 +43,6 @@ fun CategoriesScreen(
 ) {
     val context = LocalContext.current
     val state = viewModel.state.value
-    //TODO: Fix...copy from settings or recipes
-    //val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
     val actionItems = listOf(
@@ -63,31 +65,6 @@ fun CategoriesScreen(
         }
     }
 
-    fun addEditCategoryButtonClicked() {
-        //navController.navigate(Screen.AddEditRecipeScreen.route)
-        //Toast.makeText(context, "Add/Edit Recipe Click", Toast.LENGTH_LONG).show()
-    }
-
-    fun categoryItemClicked(category: Category) {
-        /*navController.navigate(Screen.AddEditCategoriesScreen.withArgs(
-            category.category.categoryId.toString()
-        ))*/
-    }
-
-    fun categoryItemDeleteClicked(category: Category) {
-        viewModel.onEvent(CategoriesEvent.DeleteCategory(category))
-        scope.launch {
-            //  TODO: Change to dialog...see recipes
-            //val result = scaffoldState.snackbarHostState.showSnackbar(
-            //    message = "Category Deleted",
-            //    actionLabel = "Undo"
-            //)
-            //if (result == SnackbarResult.ActionPerformed) {
-            //    viewModel.onEvent(CategoriesEvent.RestoreCategory)
-            //}
-        }
-    }
-
     CategoriesContent(
         navDrawerState = navDrawerState,
         categoryItems = state.categories,
@@ -102,15 +79,15 @@ fun CategoriesScreen(
         onOrderChange = { viewModel.onEvent(it) },
         onNavButtonOpenClick = { navButtonOpenClicked() },
         onNavButtonCloseClick = { navButtonCloseClicked(it) },
-        onAddEditCategoryButtonClick = { addEditCategoryButtonClicked() },
-        onCategoryItemClick = { categoryItemClicked(it) },
-        onCategoryItemDeleteClick = { categoryItemDeleteClicked(it) },
+        onAddEditCategoryButtonClick = { viewModel.onEvent(CategoriesEvent.NewCategory) },
+        onCategoryItemClick = { viewModel.onEvent(CategoriesEvent.NavigateToCategory(it)) },
+        onCategoryItemDeleteClick = { viewModel.onEvent(CategoriesEvent.DeleteCategory(it)) },
         onConfirmDeleteCategoryClick = { viewModel.onEvent(CategoriesEvent.DeleteConfirmed) },
         onCancelDeleteCategoryClick = { viewModel.onEvent(CategoriesEvent.DeleteCanceled) }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CategoriesContent(
     navDrawerState: DrawerState,
@@ -127,7 +104,7 @@ fun CategoriesContent(
     onNavButtonOpenClick: () -> Unit,
     onNavButtonCloseClick: (String) -> Unit,
     onAddEditCategoryButtonClick: () -> Unit,
-    onCategoryItemClick: (Category) -> Unit,
+    onCategoryItemClick: (Long) -> Unit,
     onCategoryItemDeleteClick: (Category) -> Unit,
     onConfirmDeleteCategoryClick: () -> Unit,
     onCancelDeleteCategoryClick: () -> Unit
@@ -218,19 +195,21 @@ fun CategoriesContent(
                     )
                 }
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
+                LazyVerticalStaggeredGrid(
+                    modifier = Modifier.fillMaxSize(),
+                    columns = StaggeredGridCells.Fixed(2),
+                    contentPadding = PaddingValues(16.dp)
                 ) {
                     items(categoryItems) { category ->
                         CategoryItem(
-                            category = category,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    onCategoryItemClick(category)
+                                    onCategoryItemClick(category.categoryId!!)
                                 },
+                            category = category,
+                            //recipesWithCategory = state.categories.filter { it.categoryId == category.categoryId }.size,
+                            onCategoryClick = { onCategoryItemClick(category.categoryId!!) },
                             onDeleteClick = {
                                 onCategoryItemDeleteClick(category)
                             }

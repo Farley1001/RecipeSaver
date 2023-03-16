@@ -21,12 +21,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -46,10 +50,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel()
 ){
+    val focusManager = LocalFocusManager.current
     // for sign-in with google
     // build with a blank string for request token id and get the info from generated java in app>build
     // and place into the build types section of the module level gradle file
@@ -91,6 +97,7 @@ fun LoginScreen(
         ))
     }
 
+/*
     when (status.status) {
         LoadingState.Status.SUCCESS -> {
             Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
@@ -100,10 +107,12 @@ fun LoginScreen(
         }
         else -> {}
     }
+*/
 
     fun launchSignInWithGoogle() { launcher.launch(googleSignInClient.signInIntent) }
 
     LoginContent(
+        focusManager = focusManager,
         facebookSignInLauncher = {},
         googleSignInLauncher = { launchSignInWithGoogle() },
         appleSignInLauncher = {},
@@ -125,9 +134,10 @@ fun LoginScreen(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun LoginContent(
+    focusManager: FocusManager,
     facebookSignInLauncher: () -> Unit,
     googleSignInLauncher: () -> Unit,
     appleSignInLauncher: () -> Unit,
@@ -146,7 +156,7 @@ fun LoginContent(
     onLoginButtonClick: () -> Unit,
     onRegisterLinkClicked: () -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             //.verticalScroll(rememberScrollState())
@@ -218,11 +228,10 @@ fun LoginContent(
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Next
+                imeAction = ImeAction.Done
             ),
-            keyboardActions = KeyboardActions(onNext = {
-                focusManager.moveFocus(FocusDirection.Down)
-            }),
+            keyboardActions = KeyboardActions(
+                onDone = {focusManager.clearFocus()}),
             isError = passwordError,
             errorMsg = passwordErrorMsg
         )

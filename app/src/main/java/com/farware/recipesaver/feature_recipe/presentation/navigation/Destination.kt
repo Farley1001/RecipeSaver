@@ -11,6 +11,13 @@ sealed class Destination(protected val route: String, vararg params: String) {
         operator fun invoke(): String = route
     }
     object SplashScreen: NoArgumentsDestination("splash_screen")
+    object CategoryScreen: Destination("category_screen", "categoryId") {
+        const val CATEGORY_ID_KEY = "categoryId"
+
+        operator fun invoke(categoryId: Long): String = route.appendParams(
+            CATEGORY_ID_KEY to categoryId
+        )
+    }
     object CategoriesScreen: NoArgumentsDestination("categories_screen")
     object LoginScreen: NoArgumentsDestination("login_screen")
     object RecipeAddEditScreen: Destination("recipe_add_edit_screen", "recipeId") {
