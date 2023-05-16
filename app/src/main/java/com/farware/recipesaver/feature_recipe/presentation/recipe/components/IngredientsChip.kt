@@ -2,6 +2,7 @@ package com.farware.recipesaver.feature_recipe.presentation.recipe.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -13,6 +14,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.FullRecipeIngredient
@@ -50,6 +54,7 @@ fun IngredientsChip(
     setIngredientTextFromDropdown: (String) -> Unit,
     dismissAllDropdowns: () -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
     Column(
         Modifier
             //.fillMaxSize()
@@ -80,7 +85,11 @@ fun IngredientsChip(
                             label = "Amount",
                             onFocusChanged = {
                                 // TODO: Add focus change if needed
-                            }
+                            },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                            keyboardActions = KeyboardActions(onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            })
                         )
                         Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
                         OutlinedTextFieldWithDropdown(
@@ -90,7 +99,11 @@ fun IngredientsChip(
                             dropDownExpanded = showMeasureDropdown,
                             textChanged = { onEditMeasureTextChanged(it) },
                             setTextFromDropdown = { setMeasureTextFromDropdown(it) },
-                            onDismissRequest = { dismissAllDropdowns() }
+                            onDismissRequest = { dismissAllDropdowns() },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                            keyboardActions = KeyboardActions(onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            })
                         )
                         Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
                         OutlinedTextFieldWithDropdown(
@@ -100,7 +113,11 @@ fun IngredientsChip(
                             dropDownExpanded = showIngredientDropdown,
                             textChanged = { onEditIngredientTextChanged(it) },
                             setTextFromDropdown = { setIngredientTextFromDropdown(it) },
-                            onDismissRequest = { dismissAllDropdowns() }
+                            onDismissRequest = { dismissAllDropdowns() },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(onNext = {
+                                focusManager.clearFocus()
+                            })
                         )
                     }
                 },

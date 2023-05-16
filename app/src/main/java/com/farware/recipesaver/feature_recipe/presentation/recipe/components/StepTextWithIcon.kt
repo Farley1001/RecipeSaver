@@ -2,6 +2,7 @@ package com.farware.recipesaver.feature_recipe.presentation.recipe.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -11,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Step
@@ -60,7 +62,8 @@ fun StepTextWithIcon(
                         value = editStepText,
                         onValueChange = {
                             onStepTextChanged(it)
-                        }
+                        },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     )
                 },
                 confirmButton = {

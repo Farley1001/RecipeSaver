@@ -14,5 +14,4 @@ sealed class TipsTabEvent {
     object ToggleNewTipDialog: TipsTabEvent()
     data class NewTipTextChanged(val tipText: String): TipsTabEvent()
     object SaveNewTip: TipsTabEvent()
-
 }

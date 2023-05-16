@@ -27,7 +27,7 @@ fun OutlinedTextFieldWithDropdown(
 ) {
     Box(modifier) {
         OutlinedTextField(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .onFocusChanged { focusState ->
                     if (!focusState.isFocused)

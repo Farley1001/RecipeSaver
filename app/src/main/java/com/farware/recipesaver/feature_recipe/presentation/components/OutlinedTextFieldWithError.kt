@@ -30,7 +30,8 @@ fun OutlinedTextFieldWithError(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     isError: Boolean = false,
-    errorMsg: String = ""
+    errorMsg: String = "",
+    textFieldModifier: Modifier = Modifier
 ) {
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -67,7 +68,7 @@ fun OutlinedTextFieldWithError(
                                 .padding(4.dp)
                         )
                     },
-                    modifier = Modifier
+                    modifier = textFieldModifier
                         .fillMaxWidth()
                         .onFocusChanged { onFocusChanged(it) },
                     onValueChange = {

@@ -1,5 +1,6 @@
 package com.farware.recipesaver.feature_recipe.presentation.recipe.ingredients_tab
 
+import android.view.KeyEvent.ACTION_DOWN
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -17,14 +18,17 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Ingredient
@@ -47,7 +51,7 @@ fun IngredientsTabScreen(
     snackbarHostState: SnackbarHostState,
     viewModel: IngredientsTabViewModel = hiltViewModel()
 ) {
-    val focusManager = LocalFocusManager.current
+    //val focusManager = LocalFocusManager.current
 
     if(viewModel.state.value.showSnackbar) {
         viewModel.state.value.copy(
@@ -59,7 +63,6 @@ fun IngredientsTabScreen(
     }
 
     IngredientsTabContent(
-        focusManager = focusManager,
         ingredients = viewModel.state.value.ingredientFocus,
         newAmountText = viewModel.state.value.newAmountText,
         newMeasureText = viewModel.state.value.newMeasureText,
@@ -96,10 +99,9 @@ fun IngredientsTabScreen(
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun IngredientsTabContent(
-    focusManager: FocusManager,
     ingredients: List<IngredientFocus>,
     newAmountText: String,
     newMeasureText: String,
@@ -148,24 +150,37 @@ fun IngredientsTabContent(
                 Text(text = "New Ingredient")
             },
             text = {
+                val focusManager = LocalFocusManager.current
+                val (amountFieldFocus, measureFieldFocus, ingredientFieldFocus) = remember { FocusRequester.createRefs() }
                 Column(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Top
                 ) {
                     OutlinedTextFieldWithError(
+                        textFieldModifier = Modifier
+                            .focusRequester(amountFieldFocus)
+                            .focusProperties { next = measureFieldFocus },
                         text = newAmountText,
                         onTextChanged = { onNewAmountTextChanged(it) },
                         label = "Amount",
                         onFocusChanged = {
                             // TODO: Add if necessary do the amount and measure parse
                         },
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.None,
+                            autoCorrect = false,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
                         keyboardActions = KeyboardActions(onNext = {
-                            focusManager.moveFocus(FocusDirection.Down)
+                            focusManager.moveFocus(FocusDirection.Next)
                         })
                     )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
                     OutlinedTextFieldWithDropdown(
+                        modifier = Modifier
+                            .focusRequester(measureFieldFocus)
+                            .focusProperties { next = ingredientFieldFocus },
                         dropdownList = measureDropdownList,
                         label = "Measure",
                         text = newMeasureText,
@@ -180,6 +195,8 @@ fun IngredientsTabContent(
                     )
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.mediumLarge))
                     OutlinedTextFieldWithDropdown(
+                        modifier = Modifier
+                            .focusRequester(ingredientFieldFocus),
                         dropdownList = ingredientDropdownList,
                         label = "Ingredient",
                         text = newIngredientText,

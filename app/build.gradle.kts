@@ -106,17 +106,17 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.compose.ui:ui:1.4.0-alpha04")
-    implementation("androidx.compose.material3:material3:1.1.0-alpha04")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.4.0-alpha04")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.compose.ui:ui:1.4.0-rc01")
+    implementation("androidx.compose.material3:material3:1.1.0-alpha08")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.4.0-rc01")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0")
     implementation("androidx.activity:activity-compose:1.6.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0-alpha04")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.4.0-alpha04")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.0-alpha04")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.0-rc01")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.4.0-rc01")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.4.0-rc01")
 
     // Firebase
     // Import the BoM for the Firebase platform
@@ -136,7 +136,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
     implementation("androidx.navigation:navigation-compose:2.5.3")
     //implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")    // removed when adding navigation to viewModels
-    implementation("androidx.compose.material:material-icons-extended:1.4.0-alpha04")
+    implementation("androidx.compose.material:material-icons-extended:1.4.0-rc01")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
@@ -170,13 +170,23 @@ dependencies {
 
     // splash screen
     implementation("androidx.core:core-splashscreen:1.0.0")
-    implementation("androidx.compose.animation:animation-graphics:1.4.0-alpha04")
+    implementation("androidx.compose.animation:animation-graphics:1.4.0-rc01")
 
     // color picker
     implementation("com.raedapps:alwan:1.0.1")
 
     // memory leak detector
     //debugImplementation("com.squareup.leakcanary:leakcanary-android:2.8.1")
+
+    // to help avoid library conflicts
+    constraints {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
+            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
+        }
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0") {
+            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
+        }
+    }
 }
 
 // Allow references to generated code

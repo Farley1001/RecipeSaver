@@ -33,6 +33,9 @@ class RecipeRepositoryImpl(
     }
 
     override suspend fun deleteRecipe(recipe: Recipe) {
+        recipe.recipeId?.let { dao.deleteStepByRecipeId(it) }
+        recipe.recipeId?.let { dao.deleteTipByRecipeId(it) }
+        recipe.recipeId?.let { dao.deleteRecipeIngredientByRecipeId(it) }
         dao.deleteRecipe(RecipeEntity.from(recipe))
     }
 

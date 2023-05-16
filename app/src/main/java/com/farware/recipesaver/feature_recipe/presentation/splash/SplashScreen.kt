@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -34,14 +35,14 @@ fun SplashContent(){
     Surface(modifier = Modifier
         .fillMaxSize()
         // TODO: Fix Color
-        .background(Color.White)) {
+        .background(MaterialTheme.colorScheme.background)) {
         val image = AnimatedImageVector.animatedVectorResource(R.drawable.avd_anim3)
         var atEnd by remember { mutableStateOf(false) }
         Image(
             painter = rememberAnimatedVectorPainter(image, atEnd),
             contentDescription = "Your content description",
             modifier = Modifier
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
                 .size(64.dp)
                 .clickable {
                     atEnd = !atEnd

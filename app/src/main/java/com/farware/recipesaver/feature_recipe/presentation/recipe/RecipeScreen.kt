@@ -324,6 +324,16 @@ fun RecipeContent(
                     actions = {
                         IconButton(
                             onClick = {
+                                // TODO
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Share,
+                                contentDescription = "Localized description"
+                            )
+                        }
+                        IconButton(
+                            onClick = {
                                 onToggleAddEditDialog()
                             }
                         ) {

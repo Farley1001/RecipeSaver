@@ -107,6 +107,9 @@ interface RecipeDao {
     @Delete
     suspend fun deleteStep(step: StepEntity)
 
+    @Query("Delete from step_table where recipeId = :id")
+    fun deleteStepByRecipeId(id: Long)
+
     /*
             tip entity
     */
@@ -124,6 +127,9 @@ interface RecipeDao {
 
     @Delete
     suspend fun deleteTip(tip: TipEntity)
+
+    @Query("Delete from tip_table where recipeId = :id")
+    fun deleteTipByRecipeId(id: Long)
 
     /*
             ingredient entity
@@ -166,6 +172,10 @@ interface RecipeDao {
 
     @Delete
     suspend fun deleteRecipeIngredient(recipeIngredient: RecipeIngredientEntity)
+
+    @Transaction
+    @Query("Delete from recipe_ingredient_table where recipeId = :id")
+    fun deleteRecipeIngredientByRecipeId(id: Long)
 
     /*
             measure entity

@@ -4,10 +4,12 @@ import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.farware.recipesaver.RecipeApp
+import com.farware.recipesaver.feature_recipe.data.bluetooth.BluetoothControllerImpl
 import com.farware.recipesaver.feature_recipe.data.data_source.RecipeDatabase
 import com.farware.recipesaver.feature_recipe.data.repository.DataStoreRepositoryImpl
 import com.farware.recipesaver.feature_recipe.data.repository.FirebaseRepositoryImpl
 import com.farware.recipesaver.feature_recipe.data.repository.RecipeRepositoryImpl
+import com.farware.recipesaver.feature_recipe.domain.bluetooth.BluetoothController
 import com.farware.recipesaver.feature_recipe.domain.repository.DataStoreRepository
 import com.farware.recipesaver.feature_recipe.domain.repository.FirebaseRepository
 import com.farware.recipesaver.feature_recipe.domain.repository.RecipeRepository
@@ -50,6 +52,12 @@ object AppModule {
     @Provides
     fun provideApplication(@ApplicationContext app: Context): RecipeApp {
         return app as RecipeApp
+    }
+
+    @Provides
+    @Singleton
+    fun provideBluetoothController(@ApplicationContext context: Context): BluetoothController {
+        return BluetoothControllerImpl(context)
     }
 
     @Singleton
