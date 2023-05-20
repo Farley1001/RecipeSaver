@@ -15,4 +15,5 @@ sealed class RecipeEvent {
     data class NewCategorySelected(val categoryId: Long ): RecipeEvent()
     data class SavePrepTime(val prepTime: Long): RecipeEvent()
     data class SaveCookTime(val cookTime: Long): RecipeEvent()
+    object NavigateToShare: RecipeEvent()
 }

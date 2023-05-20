@@ -23,10 +23,12 @@ import com.farware.recipesaver.feature_recipe.presentation.navigation.Destinatio
 import com.farware.recipesaver.feature_recipe.presentation.navigation.NavHost
 import com.farware.recipesaver.feature_recipe.presentation.navigation.NavigationIntent
 import com.farware.recipesaver.feature_recipe.presentation.navigation.composable
+import com.farware.recipesaver.feature_recipe.presentation.permissions.PermissionsScreen
 import com.farware.recipesaver.feature_recipe.presentation.recipe.RecipeScreen
 import com.farware.recipesaver.feature_recipe.presentation.recipe_add_edit.RecipeAddEditScreen
 import com.farware.recipesaver.feature_recipe.presentation.recipes.RecipesScreen
 import com.farware.recipesaver.feature_recipe.presentation.settings.SettingsScreen
+import com.farware.recipesaver.feature_recipe.presentation.share_recipe.ShareRecipeScreen
 import com.farware.recipesaver.feature_recipe.presentation.splash.SplashScreen
 import com.farware.recipesaver.feature_recipe.presentation.ui.theme.RecipeSaverTheme
 import kotlinx.coroutines.channels.Channel
@@ -118,6 +120,48 @@ fun MainScreen(
                     )
                 ) {
                     CategoryScreen(snackbarHostState = snackbarHostState)
+                }
+                composable(
+                    destination = Destination.PermissionsScreen,
+                    arguments = listOf(
+                        navArgument(
+                            name = "permissionType"
+                        ) {
+                            type = NavType.StringType
+                            defaultValue = ""
+                            nullable = false
+                        },
+                        navArgument(
+                            name = "successPath"
+                        ) {
+                            type = NavType.StringType
+                            defaultValue = ""
+                            nullable = false
+                        },
+                        navArgument(
+                            name = "declinePath"
+                        ) {
+                            type = NavType.StringType
+                            defaultValue = ""
+                            nullable = false
+                        }
+                    )
+                ) {
+                    PermissionsScreen()
+                }
+                composable(
+                    destination = Destination.ShareRecipeScreen,
+                    arguments = listOf(
+                        navArgument(
+                            name = "recipeId"
+                        ) {
+                            type = NavType.LongType
+                            defaultValue = -1
+                            nullable = false
+                        }
+                    )
+                ) {
+                    ShareRecipeScreen()
                 }
             }
         }

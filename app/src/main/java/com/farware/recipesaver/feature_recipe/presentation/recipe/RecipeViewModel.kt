@@ -11,6 +11,7 @@ import com.farware.recipesaver.feature_recipe.domain.model.recipe.relations.Reci
 import com.farware.recipesaver.feature_recipe.domain.use_cases.RecipeUseCases
 import com.farware.recipesaver.feature_recipe.presentation.navigation.AppNavigator
 import com.farware.recipesaver.feature_recipe.presentation.navigation.Destination
+import com.farware.recipesaver.feature_recipe.presentation.permissions.PermissionsType
 import com.farware.recipesaver.feature_recipe.presentation.util.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -180,6 +181,16 @@ class RecipeViewModel @Inject constructor(
                 if(recipe.value?.name != "" && recipe.value?.description != "" && recipe.value?.categoryId!! > 0) {
                     saveRecipe(recipe.value!!.toRecipe())
                 }
+            }
+            is RecipeEvent.NavigateToShare -> {
+                val path: String = Destination.RecipeScreen(recipeId = recipe.value?.recipeId!!)
+                appNavigator.tryNavigateTo(
+                    Destination.PermissionsScreen(
+                        permissionType = PermissionsType.BLUETOOTH.toString(),
+                        successPath = Destination.ShareRecipeScreen(recipeId = recipe.value?.recipeId!!).replace("/", "-"),
+                        declinePath = Destination.RecipeScreen(recipeId = recipe.value?.recipeId!!).replace("/", "-")
+                    )
+                )
             }
         }
     }

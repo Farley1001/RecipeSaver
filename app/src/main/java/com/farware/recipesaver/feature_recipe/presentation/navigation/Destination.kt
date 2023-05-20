@@ -37,6 +37,24 @@ sealed class Destination(protected val route: String, vararg params: String) {
     object RecipesScreen: NoArgumentsDestination("recipes_screen")
     object RegisterScreen: NoArgumentsDestination("register_screen")
     object SettingsScreen: NoArgumentsDestination("settings_screen")
+    object PermissionsScreen: Destination("permissions_screen", "permissionType","successPath", "declinePath") {
+        private const val PERMISSION_TYPE_KEY = "permissionType"
+        private const val SUCCESS_KEY = "successPath"
+        private const val DECLINE_KEY = "declinePath"
+
+        operator fun invoke(permissionType: String, successPath: String, declinePath: String): String = route.appendParams(
+            PERMISSION_TYPE_KEY to permissionType,
+            SUCCESS_KEY to successPath,
+            DECLINE_KEY to declinePath
+        )
+    }
+    object ShareRecipeScreen: Destination("share_recipe_screen", "recipeId") {
+        private const val RECIPE_ID_KEY = "recipeId"
+
+        operator fun invoke(recipeId: Long): String = route.appendParams(
+            RECIPE_ID_KEY to recipeId
+        )
+    }
 }
 
 internal fun String.appendParams(vararg params: Pair<String, Any?>): String {
