@@ -21,6 +21,29 @@ data class RecipeWithCategory(
     val onDarkThemeColor: Int,
     val timeStamp: Long,
 ) {
+
+    companion object {
+        fun new(): RecipeWithCategory {
+            return RecipeWithCategory(
+            recipeId = null,
+            categoryId = -1L,
+            name = "",
+            description = "",
+            imagePath = null,
+            prepTime = 0,
+            cookTime = 0,
+            favorite = false,
+            category = "",
+            colorId = -1L,
+            color = "",
+            lightThemeColor = -1,
+            onLightThemeColor = -1,
+            darkThemeColor = -1,
+            onDarkThemeColor = -1,
+            timeStamp = System.currentTimeMillis(),
+            )
+        }
+    }
     /**
      * create any functions that are needed to operate on this entity
      */

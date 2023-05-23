@@ -70,6 +70,10 @@ class RecipeRepositoryImpl(
         dao.insertCategory(CategoryEntity.from(category))
     }
 
+    override suspend fun insertCategoryReturnId(category: Category): Long {
+        return dao.insertCategoryReturnId(CategoryEntity.from(category))
+    }
+
     override suspend fun deleteCategory(category: Category) {
         dao.deleteCategory(CategoryEntity.from(category))
     }

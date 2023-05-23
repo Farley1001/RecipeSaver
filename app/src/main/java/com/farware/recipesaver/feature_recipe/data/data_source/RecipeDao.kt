@@ -53,7 +53,6 @@ interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertRecipeReturnId(recipe: RecipeEntity): Long
 
-
     @Delete
     suspend fun deleteRecipe(recipe: RecipeEntity)
 
@@ -70,6 +69,9 @@ interface RecipeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCategory(category: CategoryEntity)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertCategoryReturnId(category: CategoryEntity): Long
 
     @Delete
     suspend fun deleteCategory(category: CategoryEntity)

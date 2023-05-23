@@ -38,10 +38,10 @@ class IngredientsTabViewModel @Inject constructor(
     private var _ingredient = mutableStateOf(Ingredient(-1, "", ""))
     val ingredient: State<Ingredient> = _ingredient
 
-    private var _recipeIngredient = mutableStateOf(RecipeIngredient(null, -1, -1, -1, "", "", ""))
+    private var _recipeIngredient = mutableStateOf(RecipeIngredient(null, -1, -1, -1, ""))
     val recipeIngredient: State<RecipeIngredient> = _recipeIngredient
 
-    private var _recipeIngredientWithIngredient = mutableStateOf(RecipeIngredientWithIngredient(null, -1, -1, -1, "", "", "", "", ""))
+    private var _recipeIngredientWithIngredient = mutableStateOf(RecipeIngredientWithIngredient(null, -1, -1, -1, "", "", ""))
     val recipeIngredientWithIngredient: State<RecipeIngredientWithIngredient> = _recipeIngredientWithIngredient
 
     private var _newFullRecipeIngredient = mutableStateOf(FullRecipeIngredient.new())

@@ -25,9 +25,7 @@ data class FullRecipeIngredientRelation(
                         fullRecipeIngredient.recipeId,
                         fullRecipeIngredient.ingredientId,
                         fullRecipeIngredient.measureId,
-                        fullRecipeIngredient.amount,
-                        fullRecipeIngredient.measure,
-                        fullRecipeIngredient.ingredient
+                        fullRecipeIngredient.amount
                     ),
                     IngredientEntity(
                         fullRecipeIngredient.ingredientId,

@@ -22,13 +22,11 @@ data class RecipeIngredientWithIngredientRelation(
                     recipeIngredientWithIngredient.recipeId,
                     recipeIngredientWithIngredient.ingredientId,
                     recipeIngredientWithIngredient.measureId,
-                    recipeIngredientWithIngredient.amount,
-                    recipeIngredientWithIngredient.measure,
-                    recipeIngredientWithIngredient.ingredient
+                    recipeIngredientWithIngredient.amount
                 ),
                 IngredientEntity(
                     recipeIngredientWithIngredient.ingredientId,
-                    recipeIngredientWithIngredient.ingredientName,
+                    recipeIngredientWithIngredient.ingredient,
                     recipeIngredientWithIngredient.type
                 )
             )
@@ -44,8 +42,6 @@ data class RecipeIngredientWithIngredientRelation(
             recipeIngredient.ingredientId,
             recipeIngredient.measureId,
             recipeIngredient.amount,
-            recipeIngredient.measure,
-            recipeIngredient.ingredient,
             ingredient.name,
             ingredient.type
         )

@@ -37,6 +37,8 @@ interface RecipeRepository {
 
     suspend fun insertCategory(category: Category)
 
+    suspend fun insertCategoryReturnId(category: Category): Long
+
     suspend fun deleteCategory(category: Category)
 
     /*

@@ -6,8 +6,6 @@ data class RecipeIngredientWithIngredient(
     val ingredientId: Long,
     val measureId: Long,
     val amount: String,
-    val measure: String,
     val ingredient: String,
-    val ingredientName: String,
     val type: String
 )

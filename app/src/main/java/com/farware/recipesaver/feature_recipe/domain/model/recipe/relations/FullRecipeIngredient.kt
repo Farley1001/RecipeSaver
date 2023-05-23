@@ -1,6 +1,7 @@
 package com.farware.recipesaver.feature_recipe.domain.model.recipe.relations
 
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Ingredient
+import com.farware.recipesaver.feature_recipe.domain.model.recipe.Measure
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.RecipeIngredient
 
 data class FullRecipeIngredient(
@@ -33,9 +34,14 @@ data class FullRecipeIngredient(
             recipeId,
             ingredientId,
             measureId,
-            amount,
-            measure,
-            ingredient
+            amount
+        )
+    }
+
+    fun toMeasure(): Measure {
+        return Measure(
+            measureId,
+            measure
         )
     }
 

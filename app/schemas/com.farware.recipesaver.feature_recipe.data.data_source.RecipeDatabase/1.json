@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c42c3da917916cc4e601ded025ede566",
+    "identityHash": "86e03b9273e2e1b51f9ed524c6406d56",
     "entities": [
       {
         "tableName": "recipe_table",
@@ -317,7 +317,7 @@
       },
       {
         "tableName": "recipe_ingredient_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`recipeIngredientId` INTEGER PRIMARY KEY AUTOINCREMENT, `recipeId` INTEGER NOT NULL, `ingredientId` INTEGER NOT NULL, `measureId` INTEGER NOT NULL, `amount` TEXT NOT NULL, `measure` TEXT NOT NULL, `ingredient` TEXT NOT NULL, FOREIGN KEY(`recipeId`) REFERENCES `recipe_table`(`recipeId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`ingredientId`) REFERENCES `ingredient_table`(`ingredientId`) ON UPDATE NO ACTION ON DELETE SET DEFAULT , FOREIGN KEY(`measureId`) REFERENCES `measure_table`(`measureId`) ON UPDATE NO ACTION ON DELETE SET DEFAULT )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`recipeIngredientId` INTEGER PRIMARY KEY AUTOINCREMENT, `recipeId` INTEGER NOT NULL, `ingredientId` INTEGER NOT NULL, `measureId` INTEGER NOT NULL, `amount` TEXT NOT NULL, FOREIGN KEY(`recipeId`) REFERENCES `recipe_table`(`recipeId`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`ingredientId`) REFERENCES `ingredient_table`(`ingredientId`) ON UPDATE NO ACTION ON DELETE SET DEFAULT , FOREIGN KEY(`measureId`) REFERENCES `measure_table`(`measureId`) ON UPDATE NO ACTION ON DELETE SET DEFAULT )",
         "fields": [
           {
             "fieldPath": "recipeIngredientId",
@@ -346,18 +346,6 @@
           {
             "fieldPath": "amount",
             "columnName": "amount",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "measure",
-            "columnName": "measure",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "ingredient",
-            "columnName": "ingredient",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -569,7 +557,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c42c3da917916cc4e601ded025ede566')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '86e03b9273e2e1b51f9ed524c6406d56')"
     ]
   }
 }
