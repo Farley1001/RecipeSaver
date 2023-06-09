@@ -7,7 +7,6 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-
 data class Spacing(
     val default: Dp = 8.dp,
     val extraSmall: Dp = 4.dp,

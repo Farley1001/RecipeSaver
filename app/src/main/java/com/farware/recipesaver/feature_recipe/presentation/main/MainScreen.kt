@@ -11,10 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
+import androidx.lifecycle.ViewModel
+import androidx.navigation.*
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.farware.recipesaver.feature_recipe.presentation.auth.login.LoginScreen
 import com.farware.recipesaver.feature_recipe.presentation.auth.register.RegisterScreen
 import com.farware.recipesaver.feature_recipe.presentation.categories.CategoriesScreen
@@ -50,6 +49,21 @@ fun MainScreen(
         navHostController = navController
     )
 
+    /*
+        to share a viewmodel between screens you will need to use the following pattern
+
+        composable(destination = Destination.LoginScreen) {
+            val viewModel = it.sharedViewModel<AuthViewModel>(navController = navController)
+            LoginScreen(viewModel = viewModel)
+            //LoginScreen()
+        }
+        composable(destination = Destination.RegisterScreen) {
+            val viewModel = it.sharedViewModel<AuthViewModel>(navController = navController)
+            RegisterScreen(viewModel = viewModel)
+            //RegisterScreen()
+        }
+    */
+
     RecipeSaverTheme {
 
         // A surface container using the 'background' color from the theme
@@ -64,104 +78,115 @@ fun MainScreen(
                 composable(destination = Destination.SplashScreen) {
                     SplashScreen()
                 }
-                composable(destination = Destination.LoginScreen) {
-                    LoginScreen()
-                }
-                composable(destination = Destination.RegisterScreen) {
-                    RegisterScreen()
-                }
-                composable(destination = Destination.SettingsScreen) {
-                    SettingsScreen(navDrawerState = navDrawerState)
-                }
-                composable(destination = Destination.RecipesScreen) {
-                    RecipesScreen(navDrawerState = navDrawerState)
-                }
-                composable(
-                    destination = Destination.RecipeScreen,
-                    arguments = listOf(
-                        navArgument(
-                            name = "recipeId"
-                        ) {
-                            type = NavType.LongType
-                            defaultValue = -1
-                            nullable = false
-                        }
-                    )
+                navigation(
+                    startDestination = "login_screen",
+                    route = "auth"
                 ) {
-                    RecipeScreen(snackbarHostState = snackbarHostState)
+
+                    composable(destination = Destination.LoginScreen) {
+                        LoginScreen()
+                    }
+                    composable(destination = Destination.RegisterScreen) {
+                        RegisterScreen()
+                    }
                 }
-                composable(
-                    destination = Destination.RecipeAddEditScreen,
-                    arguments = listOf(
-                        navArgument(
-                            name = "recipeId"
-                        ) {
-                            type = NavType.LongType
-                            defaultValue = -1
-                            nullable = false
-                        }
-                    )
+                navigation(
+                    startDestination = "recipes_screen",
+                    route = "recipe_feature"
                 ) {
-                    RecipeAddEditScreen(snackbarHostState = snackbarHostState)
-                }
-                composable(destination = Destination.CategoriesScreen) {
-                    CategoriesScreen(navDrawerState = navDrawerState)
-                }
-                composable(
-                    destination = Destination.CategoryScreen,
-                    arguments = listOf(
-                        navArgument(
-                            name = "categoryId"
-                        ) {
-                            type = NavType.LongType
-                            defaultValue = -1
-                            nullable = false
-                        }
-                    )
-                ) {
-                    CategoryScreen(snackbarHostState = snackbarHostState)
-                }
-                composable(
-                    destination = Destination.PermissionsScreen,
-                    arguments = listOf(
-                        navArgument(
-                            name = "permissionType"
-                        ) {
-                            type = NavType.StringType
-                            defaultValue = ""
-                            nullable = false
-                        },
-                        navArgument(
-                            name = "successPath"
-                        ) {
-                            type = NavType.StringType
-                            defaultValue = ""
-                            nullable = false
-                        },
-                        navArgument(
-                            name = "declinePath"
-                        ) {
-                            type = NavType.StringType
-                            defaultValue = ""
-                            nullable = false
-                        }
-                    )
-                ) {
-                    PermissionsScreen()
-                }
-                composable(
-                    destination = Destination.ShareRecipeScreen,
-                    arguments = listOf(
-                        navArgument(
-                            name = "recipeId"
-                        ) {
-                            type = NavType.LongType
-                            defaultValue = -1
-                            nullable = false
-                        }
-                    )
-                ) {
-                    ShareRecipeScreen()
+                    composable(destination = Destination.RecipesScreen) {
+                        RecipesScreen(navDrawerState = navDrawerState)
+                    }
+                    composable(
+                        destination = Destination.RecipeScreen,
+                        arguments = listOf(
+                            navArgument(
+                                name = "recipeId"
+                            ) {
+                                type = NavType.LongType
+                                defaultValue = -1
+                                nullable = false
+                            }
+                        )
+                    ) {
+                        RecipeScreen(snackbarHostState = snackbarHostState)
+                    }
+                    composable(
+                        destination = Destination.RecipeAddEditScreen,
+                        arguments = listOf(
+                            navArgument(
+                                name = "recipeId"
+                            ) {
+                                type = NavType.LongType
+                                defaultValue = -1
+                                nullable = false
+                            }
+                        )
+                    ) {
+                        RecipeAddEditScreen(snackbarHostState = snackbarHostState)
+                    }
+                    composable(destination = Destination.CategoriesScreen) {
+                        CategoriesScreen(navDrawerState = navDrawerState)
+                    }
+                    composable(
+                        destination = Destination.CategoryScreen,
+                        arguments = listOf(
+                            navArgument(
+                                name = "categoryId"
+                            ) {
+                                type = NavType.LongType
+                                defaultValue = -1
+                                nullable = false
+                            }
+                        )
+                    ) {
+                        CategoryScreen(snackbarHostState = snackbarHostState)
+                    }
+                    composable(
+                        destination = Destination.PermissionsScreen,
+                        arguments = listOf(
+                            navArgument(
+                                name = "permissionType"
+                            ) {
+                                type = NavType.StringType
+                                defaultValue = ""
+                                nullable = false
+                            },
+                            navArgument(
+                                name = "successPath"
+                            ) {
+                                type = NavType.StringType
+                                defaultValue = ""
+                                nullable = false
+                            },
+                            navArgument(
+                                name = "declinePath"
+                            ) {
+                                type = NavType.StringType
+                                defaultValue = ""
+                                nullable = false
+                            }
+                        )
+                    ) {
+                        PermissionsScreen()
+                    }
+                    composable(
+                        destination = Destination.ShareRecipeScreen,
+                        arguments = listOf(
+                            navArgument(
+                                name = "recipeId"
+                            ) {
+                                type = NavType.LongType
+                                defaultValue = -1
+                                nullable = false
+                            }
+                        )
+                    ) {
+                        ShareRecipeScreen()
+                    }
+                    composable(destination = Destination.SettingsScreen) {
+                        SettingsScreen(navDrawerState = navDrawerState)
+                    }
                 }
             }
         }
@@ -198,4 +223,13 @@ fun NavigationEffects(
             }
         }
     }
+}
+
+@Composable
+inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
+    val navGraphRoute = destination.parent?.route ?: return hiltViewModel()
+    val parentEntry = remember(this) {
+        navController.getBackStackEntry(navGraphRoute)
+    }
+    return hiltViewModel(parentEntry)
 }

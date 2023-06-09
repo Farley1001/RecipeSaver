@@ -30,7 +30,7 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             delay(1000L)
             if (currentUser != null) {
-                appNavigator.tryNavigateTo(Destination.RecipesScreen())
+                appNavigator.tryNavigateTo(route = Destination.RecipesScreen(), popUpToRoute = "recipe_feature", inclusive = true)
                 currentUser = null
             } else {
                 appNavigator.tryNavigateTo(Destination.LoginScreen())

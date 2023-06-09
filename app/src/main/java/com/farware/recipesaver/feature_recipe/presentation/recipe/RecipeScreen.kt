@@ -179,7 +179,8 @@ fun RecipeScreen(
         prepTimePicker = prepTimePickerDialog,
         cookTimePicker = cookTimePickerDialog,
         onToggleFavorite = { viewModel.onEvent(RecipeEvent.ToggleFavorite) },
-        onSaveRecipe = { viewModel.onEvent(RecipeEvent.SaveRecipe) }
+        onSaveRecipe = { viewModel.onEvent(RecipeEvent.SaveRecipe) },
+        onShareButtonClick = { viewModel.onEvent(RecipeEvent.NavigateToShare) }
     )
 }
 
@@ -214,7 +215,8 @@ fun RecipeContent(
     prepTimePicker: TimePickerDialog,
     cookTimePicker: TimePickerDialog,
     onToggleFavorite: () -> Unit,
-    onSaveRecipe: () -> Unit
+    onSaveRecipe: () -> Unit,
+    onShareButtonClick: () -> Unit
 ) {
     if(showAddEditDialog){
         AlertDialog(
@@ -324,7 +326,7 @@ fun RecipeContent(
                     actions = {
                         IconButton(
                             onClick = {
-                                // TODO
+                                onShareButtonClick()
                             }
                         ) {
                             Icon(

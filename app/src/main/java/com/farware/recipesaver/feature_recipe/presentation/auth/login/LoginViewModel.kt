@@ -194,67 +194,13 @@ class LoginViewModel @Inject constructor(
                 )
 
                 // navigate to recipes screen
-                appNavigator.tryNavigateTo(Destination.RecipesScreen())
+                //appNavigator.tryNavigateTo(Destination.RecipesScreen())
+                appNavigator.tryNavigateTo(route = Destination.RecipesScreen(), popUpToRoute = "recipe_feature", inclusive = true)
             }
             is LoginEvent.Register -> {
                 appNavigator.tryNavigateTo(Destination.RegisterScreen())
             }
         }
     }
-
-/*
-
-    private fun getConversionsFromFirebase()  {
-        firebaseUseCases.getFirebaseConversions()
-            .onEach { result ->
-                when(result) {
-                    is Resource.Success -> {
-                        val data = result.data
-                        recipesUseCases.insertAllConversions(data!!)
-                        //
-                        loadingState.emit(LoadingState.LOADED)
-                    }
-                    is Resource.Error -> {
-                        _state.value = state.value.copy(
-                            error = result.message ?: "Unable to get conversions from firebase.",
-                            isLoading = false
-                        )
-                        loadingState.emit(LoadingState.error(result.message ?: "Unable to get conversions from firebase."))
-                    }
-                    is Resource.Loading -> {
-                        _state.value = state.value.copy(
-                            isLoading = true
-                        )
-                    }
-                }
-            }.launchIn(viewModelScope)
-    }
-
-    private fun getMeasuresFromFirebase()  {
-        firebaseUseCases.getFirebaseMeasures()
-            .onEach { result ->
-                when(result) {
-                    is Resource.Success -> {
-                        val data = result.data
-                        recipesUseCases.insertAllMeasures(data!!)
-                        //
-                        loadingState.emit(LoadingState.LOADED)
-                    }
-                    is Resource.Error -> {
-                        _state.value = state.value.copy(
-                            error = result.message ?: "Unable to get measures from firebase.",
-                            isLoading = false
-                        )
-                        loadingState.emit(LoadingState.error(result.message ?: "Unable to get measures from firebase."))
-                    }
-                    is Resource.Loading -> {
-                        _state.value = state.value.copy(
-                            isLoading = true
-                        )
-                    }
-                }
-            }.launchIn(viewModelScope)
-    }
-    */
 }
 

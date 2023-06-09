@@ -33,6 +33,9 @@ import com.farware.recipesaver.feature_recipe.domain.use_cases.step.GetStepsByRe
 import com.farware.recipesaver.feature_recipe.domain.use_cases.tip.AddTipUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.tip.DeleteTipUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.tip.GetTipsByRecipeIdUseCase
+import com.farware.recipesaver.feature_recipe.domain.use_cases.validation.ValidateConfirmPasswordUseCase
+import com.farware.recipesaver.feature_recipe.domain.use_cases.validation.ValidateEmailUseCase
+import com.farware.recipesaver.feature_recipe.domain.use_cases.validation.ValidatePasswordUseCase
 import com.farware.recipesaver.feature_recipe.presentation.navigation.AppNavigator
 import com.farware.recipesaver.feature_recipe.presentation.navigation.AppNavigatorImpl
 import dagger.Module
@@ -188,6 +191,15 @@ object AppModule {
             getMeasures = GetMeasuresUseCase(repository),
             getMeasureById = GetMeasureByIdUseCase(repository),
             insertMeasureReturnId = InsertMeasureReturnIdUseCase(repository)
+        )
+    }
+
+    @Provides
+    fun provideValidationUseCases(): ValidationUseCases {
+        return ValidationUseCases(
+            validateEmail = ValidateEmailUseCase(),
+            validatePassword = ValidatePasswordUseCase(),
+            validateConfirmPassword = ValidateConfirmPasswordUseCase()
         )
     }
 

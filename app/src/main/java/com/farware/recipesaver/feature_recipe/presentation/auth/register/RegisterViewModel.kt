@@ -9,14 +9,18 @@ import com.farware.recipesaver.feature_recipe.common.Resource
 import com.farware.recipesaver.feature_recipe.domain.use_cases.DataStoreUseCases
 import com.farware.recipesaver.feature_recipe.domain.use_cases.FirebaseUseCases
 import com.farware.recipesaver.feature_recipe.domain.use_cases.RecipeUseCases
+import com.farware.recipesaver.feature_recipe.domain.use_cases.ValidationUseCases
 import com.farware.recipesaver.feature_recipe.presentation.components.OutlinedTextFieldState
 import com.farware.recipesaver.feature_recipe.presentation.navigation.AppNavigator
 import com.farware.recipesaver.feature_recipe.presentation.navigation.Destination
 import com.farware.recipesaver.feature_recipe.presentation.util.LoadingState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +28,8 @@ class RegisterViewModel @Inject constructor(
     private val appNavigator: AppNavigator,
     private val firebaseUseCases: FirebaseUseCases,
     private val dataStoreUseCases: DataStoreUseCases,
-    private val recipesUseCases: RecipeUseCases
+    private val recipesUseCases: RecipeUseCases,
+    private val validationUseCases: ValidationUseCases
 ): ViewModel() {
     private var _state =  mutableStateOf(RegisterState())
     val state: State<RegisterState> = _state
@@ -52,28 +57,35 @@ class RegisterViewModel @Inject constructor(
     )
     val confirmPassword: State<OutlinedTextFieldState> = _confirmPassword
 
+    private val validationEventChannel = Channel<ValidationEvent>()
+    val validationEvents = validationEventChannel.receiveAsFlow()
+
+
     fun onEvent(event: RegisterEvent) {
         when (event) {
             is RegisterEvent.EmailValueChange -> {
                 _email.value = email.value.copy(
                     text = event.value,
-                    isDirty = true
+                    isDirty = true,
+                    hasError = false,
+                    errorMsg = ""
                 )
             }
             is RegisterEvent.EmailFocusChange -> {
                 if(!event.focusState.isFocused && email.value.isDirty) {
-                    if(!Patterns.EMAIL_ADDRESS.matcher(email.value.text).matches()) {
+                    val result = validationUseCases.validateEmail.execute(email.value.text)
+                    if(!result.successful) {
                         _email.value = email.value.copy(
                             hasError = true,
-                            errorMsg = "* Invalid Email Address"
+                            errorMsg = result.errorMessage!!
                         )
                     }
-                    else {
+                    /*else {
                         _email.value = email.value.copy(
                             hasError = false,
                             errorMsg = ""
                         )
-                    }
+                    }*/
                 }
             }
             is RegisterEvent.ClearEmail -> {
@@ -86,23 +98,26 @@ class RegisterViewModel @Inject constructor(
             is RegisterEvent.PasswordValueChange -> {
                 _password.value = password.value.copy(
                     text = event.value,
-                    isDirty = true
+                    isDirty = true,
+                    hasError = false,
+                    errorMsg = ""
                 )
             }
             is RegisterEvent.PasswordFocusChange -> {
                 if(!event.focusState.isFocused && password.value.isDirty) {
-                    if(!isValidPassword(password.value.text)) {
+                    val result = validationUseCases.validatePassword.execute(password.value.text)
+                    if(!result.successful) {
                         _password.value = password.value.copy(
                             hasError = true,
-                            errorMsg = "* Password must be at least 8 characters long\nand contain an upper case, a number,\nand a special character."
+                            errorMsg = result.errorMessage!!
                         )
                     }
-                    else {
+                    /*else {
                         _password.value = password.value.copy(
                             hasError = false,
                             errorMsg = ""
                         )
-                    }
+                    }*/
                 }
             }
             is RegisterEvent.ClearPassword -> {
@@ -115,23 +130,26 @@ class RegisterViewModel @Inject constructor(
             is RegisterEvent.ConfirmPasswordValueChange -> {
                 _confirmPassword.value = confirmPassword.value.copy(
                     text = event.value,
-                    isDirty = true
+                    isDirty = true,
+                    hasError = false,
+                    errorMsg = ""
                 )
             }
             is RegisterEvent.ConfirmPasswordFocusChange -> {
                 if(!event.focusState.isFocused && confirmPassword.value.isDirty) {
+                    val result = validationUseCases.validateConfirmPassword.execute(password.value.text, confirmPassword.value.text)
                     if(confirmPassword.value.text != password.value.text) {
                         _confirmPassword.value = confirmPassword.value.copy(
                             hasError = true,
-                            errorMsg = "* Passwords do not match"
+                            errorMsg = result.errorMessage!!
                         )
                     }
-                    else {
+                    /*else {
                         _confirmPassword.value = confirmPassword.value.copy(
                             hasError = false,
                             errorMsg = ""
                         )
-                    }
+                    }*/
                 }
             }
             is RegisterEvent.ClearConfirmPassword -> {
@@ -142,7 +160,8 @@ class RegisterViewModel @Inject constructor(
                 )
             }
             is RegisterEvent.SignUpWithEmailAndPassword -> {
-                firebaseUseCases.createUserWithEmailAndPassword(event.email, event.password)
+                validateAndSubmit()
+                /*firebaseUseCases.createUserWithEmailAndPassword(event.email, event.password)
                     .onEach { result ->
                         when(result) {
                             is Resource.Success -> {
@@ -151,13 +170,6 @@ class RegisterViewModel @Inject constructor(
                                     isLoading = false
                                 )
 
-                                // get conversions from firebase
-                                //getConversionsFromFirebase()
-
-                                // get measures from firebase
-                                //getMeasuresFromFirebase()
-
-                                //
                                 loadingState.emit(LoadingState.LOADED)
                             }
                             is Resource.Error -> {
@@ -173,7 +185,7 @@ class RegisterViewModel @Inject constructor(
                                 )
                             }
                         }
-                    }.launchIn(viewModelScope)
+                    }.launchIn(viewModelScope)*/
             }
             is RegisterEvent.UpdatePreferences -> {
                 dataStoreUseCases.updateDisplayEmailAndName(
@@ -211,20 +223,98 @@ class RegisterViewModel @Inject constructor(
                 )
 
                 // navigate to recipes screen
-                appNavigator.tryNavigateTo(Destination.RecipesScreen())
+                //appNavigator.tryNavigateTo(Destination.RecipesScreen())
+                appNavigator.tryNavigateTo(route = Destination.RecipesScreen(), popUpToRoute = "recipe_feature", inclusive = true)
             }
             is RegisterEvent.Login -> {
-                appNavigator.tryNavigateTo(Destination.RegisterScreen())
+                appNavigator.tryNavigateTo(Destination.LoginScreen())
             }
         }
     }
 
-    private fun isValidPassword(password: String?) : Boolean {
+/*    private fun isValidPassword(password: String?) : Boolean {
         password?.let {
             val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$"
             val passwordMatcher = Regex(passwordPattern)
             return passwordMatcher.find(password) != null
         } ?: return false
+    }*/
+
+    private fun validateAndSubmit() {
+        val emailResult = validationUseCases.validateEmail.execute(email.value.text)
+        val passwordResult = validationUseCases.validatePassword.execute(password.value.text)
+        val confirmPasswordResult = validationUseCases.validateConfirmPassword.execute(
+            password.value.text, confirmPassword.value.text
+        )
+
+        val hasError = listOf(
+            emailResult,
+            passwordResult,
+            confirmPasswordResult
+        ).any { !it.successful }
+
+        if(hasError) {
+            if (!emailResult.errorMessage.isNullOrEmpty()) {
+                _email.value =
+                    email.value.copy(errorMsg = emailResult.errorMessage!!, hasError = true)
+
+            } //else { _email.value = email.value.copy(errorMsg = "", hasError = false) }
+
+            if (!passwordResult.errorMessage.isNullOrEmpty()) {
+                _password.value =
+                    password.value.copy(errorMsg = passwordResult.errorMessage!!, hasError = true)
+
+            } //else { _password.value = email.value.copy(errorMsg = "", hasError = false) }
+
+            if(!confirmPasswordResult.errorMessage.isNullOrEmpty()) {
+                _confirmPassword.value = confirmPassword.value.copy(
+                    errorMsg = confirmPasswordResult.errorMessage!!,
+                    hasError = true
+                )
+            } //else {
+              //  _confirmPassword.value = confirmPassword.value.copy(
+              //      errorMsg = "",
+              //      hasError = false
+              //  )
+            //}
+        } else {
+            registerNewUser(email.value.text, password.value.text)
+            viewModelScope.launch {
+                validationEventChannel.send(ValidationEvent.Success)
+            }
+        }
+    }
+
+    sealed class ValidationEvent {
+        object Success: ValidationEvent()
+    }
+
+    private fun registerNewUser(email: String, password: String){
+        firebaseUseCases.createUserWithEmailAndPassword(email, password)
+            .onEach { result ->
+                when(result) {
+                    is Resource.Success -> {
+                        _state.value = state.value.copy(
+                            currentUser = result.data,
+                            isLoading = false
+                        )
+
+                        loadingState.emit(LoadingState.LOADED)
+                    }
+                    is Resource.Error -> {
+                        _state.value = state.value.copy(
+                            error = result.message ?: "Unable to create new user, please try again.",
+                            isLoading = false
+                        )
+                        loadingState.emit(LoadingState.error(result.message ?: "Unable to create new user, please try again."))
+                    }
+                    is Resource.Loading -> {
+                        _state.value = state.value.copy(
+                            isLoading = true
+                        )
+                    }
+                }
+            }.launchIn(viewModelScope)
     }
 
     private fun getConversionsFromFirebase()  {
