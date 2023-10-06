@@ -4,15 +4,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.farware.recipesaver.feature_recipe.domain.bluetooth.BluetoothConnectionResult
+
 import com.farware.recipesaver.feature_recipe.domain.bluetooth.BluetoothController
 import com.farware.recipesaver.feature_recipe.domain.bluetooth.BluetoothDeviceDomain
 import com.farware.recipesaver.feature_recipe.domain.bluetooth.BluetoothMessage
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.*
 import com.farware.recipesaver.feature_recipe.domain.use_cases.*
 import com.farware.recipesaver.feature_recipe.presentation.navigation.AppNavigator
+import com.farware.recipesaver.feature_recipe.presentation.navigation.Destination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -150,7 +151,7 @@ class ShareRecipeViewModel @Inject constructor(
     private fun Flow<BluetoothConnectionResult>.listen(): Job {
         return onEach { result ->
             when (result) {
-                BluetoothConnectionResult.ConnectionEstablished -> {
+                is BluetoothConnectionResult.ConnectionEstablished -> {
                     _state.update {
                         it.copy(
                             isConnected = true,
@@ -186,7 +187,7 @@ class ShareRecipeViewModel @Inject constructor(
                                     isFromLocalUser = result.message.isFromLocalUser
                                 ),
                                 messageSize = 0,
-                                partialMessage = ""
+                                partialMessage = "",
                             )
                         }
                         if (!result.message.isFromLocalUser) {
@@ -204,14 +205,14 @@ class ShareRecipeViewModel @Inject constructor(
                     }
                 }
             }
-        }.catch { throwable ->
-            bluetoothController.closeConnection()
+        }.catch {
+           /* bluetoothController.closeConnection()
             _state.update {
                 it.copy(
                     isConnected = false,
                     isConnecting = false
                 )
-            }
+            }*/
         }.launchIn(viewModelScope)
     }
 
@@ -286,7 +287,7 @@ class ShareRecipeViewModel @Inject constructor(
     }
 
     // *********************************************************************************************************************************************
-    //        need fo fix this section to use theis apps db
+    //        need fo fix this section to use the apps db
     // *********************************************************************************************************************************************
 
     private fun buildRecipeToSend(): String {
@@ -329,11 +330,151 @@ class ShareRecipeViewModel @Inject constructor(
         }
 
         if(r.size == 10) {
-            createRecipe(r, s, t, i)
+            // For testing only
+            appNavigator.tryNavigateTo(Destination.RecipesScreen())
+            // createRecipe(r, s, t, i)
         }
     }
 
+    // TODO:  Put into Transaction in DAO - call it something like CreateSentRecipe(Category, Recipe, ?? Steps, Tips, Ingredients)
     private suspend fun createRecipe(recipeList: List<String>, stepString: String, tipString: String, ingredientString: String) {
+        var recId = 0L
+
+        var cat = Category(
+            categoryId = null,
+            name = recipeList[5],
+            lightThemeColor = recipeList[6].toInt(),
+            onLightThemeColor = recipeList[7].toInt(),
+            darkThemeColor = recipeList[8].toInt(),
+            onDarkThemeColor = recipeList[9].toInt(),
+            timeStamp = System.currentTimeMillis()
+        )
+
+        var rec = Recipe(
+            recipeId = null,
+            categoryId = 0L,
+            name = recipeList[0].trim(),
+            description = recipeList[1].trim(),
+            prepTime = recipeList[2].trim().toLong(),
+            cookTime = recipeList[3].trim().toLong(),
+            favorite = recipeList[4].trim().toBoolean(),
+            timeStamp = System.currentTimeMillis()
+        )
+        // check for existing category name
+        var catId = state.value.categories.first { it.name == recipeList[5].trim() }.categoryId!!
+
+        // copy categoryId into record
+        if(catId > 0L) {
+            rec.copy(categoryId = catId)
+        }
+
+        // change below here will not have recId need to do in dao
+        val stp = createSteps(stepString.split(";"))
+        val tps = createTips(tipString.split(";"))
+        val (mes, ing, rig) = createIngredients(ingredientString.split(";"))
+
+        // TODO: Call the insertSharedRecipeUseCase method to insert the recipe inside a transaction
+        viewModelScope.launch {
+            recipeUseCases.insertSharedRecipe(cat, rec, stp, tps, mes, ing, rig)
+            // TODO: add a success or failure message
+        }
+
+        // TODO: navigate to new recipe
+        //if (resultA.await() ==  100 && resultB.await() == 100 && resultC.await() == 100 ) {
+        //    appNavigator.tryNavigateTo(Destination.RecipeScreen(recId))
+        //}
+    }
+
+    private suspend fun createSteps(stepList: List<String>): List<Step> {
+        // list of 1 field step text
+        var newSteps: List<Step> = emptyList()
+        var stepNum = 0
+        stepList.forEach {
+            if(it.trim().isNotEmpty()) {
+                stepNum++
+                newSteps += Step(
+                    stepId = null,
+                    recipeId = 0L,
+                    stepNumber = stepNum,
+                    text = it.trim()
+                )
+            }
+        }
+        return newSteps
+    }
+
+    private suspend fun createTips(tipList: List<String>): List<Tip> {
+        // list of 1 field tip text
+        var newTips: List<Tip> = emptyList()
+        var tipNum = 0
+        tipList.forEach {
+            tipNum++
+            if(it.trim().isNotEmpty()) {
+                newTips += Tip(
+                    tipId = null,
+                    recipeId = 0L,
+                    tipNumber = tipNum,
+                    text = it.trim()
+                )
+            }
+        }
+        return newTips
+    }
+
+
+    private suspend fun createIngredients(ingredientList: List<String>): Triple<List<Measure>, List<Ingredient>, List<RecipeIngredient>> {
+
+        var measures: List<Measure> = emptyList()
+        var ingredients: List<Ingredient> = emptyList()
+        var recipeIngredients: List<RecipeIngredient> = emptyList()
+
+
+        // list of 3 fields amount, measureShortName, ingredient
+        var size = ingredientList.size/3*3
+
+        for(i in 0 until size step 3) {
+
+            var ingId = 0L
+            var mesId = 0L
+
+            // measureId
+            if (ingredientList[i + 1].trim().isNotEmpty()) {
+                mesId = state.value.allMeasures.first { it?.name?.lowercase() == ingredientList[i + 1].trim().lowercase() }?.measureId!!
+
+                measures += Measure(
+                    measureId = mesId,
+                    name = ingredientList[i + 1].trim()
+                )
+            }
+
+            // ingredientId
+            if (ingredientList[i + 2].trim().isNotEmpty()) {
+                ingId = state.value.allIngredients.first { it?.name?.lowercase() == ingredientList[i + 2].trim().lowercase() }?.ingredientId!!
+
+                ingredients += Ingredient(
+                    ingredientId = ingId,
+                    name = ingredientList[i + 2].trim(),
+                    type = "Import"
+                )
+            }
+
+            // recipe ingredient
+            recipeIngredients += RecipeIngredient(
+                recipeIngredientId = null,
+                recipeId = 0L,
+                ingredientId = ingId,
+                measureId = mesId,
+                amount = ingredientList[i].trim()
+            )
+
+        }
+
+        return Triple(measures, ingredients, recipeIngredients)
+    }
+
+
+    // old logic
+    /*private suspend fun createRecipe(recipeList: List<String>, stepString: String, tipString: String, ingredientString: String) {
         var catId = 0L                         //createCategory(recipeList[5])
         var recId = 0L
         // check for existing category name
@@ -372,13 +513,18 @@ class ShareRecipeViewModel @Inject constructor(
                 )
 
                 if(recId > 0) {
-                    var resultA = async {createSteps(recId, stepString.split(";") ) }
-                    var resultB = async { createTips(recId, tipString.split(";")) }
-                    var resultC = async { createIngredients(recId, ingredientString.split(";")) }
+                    val resultA = async {createSteps(recId, stepString.split(";") ) }
+                    val resultB = async { createTips(recId, tipString.split(";")) }
+                    val resultC = async { createIngredients(recId, ingredientString.split(";")) }
 
                     val a = resultA.await()
                     val b = resultB.await()
                     val c = resultC.await()
+
+                    if (resultA.await() ==  100 && resultB.await() == 100 && resultC.await() == 100 ) {
+                        appNavigator.tryNavigateTo(Destination.RecipeScreen(recId))
+                    }
+
                 }
             }
         }
@@ -426,19 +572,6 @@ class ShareRecipeViewModel @Inject constructor(
 
     private suspend fun createIngredients(recipeId: Long, ingredientList: List<String>): Int {
         // list of 3 fields amount, measureShortName, ingredient
-/*        var ax = emptyList<String>()
-        var mx = emptyList<String>()
-        var ix = emptyList<String>()
-        ax = ingredientList.filterIndexed { index, data ->
-            index % 3 == 0
-        }
-        mx = ingredientList.filterIndexed { index, data ->
-            index > 0 && index-1 % 3 == 0
-        }
-        ix = ingredientList.filterIndexed { index, data ->
-            index > 1 && index-2 % 3 == 0
-        }*/
-
         var size = ingredientList.size/3*3
         for(i in 0 until size step 3) {
             var ingId = -1L
@@ -493,5 +626,7 @@ class ShareRecipeViewModel @Inject constructor(
             //i += 3
         }
         return 100
-    }
+    }*/
 }
+
+

@@ -20,13 +20,13 @@ sealed class Destination(protected val route: String, vararg params: String) {
     }
     object CategoriesScreen: NoArgumentsDestination("categories_screen")
     object LoginScreen: NoArgumentsDestination("login_screen")
-    object RecipeAddEditScreen: Destination("recipe_add_edit_screen", "recipeId") {
+    /*object RecipeAddEditScreen: Destination("recipe_add_edit_screen", "recipeId") {
         const val RECIPE_ID_KEY = "recipeId"
 
         operator fun invoke(recipeId: Long): String = route.appendParams(
             RECIPE_ID_KEY to recipeId
         )
-    }
+    }*/
     object RecipeScreen: Destination("recipe_screen", "recipeId") {
         const val RECIPE_ID_KEY = "recipeId"
 

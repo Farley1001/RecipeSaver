@@ -103,8 +103,6 @@ fun ShareRecipeScreen(
                 if(state.messages.isNotEmpty() && !state.messages.last().isFromLocalUser) {
                     ShareRecipeReceiveContent(
                         state = state,
-                        onDisconnect = { viewModel.disconnectFromDevice() },
-                        onSendMessage = { viewModel.sendMessage(it) }
                     )
                 } else {
                     ShareRecipeSendContent(

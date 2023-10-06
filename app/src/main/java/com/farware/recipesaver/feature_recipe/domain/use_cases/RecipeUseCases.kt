@@ -23,4 +23,5 @@ data class RecipeUseCases(
     val insertAllMeasures: InsertAllMeasuresUseCase,
     val insertRecipeReturnId: InsertRecipeReturnIdUseCase,
     val insertCategoryReturnId: InsertCategoryReturnIdUseCase,
+    val insertSharedRecipe: InsertSharedRecipeUseCase,
 )

@@ -135,6 +135,7 @@ object AppModule {
             insertAllMeasures = InsertAllMeasuresUseCase(repository),
             insertRecipeReturnId =  InsertRecipeReturnIdUseCase(repository),
             insertCategoryReturnId =  InsertCategoryReturnIdUseCase(repository),
+            insertSharedRecipe =  InsertSharedRecipeUseCase(repository),
         )
     }
 

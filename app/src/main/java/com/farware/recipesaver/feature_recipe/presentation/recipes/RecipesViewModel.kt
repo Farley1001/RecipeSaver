@@ -169,15 +169,15 @@ class RecipesViewModel @Inject constructor(
                 )
             }
             is RecipesEvent.NewRecipe -> {
-                // navigate to recipeAddEditScreen
+                // navigate to RecipeScreen with default id
                 appNavigator.tryNavigateTo(Destination.RecipeScreen(-1L))
             }
             is RecipesEvent.NavigateToRecipe -> {
                 appNavigator.tryNavigateTo(Destination.RecipeScreen(event.recipeId))
             }
-            is RecipesEvent.NavigateToRecipeAddEdit -> {
+            /*is RecipesEvent.NavigateToRecipeAddEdit -> {
                 appNavigator.tryNavigateTo(Destination.RecipeAddEditScreen(event.recipeId))
-            }
+            }*/
             is RecipesEvent.NavMenuNavigate -> {
                 var route = event.route
                 when (route) {

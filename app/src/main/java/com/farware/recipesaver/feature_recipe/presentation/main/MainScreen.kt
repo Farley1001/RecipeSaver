@@ -49,21 +49,6 @@ fun MainScreen(
         navHostController = navController
     )
 
-    /*
-        to share a viewmodel between screens you will need to use the following pattern
-
-        composable(destination = Destination.LoginScreen) {
-            val viewModel = it.sharedViewModel<AuthViewModel>(navController = navController)
-            LoginScreen(viewModel = viewModel)
-            //LoginScreen()
-        }
-        composable(destination = Destination.RegisterScreen) {
-            val viewModel = it.sharedViewModel<AuthViewModel>(navController = navController)
-            RegisterScreen(viewModel = viewModel)
-            //RegisterScreen()
-        }
-    */
-
     RecipeSaverTheme {
 
         // A surface container using the 'background' color from the theme
@@ -82,7 +67,6 @@ fun MainScreen(
                     startDestination = "login_screen",
                     route = "auth"
                 ) {
-
                     composable(destination = Destination.LoginScreen) {
                         LoginScreen()
                     }
@@ -111,7 +95,7 @@ fun MainScreen(
                     ) {
                         RecipeScreen(snackbarHostState = snackbarHostState)
                     }
-                    composable(
+                    /*composable(
                         destination = Destination.RecipeAddEditScreen,
                         arguments = listOf(
                             navArgument(
@@ -124,7 +108,7 @@ fun MainScreen(
                         )
                     ) {
                         RecipeAddEditScreen(snackbarHostState = snackbarHostState)
-                    }
+                    }*/
                     composable(destination = Destination.CategoriesScreen) {
                         CategoriesScreen(navDrawerState = navDrawerState)
                     }

@@ -12,8 +12,6 @@ import com.farware.recipesaver.feature_recipe.presentation.share_recipe.ShareRec
 @Composable
 fun ShareRecipeReceiveContent(
     state: ShareRecipeUiState,
-    onDisconnect: () -> Unit,
-    onSendMessage: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -22,6 +20,7 @@ fun ShareRecipeReceiveContent(
         verticalArrangement = Arrangement.Center
     ) {
         Text(text = "Receive Recipe Content Here")
+        Text(text = "connecting: ${state.isConnecting} - connected: ${state.isConnected}")
     }
 
 }
