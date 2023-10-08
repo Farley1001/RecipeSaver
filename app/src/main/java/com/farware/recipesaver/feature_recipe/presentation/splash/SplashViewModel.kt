@@ -1,5 +1,6 @@
 package com.farware.recipesaver.feature_recipe.presentation.splash
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -30,6 +31,7 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             delay(1000L)
             if (currentUser != null) {
+                appNavigator
                 appNavigator.tryNavigateTo(route = Destination.RecipesScreen(), popUpToRoute = "recipe_feature", inclusive = true)
                 currentUser = null
             } else {

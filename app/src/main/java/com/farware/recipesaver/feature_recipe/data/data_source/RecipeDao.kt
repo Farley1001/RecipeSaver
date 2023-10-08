@@ -64,6 +64,60 @@ interface RecipeDao {
         deleteRecipe(recipe)
     }
     /*
+            insert a shared recipe
+    */
+
+    @Transaction
+    suspend fun insertSharedRecipe(category: CategoryEntity, recipe: RecipeEntity, steps: List<StepEntity>, tips: List<TipEntity>, measures: List<MeasureEntity>, ingredients: List<IngredientEntity>, recipeIngredients: List<RecipeIngredientEntity>) {
+        var catId = recipe.categoryId
+        // create new category if needed
+        if(catId < 1) {
+            catId = insertCategoryReturnId(category)
+            // save categoryId into recipe
+            recipe.copy(categoryId = catId)
+        }
+        // create recipe
+        var repId = insertRecipeReturnId(recipe)
+
+        // map recipeId into steps and insert
+        var stepsWithId = steps.map{
+            it.copy(recipeId = repId)
+        }
+        insertSteps(stepsWithId)
+        //stepsWithId.forEach { insertStep(it) }
+
+        // map recipeId into tips and insert
+        var tipsWithId = tips.map{
+            it.copy(recipeId = repId)
+        }
+        //tipsWithId.forEach { insertTip(it) }
+
+
+        var index: Int = 0
+
+        // iterate each recipeIngredient
+        for(index in recipeIngredients.indices) {
+            var newRecIng: RecipeIngredientEntity = recipeIngredients[index]
+
+            // insert measure and map measureId to recipeIngredient
+            if(recipeIngredients[index].measureId == 0L) {
+                var mesId = insertMeasureReturnId(measures[index])
+                newRecIng.copy(measureId = mesId)
+            }
+
+            // insert ingredient and map ingredientId to recipeIngredient
+            if(recipeIngredients[index].ingredientId == 0L) {
+                var ingId = insertIngredientReturnId(ingredients[index])
+                newRecIng.copy(ingredientId = ingId)
+            }
+
+            // map recipeId to recipeIngredient and insert recipeIngredient
+            newRecIng.copy(recipeId = repId)
+            insertRecipeIngredient(newRecIng)
+        }
+    }
+
+    /*
             category entity
     */
     @Transaction
@@ -113,6 +167,9 @@ interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertStep(step: StepEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSteps(steps: List<StepEntity>)
+
     @Delete
     suspend fun deleteStep(step: StepEntity)
 
@@ -134,6 +191,9 @@ interface RecipeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTip(tip: TipEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTips(steps: List<TipEntity>)
 
     @Delete
     suspend fun deleteTip(tip: TipEntity)
@@ -235,4 +295,6 @@ interface RecipeDao {
 
     @Query("Delete From conversion_table")
     suspend fun deleteAllConversions()
+
+
 }

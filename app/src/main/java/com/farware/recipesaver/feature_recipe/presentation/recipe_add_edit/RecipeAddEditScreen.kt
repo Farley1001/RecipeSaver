@@ -8,10 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.Category
 import com.farware.recipesaver.feature_recipe.presentation.components.DropdownWithLabel
@@ -26,7 +24,6 @@ fun RecipeAddEditScreen(
     snackbarHostState: SnackbarHostState,
     viewModel: RecipeAddEditViewModel = hiltViewModel()
 ) {
-    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -46,7 +43,6 @@ fun RecipeAddEditScreen(
     }
 
     RecipeAddEditContent(
-        focusManager = focusManager,
         snackbarHostState = snackbarHostState,
         categories = viewModel.state.value.categories,
         recipeName = viewModel.recipe.value!!.name,
@@ -60,10 +56,8 @@ fun RecipeAddEditScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipeAddEditContent(
-    focusManager: FocusManager,
     snackbarHostState: SnackbarHostState,
     categories: List<Category>,
     recipeName: String,
@@ -77,22 +71,23 @@ fun RecipeAddEditContent(
 ) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
-    ) {
+    ) { padding ->
         AlertDialog(
             modifier = Modifier
                 .customDialogPosition(CustomDialogPosition.TOP)
-                .padding(it),
+                .padding(padding),
             onDismissRequest = { onCancelRecipeClick() },
             title = {
-                Text(text = "Add / Edit Recipe")
+                Text(text = "Add Recipe")
             },
             text = {
+                val focusManager = LocalFocusManager.current
                 Column() {//modifier = Modifier.fillMaxSize()
                     Row(
                         modifier = Modifier
-                            .padding(start = 50.dp)
+                            //.padding(start = 50.dp)
                             .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        //horizontalArrangement = Arrangement.Center
                     ) {
                         if (categories.isNotEmpty() && selectedCategoryIndex != -1) {
                             DropdownWithLabel(
@@ -103,6 +98,7 @@ fun RecipeAddEditContent(
                             )
                         }
                     }
+                    
                     Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
                     OutlinedTextField(
                         value = recipeName,

@@ -32,6 +32,7 @@ class RecipeRepositoryImpl(
         return dao.insertRecipeReturnId(RecipeEntity.from(recipe))
     }
 
+    // TODO: Need to put into transaction in dao
     override suspend fun deleteRecipe(recipe: Recipe) {
         dao.deleteCompleteRecipe(RecipeEntity.from(recipe))
     }
@@ -50,6 +51,26 @@ class RecipeRepositoryImpl(
 
     override fun searchRecipesOnDirections(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategory>> {
         return dao.searchRecipesOnDirections(search, onlyFavorites)!!.map { recipes -> recipes.map { it.toRecipeWithCategory() } }
+    }
+
+    override suspend fun insertSharedRecipe(
+        category: Category,
+        recipe: Recipe,
+        steps: List<Step>,
+        tips: List<Tip>,
+        measures: List<Measure>,
+        ingredients: List<Ingredient>,
+        recipeIngredients: List<RecipeIngredient>
+    ) {
+        dao.insertSharedRecipe(
+            CategoryEntity.from(category),
+            RecipeEntity.from(recipe),
+            steps.map {StepEntity.from(it) },
+            tips.map { TipEntity.from(it) },
+            measures.map { MeasureEntity.from(it) },
+            ingredients.map { IngredientEntity.from(it) },
+            recipeIngredients.map { RecipeIngredientEntity.from(it) }
+        )
     }
 
     /*

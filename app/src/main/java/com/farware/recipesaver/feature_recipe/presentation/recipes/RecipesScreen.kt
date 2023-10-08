@@ -99,7 +99,7 @@ fun RecipesScreen(
         onNavButtonCloseClick = { navButtonCloseClicked(it) },
         onNewRecipeButtonClick = { viewModel.onEvent(RecipesEvent.NewRecipe) },
         onRecipeItemClick = { viewModel.onEvent(RecipesEvent.NavigateToRecipe(it)) },
-        onRecipeItemLongClick = { viewModel.onEvent(RecipesEvent.NavigateToRecipeAddEdit(it)) },
+        onRecipeItemLongClick = { },
         onRecipeItemDeleteClick = { viewModel.onEvent(RecipesEvent.DeleteRecipe(it)) },
         onConfirmDeleteRecipeClick = { viewModel.onEvent(RecipesEvent.DeleteConfirmed) },
         onCancelDeleteRecipeClick = { viewModel.onEvent(RecipesEvent.DeleteCanceled) }
@@ -270,6 +270,8 @@ fun RecipesContent(
                                         onRecipeItemClick(recipe.recipeId!!)
                                     },
                                     onLongClick = {
+                                        // NOTE:  This currently does nothing
+                                        // the event h as been removed
                                         onRecipeItemLongClick(recipe.recipeId!!)
                                     }
                                 ),

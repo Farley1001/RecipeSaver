@@ -12,7 +12,7 @@ sealed class RecipesEvent {
     data class DeleteRecipe(val recipe: Recipe): RecipesEvent()
     data class EnteredSearch(val value: String): RecipesEvent()
     data class ChangeSearchFocus(val focusState: FocusState): RecipesEvent()
-    data class NavigateToRecipeAddEdit(val recipeId: Long): RecipesEvent()
+    //data class NavigateToRecipeAddEdit(val recipeId: Long): RecipesEvent()
     data class NavigateToRecipe(val recipeId: Long): RecipesEvent()
     data class NavMenuNavigate(val route: String): RecipesEvent()
     object DeleteConfirmed: RecipesEvent()

@@ -74,7 +74,7 @@ class BluetoothControllerImpl(
         context.registerReceiver(
             bluetoothStateReceiver,
             IntentFilter().apply {
-                addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)
+                addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED)  //ACTION_CONNECTION_STATE_CHANGED
                 addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
                 addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
             }
@@ -224,6 +224,7 @@ class BluetoothControllerImpl(
         if(!hasPermission(Manifest.permission.BLUETOOTH_CONNECT)) {
             return
         }
+
         bluetoothAdapter
             ?.bondedDevices
             ?.map { it.toBluetoothDeviceDomain() }

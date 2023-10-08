@@ -28,6 +28,8 @@ interface RecipeRepository {
 
     fun searchRecipesOnDirections(search: String, onlyFavorites: Boolean): Flow<List<RecipeWithCategory>>
 
+    suspend fun insertSharedRecipe(category: Category, recipe: Recipe, steps: List<Step>, Tips: List<Tip>, measures: List<Measure>, ingredients: List< Ingredient>, recipeIngredients: List<RecipeIngredient>)
+
     /*
             categories
     */

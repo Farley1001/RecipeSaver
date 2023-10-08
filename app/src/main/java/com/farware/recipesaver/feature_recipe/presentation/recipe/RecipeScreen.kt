@@ -3,7 +3,7 @@ package com.farware.recipesaver.feature_recipe.presentation.recipe
 import android.app.TimePickerDialog
 import android.widget.Toast
 import androidx.compose.animation.*
-import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Right
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Right
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.tween
@@ -20,7 +20,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -53,7 +52,6 @@ fun RecipeScreen(
     snackbarHostState: SnackbarHostState,
     viewModel: RecipeViewModel = hiltViewModel()
 ) {
-    val focusManager = LocalFocusManager.current
     val context = LocalContext.current
 
     // following is used to show snackbars
@@ -151,7 +149,6 @@ fun RecipeScreen(
     }
 
     RecipeContent(
-        focusManager = focusManager,
         snackbarHostState = snackbarHostState,
         categories = viewModel.state.value.categories,
         selectedCategoryIndex = viewModel.state.value.selectedCategoryIndex,
@@ -187,7 +184,6 @@ fun RecipeScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun RecipeContent(
-    focusManager: FocusManager,
     snackbarHostState: SnackbarHostState,
     categories: List<Category>,
     selectedCategoryIndex: Int,
@@ -221,19 +217,20 @@ fun RecipeContent(
     if(showAddEditDialog){
         AlertDialog(
             modifier = Modifier
-                .customDialogPosition(CustomDialogPosition.TOP)
-                .padding(8.dp),
+                .customDialogPosition(CustomDialogPosition.TOP),
             onDismissRequest = { onToggleAddEditDialog() },
             title = {
-                Text(text = "Add / Edit Recipe")
+                val em = if(name == "") "New Recipe" else "Edit Recipe"
+                Text(text = em)
             },
             text = {
+                val focusManager = LocalFocusManager.current
                 Column() {//modifier = Modifier.fillMaxSize()
                     Row(
                         modifier = Modifier
-                            .padding(start = 50.dp)
+                            //.padding(start = 50.dp)
                             .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        //horizontalArrangement = Arrangement.Center
                     ) {
                         if (categories.isNotEmpty() && selectedCategoryIndex != -1) {
                             DropdownWithLabel(
