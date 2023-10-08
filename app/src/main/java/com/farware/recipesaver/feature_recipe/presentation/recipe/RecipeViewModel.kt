@@ -220,7 +220,7 @@ class RecipeViewModel @Inject constructor(
                 if(id == null) {
                     id = recipeUseCases.insertRecipeReturnId(recipe)
                 } else {
-                    recipeUseCases.addRecipe(recipe)
+                    recipeUseCases.insertRecipe(recipe)
                 }
                 _eventFlow.emit(UiEvent.Success)
             } catch (e: InvalidRecipeException) {

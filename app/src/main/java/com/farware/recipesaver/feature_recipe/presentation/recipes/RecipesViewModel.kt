@@ -144,7 +144,7 @@ class RecipesViewModel @Inject constructor(
             }
             /*is RecipesEvent.RestoreRecipe -> {
                 viewModelScope.launch {
-                    recipeUseCases.addRecipe(recentlyDeletedRecipe ?: return@launch)
+                    recipeUseCases.insertRecipe(recentlyDeletedRecipe ?: return@launch)
                     recentlyDeletedRecipe = null
                 }
             }*/
@@ -222,7 +222,8 @@ class RecipesViewModel @Inject constructor(
     // used for testing
     private fun insertRecipe() {
         viewModelScope.launch {
-            recipeUseCases.addRecipe(
+            // FindThis
+            recipeUseCases.insertRecipe(
                 Recipe(
                     recipeId = null,
                     categoryId = 3,

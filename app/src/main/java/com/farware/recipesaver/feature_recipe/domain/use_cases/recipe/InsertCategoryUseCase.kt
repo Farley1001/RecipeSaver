@@ -4,7 +4,7 @@ import com.farware.recipesaver.feature_recipe.domain.model.recipe.Category
 import com.farware.recipesaver.feature_recipe.domain.model.recipe.InvalidRecipeException
 import com.farware.recipesaver.feature_recipe.domain.repository.RecipeRepository
 
-class AddCategoryUseCase(
+class InsertCategoryUseCase(
     private val repository: RecipeRepository
 ) {
     @Throws(InvalidRecipeException::class)

@@ -85,7 +85,7 @@ class CategoriesViewModel @Inject constructor(
             }
             /*is CategoriesEvent.RestoreCategory -> {
                 viewModelScope.launch {
-                    recipeUseCases.addCategory(recentlyDeletedCategory ?: return@launch)
+                    recipeUseCases.insertCategory(recentlyDeletedCategory ?: return@launch)
                     recentlyDeletedCategory = null
                 }
             }*/

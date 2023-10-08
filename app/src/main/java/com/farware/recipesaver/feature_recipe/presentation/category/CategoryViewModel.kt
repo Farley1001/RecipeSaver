@@ -114,7 +114,7 @@ class CategoryViewModel @Inject constructor(
             is CategoryEvent.SaveCategory -> {
                 // save the category color here
                 viewModelScope.launch {
-                    categoryUseCases.addCategory(category.value)
+                    categoryUseCases.insertCategory(category.value)
                 }
 
                 _state.value = state.value.copy(
