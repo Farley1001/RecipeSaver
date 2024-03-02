@@ -115,7 +115,7 @@ class TipsTabViewModel @Inject constructor(
                 )
                 // save the tip
                 viewModelScope.launch {
-                    tipsUseCases.addTip(tip)
+                    tipsUseCases.insertTip(tip)
                 }
                 // hide the edit dialog
                 _state.value = _state.value.copy(
@@ -148,7 +148,7 @@ class TipsTabViewModel @Inject constructor(
 
                 // save the new tip
                 viewModelScope.launch {
-                    tipsUseCases.addTip(newTip.value)
+                    tipsUseCases.insertTip(newTip.value)
                 }
                 // update for the next newTip
                 _newTip.value = newTip.value.copy(

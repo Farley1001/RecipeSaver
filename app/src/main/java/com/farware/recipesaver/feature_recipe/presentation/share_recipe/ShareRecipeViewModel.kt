@@ -543,7 +543,7 @@ class ShareRecipeViewModel @Inject constructor(
                     text = it.trim()
                 )
                 viewModelScope.launch {
-                    stepUseCases.addStep(newStep)
+                    stepUseCases.insertStep(newStep)
                 }
             }
         }
@@ -563,7 +563,7 @@ class ShareRecipeViewModel @Inject constructor(
                     text = it.trim()
                 )
                 viewModelScope.launch {
-                    tipUseCases.addTip(newTip)
+                    tipUseCases.insertTip(newTip)
                 }
             }
         }
@@ -611,7 +611,7 @@ class ShareRecipeViewModel @Inject constructor(
 
             // recipe ingredient
             viewModelScope.launch {
-                recipeIngredientUseCases.addRecipeIngredient(
+                recipeIngredientUseCases.insertRecipeIngredient(
                     RecipeIngredient(
                         recipeIngredientId = null,
                         recipeId = recipeId,

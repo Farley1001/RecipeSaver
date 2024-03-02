@@ -112,7 +112,7 @@ class StepsTabViewModel @Inject constructor(
                 )
                 // save the step
                 viewModelScope.launch {
-                    stepUseCases.addStep(step)
+                    stepUseCases.insertStep(step)
                 }
                 // hide the edit dialog
                 _state.value = _state.value.copy(
@@ -142,7 +142,7 @@ class StepsTabViewModel @Inject constructor(
                     text = state.value.newStepText
                 )
                 viewModelScope.launch {
-                    stepUseCases.addStep(newStep.value)
+                    stepUseCases.insertStep(newStep.value)
                 }
                 _newStep.value = newStep.value.copy(
                     stepNumber = state.value.steps.size + 1,

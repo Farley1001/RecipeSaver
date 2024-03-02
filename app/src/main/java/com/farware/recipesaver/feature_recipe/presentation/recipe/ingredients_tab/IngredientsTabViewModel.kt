@@ -238,7 +238,7 @@ class IngredientsTabViewModel @Inject constructor(
                 if(state.value.editedIngredient.ingredientId > 0) {
                     viewModelScope.launch {
                         // save the new recipe
-                        recipeIngredientUseCases.addRecipeIngredient(state.value.editedIngredient.toRecipeIngredient())
+                        recipeIngredientUseCases.insertRecipeIngredient(state.value.editedIngredient.toRecipeIngredient())
                     }
                 }
 
@@ -369,7 +369,7 @@ class IngredientsTabViewModel @Inject constructor(
                 if(newFullRecipeIngredient.value.ingredientId > 0) {
                     viewModelScope.launch {
                         // save the new recipe
-                        recipeIngredientUseCases.addRecipeIngredient(newFullRecipeIngredient.value.toRecipeIngredient())
+                        recipeIngredientUseCases.insertRecipeIngredient(newFullRecipeIngredient.value.toRecipeIngredient())
                     }
                 }
 
@@ -515,7 +515,7 @@ class IngredientsTabViewModel @Inject constructor(
                 // ok to check for measureId here as a new measure was just added
                 if (newFullRecipeIngredient.value.measureId > 0 && newFullRecipeIngredient.value.ingredientId > 0) {
                     // save the new recipe ingredient
-                    recipeIngredientUseCases.addRecipeIngredient(newFullRecipeIngredient.value.toRecipeIngredient())
+                    recipeIngredientUseCases.insertRecipeIngredient(newFullRecipeIngredient.value.toRecipeIngredient())
                 }
             }
             if(id > 0 && type == "Edit") {
@@ -528,7 +528,7 @@ class IngredientsTabViewModel @Inject constructor(
                 // ok to check for measureId here as a new measure was just added
                 if (state.value.editedIngredient.measureId > 0 && state.value.editedIngredient.ingredientId > 0) {
                     // save the edited recipe ingredient
-                    recipeIngredientUseCases.addRecipeIngredient(state.value.editedIngredient.toRecipeIngredient())
+                    recipeIngredientUseCases.insertRecipeIngredient(state.value.editedIngredient.toRecipeIngredient())
                 }
             }
         }
@@ -551,7 +551,7 @@ class IngredientsTabViewModel @Inject constructor(
                 )
                 if (newFullRecipeIngredient.value.ingredientId > 0) {
                     // save the new recipe ingredient
-                    recipeIngredientUseCases.addRecipeIngredient(newFullRecipeIngredient.value.toRecipeIngredient())
+                    recipeIngredientUseCases.insertRecipeIngredient(newFullRecipeIngredient.value.toRecipeIngredient())
                 }
             }
             if(id > 0 && type == "Edit") {
@@ -563,7 +563,7 @@ class IngredientsTabViewModel @Inject constructor(
                 )
                 if (state.value.editedIngredient.ingredientId > 0) {
                     // save the edited recipe ingredient
-                    recipeIngredientUseCases.addRecipeIngredient(state.value.editedIngredient.toRecipeIngredient())
+                    recipeIngredientUseCases.insertRecipeIngredient(state.value.editedIngredient.toRecipeIngredient())
                 }
             }
         }

@@ -24,13 +24,13 @@ import com.farware.recipesaver.feature_recipe.domain.use_cases.measure.GetMeasur
 import com.farware.recipesaver.feature_recipe.domain.use_cases.measure.GetMeasuresUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.measure.InsertMeasureReturnIdUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.recipe.*
-import com.farware.recipesaver.feature_recipe.domain.use_cases.recipe_ingredient.AddRecipeIngredientUseCase
+import com.farware.recipesaver.feature_recipe.domain.use_cases.recipe_ingredient.InsertRecipeIngredientUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.recipe_ingredient.DeleteRecipeIngredientUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.recipe_ingredient.GetRecipeIngredientsByRecipeIdUseCase
-import com.farware.recipesaver.feature_recipe.domain.use_cases.step.AddStepUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.step.DeleteStepUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.step.GetStepsByRecipeIdUseCase
-import com.farware.recipesaver.feature_recipe.domain.use_cases.tip.AddTipUseCase
+import com.farware.recipesaver.feature_recipe.domain.use_cases.step.InsertStepUseCase
+import com.farware.recipesaver.feature_recipe.domain.use_cases.tip.InsertTipUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.tip.DeleteTipUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.tip.GetTipsByRecipeIdUseCase
 import com.farware.recipesaver.feature_recipe.domain.use_cases.validation.ValidateConfirmPasswordUseCase
@@ -144,7 +144,7 @@ object AppModule {
     ): StepUseCases {
         return StepUseCases(
             getStepsByRecipeId = GetStepsByRecipeIdUseCase(repository),
-            addStep = AddStepUseCase(repository),
+            insertStep = InsertStepUseCase(repository),
             deleteStep = DeleteStepUseCase(repository)
         )
     }
@@ -155,7 +155,7 @@ object AppModule {
     ): TipUseCases {
         return TipUseCases(
             getTipsByRecipeId = GetTipsByRecipeIdUseCase(repository),
-            addTip = AddTipUseCase(repository),
+            insertTip = InsertTipUseCase(repository),
             deleteTip = DeleteTipUseCase(repository)
         )
     }
@@ -166,7 +166,7 @@ object AppModule {
     ): RecipeIngredientUseCases {
         return RecipeIngredientUseCases(
             getRecipeIngredientsByRecipeId = GetRecipeIngredientsByRecipeIdUseCase(repository),
-            addRecipeIngredient = AddRecipeIngredientUseCase(repository),
+            insertRecipeIngredient = InsertRecipeIngredientUseCase(repository),
             deleteRecipeIngredient = DeleteRecipeIngredientUseCase(repository)
         )
     }
