@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.BluetoothSearching
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -56,12 +58,12 @@ fun RecipesScreen(
                 RecipesEvent.ToggleSearchSection
             )
         },
-        ActionItem("Sort", Icons.Default.Sort, OverflowMode.IF_NECESSARY) {
+        ActionItem("Sort", Icons.AutoMirrored.Filled.Sort, OverflowMode.IF_NECESSARY) {
             viewModel.onEvent(
                 RecipesEvent.ToggleOrderSection
             )
         },
-        //ActionItem("Delete", Icons.Default.Delete, OverflowMode.IF_NECESSARY) {},
+        ActionItem("Receive Recipe", Icons.AutoMirrored.Filled.BluetoothSearching, OverflowMode.IF_NECESSARY) {},
     )
 
     fun navButtonOpenClicked() {
